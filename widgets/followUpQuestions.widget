@@ -1,0 +1,129 @@
+{
+  "version": "1.0",
+  "name": "Follow-Up Questions",
+  "template": "{\"type\":\"Basic\",\"children\":[{%- set _c -%},{\"type\":\"Divider\",\"spacing\":2}{%-if show -%},{\"type\":\"Basic\",\"children\":[{\"type\":\"ListView\",\"children\":[{%- set _c -%}{%-for item in suggestions -%},{\"type\":\"ListViewItem\",\"key\":{{ (item.id) | tojson }},\"gap\":2,\"onClickAction\":{\"type\":\"conversation.followup\",\"payload\":{\"text\":{{ (item.text) | tojson }}},\"handler\":\"client\"},\"children\":[{\"type\":\"Icon\",\"name\":\"sparkle\",\"color\":\"secondary\"},{\"type\":\"Text\",\"value\":{{ (item.text) | tojson }}}]}{%-endfor-%}{%- endset -%}{{- (_c[1:] if _c and _c[0] == ',' else _c) -}}]}]}{%-else-%}{%-endif-%}{%- endset -%}{{- (_c[1:] if _c and _c[0] == ',' else _c) -}}]}",
+  "jsonSchema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "properties": {
+      "show": {
+        "type": "boolean"
+      },
+      "suggestions": {
+        "minItems": 3,
+        "maxItems": 3,
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "text": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "text"
+          ],
+          "additionalProperties": false
+        }
+      }
+    },
+    "required": [
+      "show",
+      "suggestions"
+    ],
+    "additionalProperties": false
+  },
+  "outputJsonPreview": {
+    "type": "Basic",
+    "children": [
+      {
+        "type": "Divider",
+        "spacing": 2
+      },
+      {
+        "type": "Basic",
+        "children": [
+          {
+            "type": "ListView",
+            "children": [
+              {
+                "type": "ListViewItem",
+                "key": "q1",
+                "gap": 2,
+                "onClickAction": {
+                  "type": "conversation.followup",
+                  "payload": {
+                    "text": "能给我一个简短总结吗？"
+                  },
+                  "handler": "client"
+                },
+                "children": [
+                  {
+                    "type": "Icon",
+                    "name": "sparkle",
+                    "color": "secondary"
+                  },
+                  {
+                    "type": "Text",
+                    "value": "能给我一个简短总结吗？"
+                  }
+                ]
+              },
+              {
+                "type": "ListViewItem",
+                "key": "q2",
+                "gap": 2,
+                "onClickAction": {
+                  "type": "conversation.followup",
+                  "payload": {
+                    "text": "可以举个贴近我的实际场景的例子吗近我的实际场景的例子吗近我的实际场景的例子吗近我的实际场景的例子吗近我的实际场景的例子吗近我的实际场景的例子吗？"
+                  },
+                  "handler": "client"
+                },
+                "children": [
+                  {
+                    "type": "Icon",
+                    "name": "sparkle",
+                    "color": "secondary"
+                  },
+                  {
+                    "type": "Text",
+                    "value": "可以举个贴近我的实际场景的例子吗近我的实际场景的例子吗近我的实际场景的例子吗近我的实际场景的例子吗近我的实际场景的例子吗近我的实际场景的例子吗？"
+                  }
+                ]
+              },
+              {
+                "type": "ListViewItem",
+                "key": "q3",
+                "gap": 2,
+                "onClickAction": {
+                  "type": "conversation.followup",
+                  "payload": {
+                    "text": "接下来我应该如何一步步做？"
+                  },
+                  "handler": "client"
+                },
+                "children": [
+                  {
+                    "type": "Icon",
+                    "name": "sparkle",
+                    "color": "secondary"
+                  },
+                  {
+                    "type": "Text",
+                    "value": "接下来我应该如何一步步做？"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "encodedWidget": "eyJpZCI6ImNkODZjNGM0LTc4ZGMtNDJlYi05NGM3LTY3YmFlOWVjNDhkNCIsIm5hbWUiOiJGb2xsb3ctVXAgUXVlc3Rpb25zIiwidmlldyI6IjxCYXNpYz5cbiAgPERpdmlkZXIgc3BhY2luZz17Mn0gLz5cbiAge3Nob3cgJiYgKFxuICAgIDxCYXNpYz5cbjxMaXN0Vmlldz5cblxuICAgIHtcbiAgICAgIHN1Z2dlc3Rpb25zLm1hcCgoaXRlbSkgPT4gKFxuICAgICAgICA8TGlzdFZpZXdJdGVtXG4gICAgICAgICAga2V5PXtpdGVtLmlkfVxuICAgICAgICAgIGdhcD17Mn1cbiAgICAgICAgICBvbkNsaWNrQWN0aW9uPXt7XG4gICAgICAgICAgICB0eXBlOiBcImNvbnZlcnNhdGlvbi5mb2xsb3d1cFwiLFxuICAgICAgICAgICAgcGF5bG9hZDogeyB0ZXh0OiBpdGVtLnRleHQgfSxcbiAgICAgICAgICAgIGhhbmRsZXI6IFwiY2xpZW50XCIsXG4gICAgICAgICAgfX1cbiAgICAgICAgPlxuICAgICAgICAgIDxJY29uIG5hbWU9XCJzcGFya2xlXCIgY29sb3I9XCJzZWNvbmRhcnlcIiAvPlxuICAgICAgICAgIDxUZXh0IHZhbHVlPXtpdGVtLnRleHR9IC8-XG4gICAgICAgIDwvTGlzdFZpZXdJdGVtPlxuICAgICAgKSlcbiAgICB9XG4gIFxuICAgICAgPC9MaXN0Vmlldz5cbiAgICA8L0Jhc2ljPlxuICApfVxuPC9CYXNpYz4iLCJkZWZhdWx0U3RhdGUiOnsic2hvdyI6dHJ1ZSwic3VnZ2VzdGlvbnMiOlt7ImlkIjoicTEiLCJ0ZXh0Ijoi6IO957uZ5oiR5LiA5Liq566A55-t5oC757uT5ZCX77yfIn0seyJpZCI6InEyIiwidGV4dCI6IuWPr-S7peS4vuS4qui0tOi_keaIkeeahOWunumZheWcuuaZr-eahOS-i-WtkOWQl-i_keaIkeeahOWunumZheWcuuaZr-eahOS-i-WtkOWQl-i_keaIkeeahOWunumZheWcuuaZr-eahOS-i-WtkOWQl-i_keaIkeeahOWunumZheWcuuaZr-eahOS-i-WtkOWQl-i_keaIkeeahOWunumZheWcuuaZr-eahOS-i-WtkOWQl-i_keaIkeeahOWunumZheWcuuaZr-eahOS-i-WtkOWQl--8nyJ9LHsiaWQiOiJxMyIsInRleHQiOiLmjqXkuIvmnaXmiJHlupTor6XlpoLkvZXkuIDmraXmraXlgZrvvJ8ifV19LCJzdGF0ZXMiOltdLCJzY2hlbWEiOiJpbXBvcnQgeyB6IH0gZnJvbSBcInpvZFwiXG5cbmNvbnN0IFN1Z2dlc3Rpb24gPSB6LnN0cmljdE9iamVjdCh7XG4gIGlkOiB6LnN0cmluZygpLFxuICB0ZXh0OiB6LnN0cmluZygpLFxufSlcblxuY29uc3QgV2lkZ2V0U3RhdGUgPSB6LnN0cmljdE9iamVjdCh7XG4gIHNob3c6IHouYm9vbGVhbigpLFxuICBzdWdnZXN0aW9uczogei5hcnJheShTdWdnZXN0aW9uKS5sZW5ndGgoMyksXG59KVxuXG5leHBvcnQgZGVmYXVsdCBXaWRnZXRTdGF0ZSIsImpzb25TY2hlbWEiOnt9LCJzY2hlbWFNb2RlIjoiem9kIiwic2NoZW1hVmFsaWRpdHkiOiJ2YWxpZCIsInZpZXdWYWxpZGl0eSI6InZhbGlkIiwiZGVmYXVsdFN0YXRlVmFsaWRpdHkiOiJ2YWxpZCJ9"
+}

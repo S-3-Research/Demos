@@ -396,9 +396,30 @@ export function ChatKitPanel({
       retry: true,     // 启用重试按钮（🔄）
     },
     widgets: {
-      onAction: async (action: { type: string; [key: string]: unknown }) => {
+      onAction: async (action: { type: string; payload?: { text?: string }; [key: string]: unknown }) => {
         if (isDev) {
           console.info("[ChatKitPanel] widget action received:", action);
+        }
+
+        // Handle conversation.followup — auto-send the payload text
+        if (action.type === "conversation.followup") {
+          console.log("[ChatKitPanel] conversation.followup action:", action);
+          const text = action.payload?.text;
+          if (text && chatkit.control) {
+            // Defer to next tick to avoid "Maximum update depth exceeded" (React #185)
+            // caused by sendUserMessage triggering state updates during widget render
+            setTimeout(async () => {
+              try {
+                await chatkit.sendUserMessage({ text });
+                if (isDev) {
+                  console.debug("[ChatKitPanel] conversation.followup sent:", text);
+                }
+              } catch (err) {
+                console.error("[ChatKitPanel] conversation.followup error:", err);
+              }
+            }, 0);
+          }
+          return;
         }
 
         // Handle MOCA test action
