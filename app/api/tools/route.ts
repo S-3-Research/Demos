@@ -427,6 +427,9 @@ async function handleGetTrials(params: Record<string, unknown>) {
       requestBody.phases = params.phases.map(String);
     }
 
+    // Pagination
+    requestBody.page = params.page !== undefined ? Math.max(1, Number(params.page)) : 1;
+
     console.log("🔬 [API/Tools] Calling external API with body:", JSON.stringify(requestBody, null, 2));
 
     const apiKey = process.env.CLINICAL_TRIALS_API_KEY;
