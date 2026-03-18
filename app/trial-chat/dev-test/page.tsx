@@ -19,6 +19,9 @@ import {
   Sparkles,
   Play,
   Square,
+  CheckSquare,
+  XSquare,
+  MinusSquare,
   X,
   PanelRightClose,
   PanelRightOpen,
@@ -132,11 +135,11 @@ function computePerCaseMeta(r: TestResult): PerCaseMeta {
   const avgRating =
     ratedTurns.length > 0
       ? parseFloat(
-          (
-            ratedTurns.reduce((sum, t) => sum + t.rating!.stars, 0) /
-            ratedTurns.length
-          ).toFixed(1)
-        )
+        (
+          ratedTurns.reduce((sum, t) => sum + t.rating!.stars, 0) /
+          ratedTurns.length
+        ).toFixed(1)
+      )
       : null;
   const hallucinationCount = assistantTurns.filter(
     (t) => t.rating?.hallucination
@@ -190,7 +193,7 @@ interface TestSessionProps {
   colorScheme: "dark" | "light";
   baseFontSize: 14 | 16 | 18;
   intakeData: IntakeData;
-  onComplete: (testCaseId: string, conversation: ConversationTurn[], error?: string) => void;
+  onComplete: (testCaseId: string, conversation: ConversationTurn[], error?: string, chatEndTime?: number) => void;
   onProgress: (testCaseId: string, msgIndex: number, total: number) => void;
 }
 
@@ -370,12 +373,13 @@ const TestSession = React.memo(function TestSession({
       // All messages sent & all responses received → fetch once
       isCompleteRef.current = true;
       (async () => {
+        const chatEndTime = Date.now(); // capture before wait+fetch so duration excludes thread API overhead
         await new Promise((r) => setTimeout(r, 1500)); // wait for server persistence
         const conversation = await fetchAllMessages();
-        onComplete(testCase.id, conversation.length > 0 ? conversation : []);
+        onComplete(testCase.id, conversation.length > 0 ? conversation : [], undefined, chatEndTime);
       })();
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isReady, tick]);
 
   // ---- Timeout ----
@@ -383,9 +387,9 @@ const TestSession = React.memo(function TestSession({
     const timeout = setTimeout(() => {
       if (!isCompleteRef.current) {
         isCompleteRef.current = true;
-        onComplete(testCase.id, [], "Test timed out (120s)");
+        onComplete(testCase.id, [], "Test timed out (240s)", Date.now());
       }
-    }, 120_000);
+    }, 240_000);
     return () => clearTimeout(timeout);
   }, [onComplete]);
 
@@ -415,11 +419,10 @@ function StarRating({
           key={star}
           type="button"
           onClick={() => onChange(value === star ? 0 : star)}
-          className={`p-1 rounded-md transition-all ${
-            star <= value
-              ? "text-yellow-500 fill-yellow-500 hover:text-yellow-400"
-              : "text-slate-300 dark:text-slate-600 hover:text-yellow-500/50"
-          }`}
+          className={`p-1 rounded-md transition-all ${star <= value
+            ? "text-yellow-500 fill-yellow-500 hover:text-yellow-400"
+            : "text-slate-300 dark:text-slate-600 hover:text-yellow-500/50"
+            }`}
           title={`${star} star${star > 1 ? "s" : ""}`}
         >
           <Star className={`w-4 h-4 ${star <= value ? 'fill-current' : ''}`} />
@@ -460,6 +463,7 @@ export default function DevTestPage() {
   const [editedDatasets, setEditedDatasets] = useState<Record<string, TestDataset>>({});
   const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
   const [intakeData, setIntakeData] = useState<IntakeData>(DEFAULT_INTAKE_DATA);
+  const [expandedTurns, setExpandedTurns] = useState<Set<string>>(new Set());
   const exportMenuRef = useRef<HTMLDivElement>(null);
   const stopRequestedRef = useRef(false);
   const retryingIdsRef = useRef<Set<string>>(new Set());
@@ -538,19 +542,20 @@ export default function DevTestPage() {
 
   // ---- Handle test completion ----
   const handleTestComplete = useCallback(
-    (testCaseId: string, conversation: ConversationTurn[], error?: string) => {
+    (testCaseId: string, conversation: ConversationTurn[], error?: string, chatEndTime?: number) => {
       setResults((prev) => {
         const next = [...prev];
         const idx = next.findIndex((r) => r.testCaseId === testCaseId);
         if (idx !== -1) {
+          const endTs = chatEndTime ?? Date.now();
           next[idx] = {
             ...next[idx],
             status: error ? "error" : "success",
             conversation,
             error,
-            endTime: Date.now(),
+            endTime: endTs,
             duration: next[idx].startTime
-              ? Date.now() - next[idx].startTime!
+              ? endTs - next[idx].startTime!
               : undefined,
           };
         }
@@ -671,10 +676,10 @@ export default function DevTestPage() {
     const globalAvgRating =
       allRatings.length > 0
         ? parseFloat(
-            (
-              allRatings.reduce((a, b) => a + b, 0) / allRatings.length
-            ).toFixed(1)
-          )
+          (
+            allRatings.reduce((a, b) => a + b, 0) / allRatings.length
+          ).toFixed(1)
+        )
         : null;
     const globalHallCount = results.flatMap((r) =>
       r.conversation.filter(
@@ -715,12 +720,12 @@ export default function DevTestPage() {
             isWidget: t.isWidget || false,
             ...(t.role === "assistant" && t.rating
               ? {
-                  rating: {
-                    stars: t.rating.stars,
-                    hallucination: t.rating.hallucination,
-                    note: t.rating.note || undefined,
-                  },
-                }
+                rating: {
+                  stars: t.rating.stars,
+                  hallucination: t.rating.hallucination,
+                  note: t.rating.note || undefined,
+                },
+              }
               : {}),
           })),
         };
@@ -854,8 +859,8 @@ export default function DevTestPage() {
     const globalAvgRating =
       allRatings.length > 0
         ? parseFloat(
-            (allRatings.reduce((a, b) => a + b, 0) / allRatings.length).toFixed(1)
-          )
+          (allRatings.reduce((a, b) => a + b, 0) / allRatings.length).toFixed(1)
+        )
         : null;
     const globalHallCount = results.flatMap((r) =>
       r.conversation.filter(
@@ -948,7 +953,7 @@ export default function DevTestPage() {
   // ── Render ──
 
   return (
-    <div className="mx-auto w-[95%] flex flex-col gap-3 flex-1 min-h-0 overflow-hidden pt-4 pb-2">
+    <div className="mx-auto w-[95%] min-w-[1440px] flex flex-col gap-4 flex-1 min-h-0 overflow-x-auto overflow-y-auto pt-4 pb-2">
       {/* Header */}
       <div className="flex items-center justify-between shrink-0">
         <div>
@@ -984,247 +989,230 @@ export default function DevTestPage() {
       {/* Main Two-Column Layout */}
       <div className="flex flex-1 min-h-0 gap-4">
 
-        {/* Left Column */}
-        <div className={`flex flex-col gap-3 min-h-0 transition-all duration-300 flex-1`}>
+        {/* Left Column: Controls + Progress + Test Cases */}
+        <div className="w-1/2 shrink-0 flex flex-col gap-4 min-h-0">
 
           {/* Workflow ID + Controls Bar */}
-          <div className="flex flex-col gap-3 p-3 bg-white/80 dark:bg-slate-800/80 rounded-xl shadow-md border border-slate-200 dark:border-slate-700 shrink-0">
-        {/* Row 1: Workflow */}
-        <div className="flex items-center gap-3">
-          <label className="text-sm text-slate-500 dark:text-slate-400 font-medium shrink-0">
-            Workflow:
-          </label>
-          {WORKFLOW_PRESETS.length > 0 && (
-            <select
-              value={
-                WORKFLOW_PRESETS.find((p) => p.id === customWorkflowId)?.id ??
-                "__custom__"
-              }
-              onChange={(e) => {
-                const val = e.target.value;
-                setCustomWorkflowId(val === "__custom__" ? "" : val);
-              }}
-              disabled={runnerStatus === "running"}
-              className="bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
-            >
-              {WORKFLOW_PRESETS.map((p) => (
-                <option key={p.id} value={p.id}>
-                  {p.name}
-                </option>
-              ))}
-              <option value="__custom__">
-                {WORKFLOW_ID ? "Default (.env)" : "Custom…"}
-              </option>
-            </select>
-          )}
-          <input
-            type="text"
-            value={customWorkflowId}
-            onChange={(e) => setCustomWorkflowId(e.target.value)}
-            placeholder={WORKFLOW_ID || "Paste workflow ID here…"}
-            disabled={runnerStatus === "running"}
-            className="flex-1 bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-200 rounded-lg px-3 py-1.5 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 placeholder:text-slate-400 dark:placeholder:text-slate-600"
-          />
-          {customWorkflowId && (
-            <button
-              onClick={() => setCustomWorkflowId("")}
-              className="text-xs text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
-              title="Reset to default"
-            >
-              ✕ Reset
-            </button>
-          )}
-          <span className="text-xs text-slate-400 dark:text-slate-600 shrink-0">
-            {customWorkflowId
-              ? WORKFLOW_PRESETS.find((p) => p.id === customWorkflowId)?.name ||
-                "Custom"
-              : WORKFLOW_ID
-              ? "Using .env default"
-              : "⚠ Not set"}
-          </span>
-        </div>
-
-        {/* Row 2: Dataset + Selection + Actions */}
-        <div className="flex flex-wrap items-center gap-4">
-          {/* Dataset Selector */}
-          <div className="flex items-center gap-2">
-            <label className="text-sm text-slate-500 dark:text-slate-400 font-medium">
-              Dataset:
-            </label>
-            <select
-              value={selectedDatasetId}
-              onChange={(e) => {
-                setSelectedDatasetId(e.target.value);
-                setSelectedTestIds(new Set());
-                setResults([]);
-                setRunnerStatus("idle");
-                setCompletedSessionIds(new Set());
-              }}
-              disabled={runnerStatus === "running"}
-              className="bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
-            >
-              {ALL_DATASETS.map((ds) => (
-                <option key={ds.id} value={ds.id}>
-                  {ds.name} ({ds.testCases.length} tests)
-                </option>
-              ))}
-            </select>
-            <button
-              onClick={downloadDataset}
-              className="text-xs text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors flex items-center gap-1.5"
-              title="Download dataset JSON"
-            >
-              <Download className="w-3.5 h-3.5" /> Download
-            </button>
-            <button
-              onClick={() => setShowDatasetPreview(true)}
-              className="text-xs text-slate-500 dark:text-slate-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors flex items-center gap-1.5"
-              title="Preview & edit dataset"
-            >
-              <Eye className="w-3.5 h-3.5" /> Preview
-            </button>
-          </div>
-
-          <div className="h-6 w-px bg-slate-300 dark:bg-slate-700" />
-
-          {/* Select All / Clear */}
-          <div className="flex items-center gap-2 text-xs">
-            <button
-              onClick={selectAll}
-              disabled={runnerStatus === "running" || selectedTestIds.size === effectiveDataset.testCases.length}
-              className="text-blue-400 hover:text-blue-300 disabled:opacity-50"
-            >
-              Select All
-            </button>
-            <span className="text-slate-400 dark:text-slate-600">|</span>
-            <button
-              onClick={selectNone}
-              disabled={runnerStatus === "running" || selectedTestIds.size === 0}
-              className="text-blue-400 hover:text-blue-300 disabled:opacity-50"
-            >
-              Clear
-            </button>
-            <span className="text-slate-500 ml-1">
-              ({selectedTestIds.size} / {effectiveDataset.testCases.length} checked)
-            </span>
-          </div>
-
-          <div className="flex-1" />
-
-          {/* Run / Stop */}
-          {runnerStatus === "running" ? (
-            <button
-              onClick={stopRun}
-              className="flex items-center gap-2 bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 border border-rose-500/20 px-4 py-2 rounded-lg text-sm font-semibold transition-all shadow-md"
-            >
-              <Square className="w-4 h-4 fill-current" /> Stop
-            </button>
-          ) : (
-            <button
-              onClick={startRun}
-              disabled={!effectiveWorkflowId}
-              className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 disabled:bg-slate-200 dark:disabled:bg-slate-800 disabled:text-slate-400 dark:disabled:text-slate-600 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-all shadow-md"
-            >
-              <Play className="w-4 h-4 fill-current" /> Run{" "}
-              {selectedTestIds.size > 0
-                ? `Selected (${selectedTestIds.size})`
-                : `All (${effectiveDataset.testCases.length})`}
-            </button>
-          )}
-        </div>
-
-        {/* Row 3: Intake Settings */}
-        <div className="flex items-center gap-3 pt-1 border-t border-slate-200/60 dark:border-slate-700/60">
-          <label className="text-sm text-slate-500 dark:text-slate-400 font-medium shrink-0">
-            Intake:
-          </label>
-          <div className="flex items-center gap-2 flex-wrap">
-            <select
-              value={intakeData.role}
-              onChange={(e) => setIntakeData((prev) => ({ ...prev, role: e.target.value as IntakeData["role"] }))}
-              disabled={runnerStatus === "running"}
-              className="bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-200 rounded-lg px-2 py-1 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
-            >
-              <option value="user">Patient</option>
-              <option value="caregiver">Caregiver</option>
-            </select>
-            <select
-              value={intakeData.response_style}
-              onChange={(e) => setIntakeData((prev) => ({ ...prev, response_style: e.target.value as IntakeData["response_style"] }))}
-              disabled={runnerStatus === "running"}
-              className="bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-200 rounded-lg px-2 py-1 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
-            >
-              <option value="concise">Concise</option>
-              <option value="balanced">Balanced</option>
-              <option value="verbose">Verbose</option>
-            </select>
-            <select
-              value={intakeData.intent}
-              onChange={(e) => setIntakeData((prev) => ({ ...prev, intent: e.target.value as IntakeData["intent"] }))}
-              disabled={runnerStatus === "running"}
-              className="bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-200 rounded-lg px-2 py-1 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
-            >
-              <option value="trial_matching">Trial Matching</option>
-              <option value="learn_about_trials">Learn About Trials</option>
-            </select>
-            <button
-              onClick={() => setIntakeData(DEFAULT_INTAKE_DATA)}
-              disabled={runnerStatus === "running"}
-              className="text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 disabled:opacity-50 px-1.5 py-1 rounded border border-slate-200 dark:border-slate-700 hover:border-slate-400 transition-colors"
-              title="Reset to defaults"
-            >
-              Reset
-            </button>
-          </div>
-          <span className="text-xs text-slate-400 dark:text-slate-500 shrink-0">
-            → passed as workflow state_variables
-          </span>
-        </div>
-      </div>
-
-      {/* Progress Bar */}
-      {runnerStatus !== "idle" && (
-        <div className="bg-white/60 dark:bg-slate-900/60 rounded-xl border border-slate-200 dark:border-slate-800 p-3 shrink-0">
-          <div className="flex items-center justify-between text-sm mb-2">
-            <span className="text-slate-700 dark:text-slate-300 font-medium">
-              {runnerStatus === "running"
-                ? `Running test ${stats.completed + 1}/${stats.total}…`
-                : runnerStatus === "completed"
-                ? "All tests completed"
-                : "Tests stopped"}
-              {currentProgress && runnerStatus === "running" && (
-                <span className="text-slate-500 ml-2">
-                  ({currentProgress})
-                </span>
+          <div className="flex flex-col gap-3 p-3 bg-white/80 dark:bg-slate-800/80 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 shrink-0">
+            {/* Row 1: Workflow */}
+            <div className="flex items-center gap-3">
+              <label className="text-sm text-slate-500 dark:text-slate-400 font-medium shrink-0">
+                Workflow:
+              </label>
+              {WORKFLOW_PRESETS.length > 0 && (
+                <select
+                  value={
+                    WORKFLOW_PRESETS.find((p) => p.id === customWorkflowId)?.id ??
+                    "__custom__"
+                  }
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setCustomWorkflowId(val === "__custom__" ? "" : val);
+                  }}
+                  disabled={runnerStatus === "running"}
+                  className="bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-200 rounded-lg h-8 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+                >
+                  {WORKFLOW_PRESETS.map((p) => (
+                    <option key={p.id} value={p.id}>
+                      {p.name}
+                    </option>
+                  ))}
+                  <option value="__custom__">
+                    {WORKFLOW_ID ? "Default (.env)" : "Custom…"}
+                  </option>
+                </select>
               )}
-            </span>
-            <span className="text-slate-500 dark:text-slate-400">
-              {stats.success} passed · {stats.errors} failed ·{" "}
-              {stats.total - stats.completed} remaining
-            </span>
-          </div>
-          <div className="w-full h-2 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
-            <div
-              className={`h-full transition-all duration-500 rounded-full ${
-                stats.errors > 0 ? "bg-yellow-500" : "bg-green-500"
-              }`}
-              style={{
-                width: `${
-                  stats.total ? (stats.completed / stats.total) * 100 : 0
-                }%`,
-              }}
-            />
-          </div>
-        </div>
-      )}
+              <input
+                type="text"
+                value={customWorkflowId}
+                onChange={(e) => setCustomWorkflowId(e.target.value)}
+                placeholder={WORKFLOW_ID || "Paste workflow ID here…"}
+                disabled={runnerStatus === "running"}
+                className="flex-1 bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-200 rounded-lg h-8 px-3 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 placeholder:text-slate-400 dark:placeholder:text-slate-600"
+              />
+              {customWorkflowId && (
+                <button
+                  onClick={() => setCustomWorkflowId("")}
+                  className="text-xs text-blue-400 hover:text-blue-500 disabled:opacity-50 transition-colors"
+                  title="Reset to default"
+                >
+                  ✕ Reset
+                </button>
+              )}
+            </div>
 
-      {/* Main Content — Test Cases | Conversation Logs */}
-      <div className="grid grid-cols-2 gap-4 flex-1 min-h-0">
-        {/* Left: Test Cases */}
-       
+            {/* Row 2: Dataset + Selection + Actions */}
+            <div className="flex flex-wrap items-center gap-4">
+              {/* Dataset Selector */}
+              <div className="flex items-center gap-2">
+                <label className="text-sm text-slate-500 dark:text-slate-400 font-medium">
+                  Dataset:
+                </label>
+                <select
+                  value={selectedDatasetId}
+                  onChange={(e) => {
+                    setSelectedDatasetId(e.target.value);
+                    setSelectedTestIds(new Set());
+                    setResults([]);
+                    setRunnerStatus("idle");
+                    setCompletedSessionIds(new Set());
+                  }}
+                  disabled={runnerStatus === "running"}
+                  className="bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-200 rounded-lg h-8 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+                >
+                  {ALL_DATASETS.map((ds) => (
+                    <option key={ds.id} value={ds.id}>
+                      {ds.name} ({ds.testCases.length} tests)
+                    </option>
+                  ))}
+                </select>
+                <button
+                  onClick={downloadDataset}
+                  className="text-xs text-blue-400 hover:text-blue-500 disabled:opacity-50 transition-colors flex items-center gap-1.5 ml-2"
+                  title="Download dataset JSON"
+                >
+                  <Download className="w-3.5 h-3.5" /> Download
+                </button>
+                <button
+                  onClick={() => setShowDatasetPreview(true)}
+                  className="text-xs text-blue-400 hover:text-blue-500 disabled:opacity-50 transition-colors flex items-center gap-1.5"
+                  title="Preview & edit dataset"
+                >
+                  <Eye className="w-3.5 h-3.5" /> Preview
+                </button>
+              </div>
+
+              <div className="h-6 w-px bg-slate-300 dark:bg-slate-700" />
+
+              {/* Select All / Clear */}
+              <div className="flex items-center gap-2 text-xs">
+                <button
+                  onClick={selectAll}
+                  disabled={runnerStatus === "running" || selectedTestIds.size === effectiveDataset.testCases.length}
+                  className="text-blue-400 hover:text-blue-300 disabled:opacity-50 flex items-center gap-1"
+                >
+                  <CheckSquare className="w-3.5 h-3.5" /> Select All
+                </button>
+                <span className="text-slate-400 dark:text-slate-600">|</span>
+                <button
+                  onClick={selectNone}
+                  disabled={runnerStatus === "running" || selectedTestIds.size === 0}
+                  className="text-blue-400 hover:text-blue-300 disabled:opacity-50 flex items-center gap-1"
+                >
+                  <MinusSquare className="w-3.5 h-3.5" /> Clear
+                </button>
+                <span className="text-slate-500 ml-1">
+                  ({selectedTestIds.size} / {effectiveDataset.testCases.length} checked)
+                </span>
+              </div>
+            </div>
+
+            {/* Row 3: Intake Settings */}
+            <div className="flex items-center justify-between w-full">
+                <div className="flex items-center gap-3">
+                  <label className="text-sm text-slate-500 dark:text-slate-400 font-medium shrink-0">
+                    Intake:
+                  </label>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <select
+                      value={intakeData.role}
+                      onChange={(e) => setIntakeData((prev) => ({ ...prev, role: e.target.value as IntakeData["role"] }))}
+                      disabled={runnerStatus === "running"}
+                      className="bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-200 rounded-lg h-8 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+                    >
+                      <option value="user">Patient</option>
+                      <option value="caregiver">Caregiver</option>
+                    </select>
+                    <select
+                      value={intakeData.response_style}
+                      onChange={(e) => setIntakeData((prev) => ({ ...prev, response_style: e.target.value as IntakeData["response_style"] }))}
+                      disabled={runnerStatus === "running"}
+                      className="bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-200 rounded-lg h-8 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+                    >
+                      <option value="concise">Concise</option>
+                      <option value="balanced">Balanced</option>
+                      <option value="verbose">Verbose</option>
+                    </select>
+                    <select
+                      value={intakeData.intent}
+                      onChange={(e) => setIntakeData((prev) => ({ ...prev, intent: e.target.value as IntakeData["intent"] }))}
+                      disabled={runnerStatus === "running"}
+                      className="bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-200 rounded-lg h-8 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+                    >
+                      <option value="trial_matching">Trial Matching</option>
+                      <option value="learn_about_trials">Learn About Trials</option>
+                    </select>
+                    <button
+                      onClick={() => setIntakeData(DEFAULT_INTAKE_DATA)}
+                      disabled={runnerStatus === "running"}
+                      className="text-xs text-blue-400 hover:text-blue-500 disabled:opacity-50 transition-colors px-1"
+                      title="Reset to defaults"
+                    >
+                      ✕ Reset
+                    </button>
+                  </div>
+                </div>
+                {/* Run / Stop */}
+                {runnerStatus === "running" ? (
+                  <button
+                    onClick={stopRun}
+                    className="flex items-center gap-2 bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 border border-rose-500/20 h-9 px-4 rounded-lg text-sm font-semibold transition-all shadow-sm"
+                  >
+                    <Square className="w-4 h-4 fill-current" /> Stop
+                  </button>
+                ) : (
+                  <button
+                    onClick={startRun}
+                    disabled={!effectiveWorkflowId}
+                    className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 disabled:bg-slate-200 dark:disabled:bg-slate-800 disabled:text-slate-400 dark:disabled:text-slate-600 text-white h-9 px-4 rounded-lg text-sm font-semibold transition-all shadow-sm"
+                  >
+                    <Play className="w-4 h-4 fill-current" /> Run{" "}
+                    {selectedTestIds.size > 0
+                      ? `Selected (${selectedTestIds.size})`
+                      : `All (${effectiveDataset.testCases.length})`}
+                  </button>
+                )}
+              </div>
+
+          </div>
+
+          {/* Progress Bar */}
+          {runnerStatus !== "idle" && (
+            <div className="bg-white/80 dark:bg-slate-800/80 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-3 shrink-0">
+              <div className="flex items-center justify-between text-sm mb-2">
+                <span className="text-slate-700 dark:text-slate-300 font-medium">
+                  {runnerStatus === "running"
+                    ? `Running test ${stats.completed + 1}/${stats.total}…`
+                    : runnerStatus === "completed"
+                      ? "All tests completed"
+                      : "Tests stopped"}
+                  {currentProgress && runnerStatus === "running" && (
+                    <span className="text-slate-500 ml-2">
+                      ({currentProgress})
+                    </span>
+                  )}
+                </span>
+                <span className="text-slate-500 dark:text-slate-400">
+                  {stats.success} passed · {stats.errors} failed ·{" "}
+                  {stats.total - stats.completed} remaining
+                </span>
+              </div>
+              <div className="w-full h-2 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
+                <div
+                  className={`h-full transition-all duration-500 rounded-full ${stats.errors > 0 ? "bg-yellow-500" : "bg-green-500"
+                    }`}
+                  style={{
+                    width: `${stats.total ? (stats.completed / stats.total) * 100 : 0
+                      }%`,
+                  }}
+                />
+              </div>
+            </div>
+          )}
+
           {/* Test Case List */}
-          <div className="bg-white/80 dark:bg-slate-800/80 rounded-xl shadow-md border border-slate-200 dark:border-slate-700 overflow-hidden flex flex-col flex-1 min-h-0">
-            <div className="px-4 h-14 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between shrink-0">
+          <div className="bg-white/80 dark:bg-slate-800/80 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden flex flex-col flex-1 min-h-0">
+            <div className="px-4 h-12 bg-slate-50/50 dark:bg-slate-800/80 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between shrink-0">
               <h2 className="text-sm font-semibold text-slate-700 dark:text-slate-300">
                 Test Cases
               </h2>
@@ -1246,13 +1234,12 @@ export default function DevTestPage() {
                   <div
                     key={tc.id}
                     onClick={() => setActivePreviewTab(tc.id)}
-                    className={`px-4 py-3 flex items-center gap-3 transition-colors cursor-pointer ${
-                      isActive
-                        ? "bg-blue-50/80 dark:bg-blue-950/40 border-l-2 border-l-blue-500"
-                        : isCurrent
+                    className={`px-4 py-3 flex items-center gap-3 transition-colors cursor-pointer ${isActive
+                      ? "bg-blue-50/80 dark:bg-blue-950/40 border-l-2 border-l-blue-500"
+                      : isCurrent
                         ? "bg-yellow-50/50 dark:bg-yellow-950/20 border-l-2 border-l-yellow-500"
                         : "hover:bg-slate-100/50 dark:hover:bg-slate-800/50 border-l-2 border-l-transparent"
-                    }`}
+                      }`}
                   >
                     <input
                       type="checkbox"
@@ -1302,66 +1289,69 @@ export default function DevTestPage() {
             </div>
           </div>
 
-          {/* Results Panel */}
-          <div className="bg-white/80 dark:bg-slate-800/80 rounded-xl shadow-md border border-slate-200 dark:border-slate-700 overflow-hidden flex-1 min-h-0 flex flex-col">
-            <div className="px-4 h-14 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between shrink-0">
+        </div>{/* end Left Column */}
+
+        {/* Right Column: Conversation Logs + Live Preview */}
+        <div className="flex-1 flex gap-4 min-h-0">
+
+          {/* Conversation Logs */}
+          <div className="bg-white/80 dark:bg-slate-800/80 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden flex-1 min-h-0 flex flex-col">
+            <div className="px-4 h-12 bg-slate-50/50 dark:bg-slate-800/80 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between shrink-0">
               <h2 className="text-sm font-semibold text-slate-700 dark:text-slate-300">
                 📋 Conversation Logs
               </h2>
               <div className="flex items-center gap-2">
                 {saveStatus !== "idle" && (
-                  <span className={`text-xs font-medium px-2 py-1 rounded-md ${
-                    saveStatus === "saving" ? "text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-500/10" :
-                    saveStatus === "saved"  ? "text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10" :
-                                              "text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-500/10"
-                  }`}>
+                  <span className={`text-xs font-medium px-2 py-1 rounded-md ${saveStatus === "saving" ? "text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-500/10" :
+                    saveStatus === "saved" ? "text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10" :
+                      "text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-500/10"
+                    }`}>
                     {saveStatus === "saving" ? "Saving…" : saveStatus === "saved" ? "✓ Saved" : "✕ Save failed"}
                   </span>
                 )}
                 {results.some(
                   (r) => r.status === "success" || r.status === "error"
                 ) && (
-                  <div className="relative" ref={exportMenuRef}>
-                    <button
-                      onClick={() => setShowExportMenu((v) => !v)}
-                      className="text-xs flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg transition-all font-medium border bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-500/20 hover:bg-blue-100 dark:hover:bg-blue-500/20"
-                    >
-                      <Download className="w-3.5 h-3.5" /> Export <ChevronDown className="w-3 h-3" />
-                    </button>
-                    {showExportMenu && (
-                      <div className="absolute right-0 top-full mt-1 w-52 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-lg z-50 py-1">
-                        <button
-                          onClick={exportJSON}
-                          className="w-full text-left px-3 py-2 text-xs text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center gap-2 transition-colors"
-                        >
-                          <Download className="w-3.5 h-3.5 text-blue-500" /> Export as JSON
-                        </button>
-                        <button
-                          onClick={exportCSV}
-                          className="w-full text-left px-3 py-2 text-xs text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center gap-2 transition-colors"
-                        >
-                          <Download className="w-3.5 h-3.5 text-emerald-500" /> Export as CSV
-                        </button>
-                        <div className="my-1 border-t border-slate-100 dark:border-slate-700/50" />
-                        <button
-                          onClick={saveToDatabase}
-                          disabled={saveStatus === "saving"}
-                          className="w-full text-left px-3 py-2 text-xs text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center gap-2 transition-colors disabled:opacity-50"
-                        >
-                          <Database className="w-3.5 h-3.5 text-purple-500" />
-                          {saveStatus === "saving" ? "Saving…" : "Save to Database"}
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                )}
+                    <div className="relative" ref={exportMenuRef}>
+                      <button
+                        onClick={() => setShowExportMenu((v) => !v)}
+                        className="text-xs flex items-center gap-1.5 h-8 px-3 rounded-lg transition-all font-medium border bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border-slate-200 dark:border-slate-700 shadow-sm hover:bg-slate-50 dark:hover:bg-slate-700"
+                      >
+                        <Download className="w-3.5 h-3.5" /> Export <ChevronDown className="w-3 h-3" />
+                      </button>
+                      {showExportMenu && (
+                        <div className="absolute right-0 top-full mt-1 w-52 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-lg z-50 py-1">
+                          <button
+                            onClick={exportJSON}
+                            className="w-full text-left px-3 py-2 text-xs text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center gap-2 transition-colors"
+                          >
+                            <Download className="w-3.5 h-3.5 text-blue-500" /> Export as JSON
+                          </button>
+                          <button
+                            onClick={exportCSV}
+                            className="w-full text-left px-3 py-2 text-xs text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center gap-2 transition-colors"
+                          >
+                            <Download className="w-3.5 h-3.5 text-emerald-500" /> Export as CSV
+                          </button>
+                          <div className="my-1 border-t border-slate-100 dark:border-slate-700/50" />
+                          <button
+                            onClick={saveToDatabase}
+                            disabled={saveStatus === "saving"}
+                            className="w-full text-left px-3 py-2 text-xs text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center gap-2 transition-colors disabled:opacity-50"
+                          >
+                            <Database className="w-3.5 h-3.5 text-purple-500" />
+                            {saveStatus === "saving" ? "Saving…" : "Save to Database"}
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 <button
                   onClick={() => setShowPreview((v) => !v)}
-                  className={`text-xs flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg transition-all font-medium border ${
-                    showPreview
-                      ? "bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-500/20"
-                      : "bg-slate-50 dark:bg-slate-800/50 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700/50 hover:bg-slate-100 dark:hover:bg-slate-800"
-                  }`}
+                  className={`text-xs flex items-center gap-1.5 h-8 px-3 rounded-lg transition-all font-medium border shadow-sm ${showPreview
+                    ? "bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-500/20"
+                    : "bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700"
+                    }`}
                 >
                   {showPreview ? <PanelRightClose className="w-3.5 h-3.5" /> : <PanelRightOpen className="w-3.5 h-3.5" />}
                   Preview
@@ -1378,11 +1368,10 @@ export default function DevTestPage() {
                     <button
                       key={r.testCaseId}
                       onClick={() => setActivePreviewTab(r.testCaseId)}
-                      className={`px-3 py-2 text-xs font-medium whitespace-nowrap border-b-2 transition-colors flex items-center gap-1.5 ${
-                        isActive
-                          ? "border-blue-500 text-blue-600 dark:text-blue-300 bg-blue-50/50 dark:bg-blue-950/20"
-                          : "border-transparent text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
-                      }`}
+                      className={`px-3 py-2 text-xs font-medium whitespace-nowrap border-b-2 transition-colors flex items-center gap-1.5 ${isActive
+                        ? "border-blue-500 text-blue-600 dark:text-blue-300 bg-blue-50/50 dark:bg-blue-950/20"
+                        : "border-transparent text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
+                        }`}
                     >
                       <span className="flex items-center justify-center w-4 h-4">{statusIcon(r.status)}</span>
                       {r.testCaseName}
@@ -1441,18 +1430,36 @@ export default function DevTestPage() {
                       <div className="space-y-3">
                         {result.conversation.map((turn, i) => {
                           const rating = turn.rating || { stars: 0, hallucination: false, note: "" };
+                          const turnKey = `${result.testCaseId}-${i}`;
+                          const isAssistant = turn.role === "assistant";
+                          const isLong = isAssistant && (turn.content.length > 250 || (turn.content.match(/\n/g) || []).length >= 3);
+                          const isExpanded = expandedTurns.has(turnKey);
+                          const toggleExpand = () => setExpandedTurns((prev) => {
+                            const next = new Set(prev);
+                            if (next.has(turnKey)) next.delete(turnKey); else next.add(turnKey);
+                            return next;
+                          });
                           return (
                             <div key={i} className="flex flex-col gap-1">
                               <div className="flex gap-3">
-                                <span className={`text-[11px] font-semibold tracking-wide px-2 py-1.5 rounded-md shrink-0 h-fit mt-0.5 w-[52px] text-center ${
-                                  turn.role === "user" ? "bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400" : "bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20"
-                                }`}>
+                                <span className={`text-[11px] font-semibold tracking-wide px-2 py-1.5 rounded-md shrink-0 h-fit mt-0.5 w-[52px] text-center ${turn.role === "user" ? "bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400" : "bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20"
+                                  }`}>
                                   {turn.role === "user" ? "USER" : "AI"}
                                 </span>
-                                <div className={`text-sm leading-relaxed whitespace-pre-wrap break-words min-w-0 flex-1 px-3 py-2 rounded-xl ${
-                                  turn.role === "user" ? "text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-slate-800/50" : "text-slate-800 dark:text-slate-200"
-                                }`}>
-                                  {turn.content}
+                                <div className={`text-sm leading-relaxed whitespace-pre-wrap break-words min-w-0 flex-1 px-3 py-2 rounded-xl ${turn.role === "user" ? "text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-slate-800/50" : "text-slate-800 dark:text-slate-200"
+                                  }`}>
+                                  <div className={isAssistant && isLong && !isExpanded ? "line-clamp-3" : ""}>
+                                    {turn.content}
+                                  </div>
+                                  {isLong && (
+                                    <button
+                                      onClick={toggleExpand}
+                                      className="mt-1 flex items-center gap-1 text-[11px] font-medium text-blue-500 hover:text-blue-400 transition-colors"
+                                    >
+                                      <ChevronDown className={`w-3 h-3 transition-transform ${isExpanded ? "rotate-180" : ""}`} />
+                                      {isExpanded ? "Collapse" : "Expand"}
+                                    </button>
+                                  )}
                                 </div>
                                 {turn.isWidget && (
                                   <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-purple-50 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-200 dark:border-purple-500/20 shrink-0 self-start mt-1.5 tracking-wide">
@@ -1484,13 +1491,11 @@ export default function DevTestPage() {
               )}
             </div>
           </div>
-        </div>
-        </div>
 
-        {/* Right Column (Live Preview) */}
-        <div className={`${showPreview ? "w-1/3 flex" : "hidden"} flex-col bg-white/80 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 rounded-xl shadow-md shrink-0 overflow-hidden`}>
+          {/* Live Preview */}
+          <div className={`${showPreview ? "w-1/2 flex" : "hidden"} flex-col bg-white/80 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm shrink-0 overflow-hidden`}>
             {/* Sidebar Header */}
-            <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200 dark:border-slate-800 shrink-0 bg-slate-50/50 dark:bg-slate-800/80">
+            <div className="flex items-center justify-between px-4 h-12 border-b border-slate-200 dark:border-slate-800 shrink-0 bg-slate-50/50 dark:bg-slate-800/80">
               <h3 className="text-sm font-semibold text-slate-800 dark:text-slate-100 flex items-center gap-2">
                 <PanelRightOpen className="w-4 h-4 text-blue-500" />
                 Live Preview
@@ -1504,68 +1509,68 @@ export default function DevTestPage() {
               </button>
             </div>
 
-        {/* Sidebar Tab Bar */}
-        {previewTabs.length > 0 ? (
-          <>
-            <div className="flex items-center border-b border-slate-200 dark:border-slate-800 overflow-x-auto shrink-0">
-              {previewTabs.map((tc) => {
-                const result = results.find((r) => r.testCaseId === tc.id);
-                const isActive = activePreviewTab === tc.id;
-                return (
-                  <button
-                    key={tc.id}
-                    onClick={() => setActivePreviewTab(tc.id)}
-                    className={`px-3 py-2 text-xs font-medium whitespace-nowrap border-b-2 transition-colors flex items-center gap-1.5 ${
-                      isActive
-                        ? "border-blue-500 text-blue-600 dark:text-blue-300 bg-blue-50/50 dark:bg-blue-950/20"
-                        : "border-transparent text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
-                    }`}
-                  >
-                    <span className="flex items-center justify-center w-4 h-4">{result ? statusIcon(result.status) : <Clock className="w-3.5 h-3.5 text-slate-400" />}</span>
-                    {tc.name}
-                  </button>
-                );
-              })}
-            </div>
+            {/* Sidebar Tab Bar */}
+            {previewTabs.length > 0 ? (
+              <>
+                <div className="flex items-center border-b border-slate-200 dark:border-slate-800 overflow-x-auto shrink-0">
+                  {previewTabs.map((tc) => {
+                    const result = results.find((r) => r.testCaseId === tc.id);
+                    const isActive = activePreviewTab === tc.id;
+                    return (
+                      <button
+                        key={tc.id}
+                        onClick={() => setActivePreviewTab(tc.id)}
+                        className={`px-3 py-2 text-xs font-medium whitespace-nowrap border-b-2 transition-colors flex items-center gap-1.5 ${isActive
+                          ? "border-blue-500 text-blue-600 dark:text-blue-300 bg-blue-50/50 dark:bg-blue-950/20"
+                          : "border-transparent text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
+                          }`}
+                      >
+                        <span className="flex items-center justify-center w-4 h-4">{result ? statusIcon(result.status) : <Clock className="w-3.5 h-3.5 text-slate-400" />}</span>
+                        {tc.name}
+                      </button>
+                    );
+                  })}
+                </div>
 
-            {/* Session Panels */}
-            <div className="flex-1 min-h-0 relative">
-              {previewTabs.map((tc) => {
-                const isActive = activePreviewTab === tc.id;
-                const isRunning = runnerStatus === "running" && currentTestIndex >= 0 && testsToRun[currentTestIndex]?.id === tc.id;
-                const isCompleted = completedSessionIds.has(tc.id);
-                return (
-                  <div key={tc.id} style={{ display: isActive ? "block" : "none" }} className="h-full">
-                    {(isRunning || isCompleted) && (
-                      <TestSession
-                        key={sessionKeys[tc.id]}
-                        testCase={tc}
-                        workflowId={effectiveWorkflowId}
-                        containerId={`chatkit-session-${tc.id}`}
-                        colorScheme={scheme}
-                        baseFontSize={baseFontSize as 14 | 16 | 18}
-                        intakeData={intakeData}
-                        onComplete={handleTestComplete}
-                        onProgress={handleProgress}
-                      />
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          </>
-        ) : (
-          <div className="flex-1 flex flex-col items-center justify-center bg-slate-50/50 dark:bg-slate-800/80">
-            <div className="w-16 h-16 rounded-2xl bg-white dark:bg-slate-800 shadow-md border border-slate-200 dark:border-slate-700 flex items-center justify-center mb-4">
-              <MessageSquare className="w-8 h-8 text-slate-300 dark:text-slate-600" />
-            </div>
-            <p className="text-sm font-medium text-slate-600 dark:text-slate-300">No active sessions</p>
-            <p className="text-xs text-slate-500 dark:text-slate-500 mt-1.5 text-center max-w-[200px]">
-              Select a test case and click Run to start testing and see the live preview here.
-            </p>
+                {/* Session Panels */}
+                <div className="flex-1 min-h-0 relative">
+                  {previewTabs.map((tc) => {
+                    const isActive = activePreviewTab === tc.id;
+                    const isRunning = runnerStatus === "running" && currentTestIndex >= 0 && testsToRun[currentTestIndex]?.id === tc.id;
+                    const isCompleted = completedSessionIds.has(tc.id);
+                    return (
+                      <div key={tc.id} style={{ display: isActive ? "block" : "none" }} className="h-full">
+                        {(isRunning || isCompleted) && (
+                          <TestSession
+                            key={sessionKeys[tc.id]}
+                            testCase={tc}
+                            workflowId={effectiveWorkflowId}
+                            containerId={`chatkit-session-${tc.id}`}
+                            colorScheme={scheme}
+                            baseFontSize={baseFontSize as 14 | 16 | 18}
+                            intakeData={intakeData}
+                            onComplete={handleTestComplete}
+                            onProgress={handleProgress}
+                          />
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </>
+            ) : (
+              <div className="flex-1 flex flex-col items-center justify-center bg-slate-50/50 dark:bg-slate-800/80">
+                <div className="w-16 h-16 rounded-2xl bg-white dark:bg-slate-800 shadow-md border border-slate-200 dark:border-slate-700 flex items-center justify-center mb-4">
+                  <MessageSquare className="w-8 h-8 text-slate-300 dark:text-slate-600" />
+                </div>
+                <p className="text-sm font-medium text-slate-600 dark:text-slate-300">No active sessions</p>
+                <p className="text-xs text-slate-500 dark:text-slate-500 mt-1.5 text-center max-w-[200px]">
+                  Select a test case and click Run to start testing and see the live preview here.
+                </p>
+              </div>
+            )}
           </div>
-        )}
-          </div>
+        </div>{/* end Right Column */}
       </div>
 
       {/* Dataset Preview Modal */}
@@ -1618,20 +1623,20 @@ export default function DevTestPage() {
 
             {/* Modal Body - Table */}
             <div className="flex-1 min-h-0 overflow-auto custom-scrollbar">
-              <table className="w-full text-sm">
-                <thead className="sticky top-0 bg-slate-50 dark:bg-slate-800/80 backdrop-blur-sm">
+              <table className="w-full text-sm min-w-[1000px] table-fixed">
+                <thead className="sticky top-0 bg-slate-50 dark:bg-slate-800/80 backdrop-blur-sm z-10">
                   <tr className="text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                    <th className="px-4 py-3 w-10">#</th>
-                    <th className="px-4 py-3 w-48">Name</th>
-                    <th className="px-4 py-3 w-56">Description</th>
-                    <th className="px-4 py-3">Messages</th>
+                    <th className="px-4 py-3 w-12 whitespace-nowrap">#</th>
+                    <th className="px-4 py-3 w-[200px] whitespace-nowrap">Name</th>
+                    <th className="px-4 py-3 w-[300px] whitespace-nowrap">Description</th>
+                    <th className="px-4 py-3 whitespace-nowrap">Messages</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                   {effectiveDataset.testCases.map((tc, idx) => (
                     <tr
                       key={tc.id}
-                      className="hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors align-top"
+                      className="hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors align-top whitespace-nowrap"
                     >
                       <td className="px-4 py-3 text-slate-400 font-mono text-xs">
                         {idx + 1}
