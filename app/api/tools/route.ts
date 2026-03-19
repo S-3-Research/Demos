@@ -464,73 +464,15 @@ async function handleGetTrials(params: Record<string, unknown>) {
     }
 
     const data = await response.json();
-    console.log("🔬 [API/Tools] Found trials:", data.matched_trial?.length || 0);
+    const matchedTrials = data.matched_trial || [];
+    console.log("🔬 [API/Tools] Found trials:", matchedTrials.length);
     
-    // Simplify the response to avoid ChatKit timeout/CORS issues
-    // Only return essential trial information
-    const simplifiedTrials = data.matched_trial?.map((trial: {
-      clinical_trial?: {
-        id?: string;
-        title?: string;
-        link?: string;
-        recruitment_status?: string;
-        summary_100?: string;
-        summary_50?: string;
-        locations?: Array<{ city?: string; state?: string; country?: string }>;
-        sex?: string;
-        min_age?: string;
-        max_age?: string;
-        phases?: string[];
-        intervention_types?: string[];
-        conditions?: string[];
-      };
-      reports?: Array<{
-        filter_type?: string;
-        result?: string;
-        result_text?: string;
-        matched_locations?: unknown[];
-      }>;
-      rank?: number;
-    }) => ({
-      id: trial.clinical_trial?.id,
-      title: trial.clinical_trial?.title,
-      link: trial.clinical_trial?.link,
-      recruitment_status: trial.clinical_trial?.recruitment_status,
-      summary: trial.clinical_trial?.summary_100 || trial.clinical_trial?.summary_50,
-      locations: trial.clinical_trial?.locations?.slice(0, 3).map((loc: { city?: string; state?: string; country?: string }) => ({
-        city: loc.city,
-        state: loc.state,
-        country: loc.country,
-      })),
-      eligibility: {
-        sex: trial.clinical_trial?.sex,
-        min_age: trial.clinical_trial?.min_age,
-        max_age: trial.clinical_trial?.max_age,
-      },
-      phases: trial.clinical_trial?.phases,
-      intervention_types: trial.clinical_trial?.intervention_types,
-      conditions: trial.clinical_trial?.conditions?.slice(0, 5),
-      match_reports: trial.reports?.map((report: {
-        filter_type?: string;
-        result?: string;
-        result_text?: string;
-        matched_locations?: unknown[];
-      }) => ({
-        filter_type: report.filter_type,
-        result: report.result,
-        result_text: report.result_text,
-        matched_location_count: report.matched_locations?.length || 0,
-      })),
-      rank: trial.rank,
-    })) || [];
-
-    console.log("🔬 [API/Tools] Returning simplified data with", simplifiedTrials.length, "trials");
 
     return NextResponse.json({
       success: true,
-      count: simplifiedTrials.length,
-      trials: simplifiedTrials,
-      summary: data.summary_report || `Found ${simplifiedTrials.length} matching trials`,
+      count: matchedTrials.length,
+      trials: matchedTrials,
+      summary: data.summary_report || `Found ${matchedTrials.length} matching trials`,
     });
   } catch (error) {
     console.error("🔬 [API/Tools] Error fetching clinical trials:", error);
