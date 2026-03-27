@@ -9,7 +9,12 @@ import { IntakeFormModal } from "@/components/IntakeFormModal";
 import type { IntakeData } from "@/lib/types/intake";
 import { INTAKE_STORAGE_KEY } from "@/lib/types/intake";
 
-export default function App() {
+interface AppProps {
+  skipIntake?: boolean;
+  autoOpenMatch?: boolean;
+}
+
+export default function App({ skipIntake = false, autoOpenMatch = false }: AppProps) {
   const { scheme, setScheme } = useColorScheme();
   const [isResourcePanelOpen, setIsResourcePanelOpen] = useState(false);
   const { isLoaded, isSignedIn } = useUser();
@@ -86,6 +91,14 @@ export default function App() {
   // Check if intake is needed for all users (guest and signed in)
   useEffect(() => {
     if (!isLoaded || isMigratingIntake) return;
+
+    // If coming from landing page "Match me to Trials" button, skip intake entirely
+    if (skipIntake) {
+      setIntakeCompleted(true);
+      setShowIntakeModal(false);
+      setIsCheckingIntake(false);
+      return;
+    }
 
     const checkIntakeStatus = async () => {
       if (typeof window === "undefined") return;
@@ -285,6 +298,7 @@ export default function App() {
                   onResponseEnd={handleResponseEnd}
                   onThemeRequest={setScheme}
                   onOpenResourcePanel={() => setIsResourcePanelOpen(true)}
+                  autoOpenMatch={autoOpenMatch}
                 />
               ) : (
                 <div className="flex h-full items-center justify-center rounded-2xl bg-white shadow-sm dark:bg-slate-900">

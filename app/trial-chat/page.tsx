@@ -49,6 +49,41 @@ export default function Home() {
             background-image: linear-gradient(135deg, #cbd5e1 0%, #475569 100%);
         }
         
+        @keyframes landing-border-spin {
+          0%   { transform: translate(-50%, -50%) rotate(0deg); }
+          100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+        .landing-match-btn {
+          position: relative;
+          isolation: isolate;
+          overflow: hidden;
+        }
+        .landing-match-btn::before {
+          content: "";
+          position: absolute;
+          top: 50%; left: 50%;
+          width: 200%; height: 200%;
+          background: conic-gradient(
+            from 0deg,
+            transparent 0deg, transparent 50deg,
+            rgba(139, 92, 246, 0.7) 80deg,
+            rgba(196, 181, 253, 0.9) 110deg,
+            rgba(147, 197, 253, 0.7) 140deg,
+            transparent 170deg, transparent 360deg
+          );
+          animation: landing-border-spin 3s linear infinite;
+          z-index: -2;
+          border-radius: inherit;
+        }
+        .landing-match-btn::after {
+          content: "";
+          position: absolute;
+          inset: 1px;
+          background: linear-gradient(135deg, rgba(30,27,75,0.95) 0%, rgba(46,16,101,0.95) 100%);
+          border-radius: inherit;
+          z-index: -1;
+        }
+
         .bg-noise {
             background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
         }
@@ -213,15 +248,29 @@ export default function Home() {
                         </div>
 
                         {/* CTA Button Area */}
-                        <div className="mt-8 pt-6 border-t border-white/10 relative z-10">
+                        <div className="mt-8 pt-6 border-t border-white/10 relative z-10 flex flex-col gap-3">
+                            {/* Button 1: Learn about ADRD */}
                             <Link href="/trial-chat/chat" className="w-full block group/btn relative overflow-hidden rounded-xl bg-gradient-to-r from-slate-200 to-slate-400 p-[1px] focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-900">
-                                <div className="relative h-full w-full rounded-xl bg-slate-900 px-6 py-4 transition-all group-hover/btn:bg-slate-800 group-hover/btn:bg-opacity-80">
+                                <div className="relative h-full w-full rounded-xl bg-slate-900 px-6 py-4 transition-all group-hover/btn:bg-slate-800">
                                     <div className="flex items-center justify-between">
-                                        <span className="font-semibold text-slate-200 group-hover/btn:text-white transition-colors">Start Your Journey</span>
+                                        <span className="font-semibold text-slate-200 group-hover/btn:text-white transition-colors">Learn about ADRD</span>
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4 text-slate-200 group-hover/btn:translate-x-1 transition-transform">
-                                        <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
                                         </svg>
                                     </div>
+                                </div>
+                            </Link>
+
+                            {/* Button 2: Match me to Trials */}
+                            <Link
+                                href="/trial-chat/chat?skip_intake=1&open_match=1"
+                                className="landing-match-btn w-full block rounded-xl px-6 py-4 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:ring-offset-2 focus:ring-offset-slate-900"
+                            >
+                                <div className="flex items-center justify-between">
+                                    <span className="font-semibold text-violet-200 group-hover:text-white transition-colors">Match me to Trials</span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4 text-violet-300">
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                                    </svg>
                                 </div>
                             </Link>
                         </div>

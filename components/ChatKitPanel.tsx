@@ -21,6 +21,8 @@ import type { ColorScheme } from "@/hooks/useColorScheme";
 import { useFontSize } from "@/contexts/FontSizeContext";
 import { useVoiceInputMode } from "@/contexts/VoiceInputModeContext";
 import { correctMedicalTerms } from "@/lib/medicalTermsCorrection";
+import { MatchProfileModal } from "./MatchProfileModal";
+import type { MatchProfile } from "./MatchProfileModal";
 
 export type FactAction = {
   type: "save";
@@ -34,6 +36,7 @@ type ChatKitPanelProps = {
   onResponseEnd: () => void;
   onThemeRequest: (scheme: ColorScheme) => void;
   onOpenResourcePanel: () => void;
+  autoOpenMatch?: boolean;
 };
 
 type ErrorState = {
@@ -76,6 +79,7 @@ export function ChatKitPanel({
   onResponseEnd,
   onThemeRequest,
   onOpenResourcePanel,
+  autoOpenMatch = false,
 }: ChatKitPanelProps) {
   const { isSignedIn } = useUser();
   const { fontSize } = useFontSize();
@@ -83,6 +87,7 @@ export function ChatKitPanel({
   const [errors, setErrors] = useState<ErrorState>(() => createInitialErrors());
   const [isInitializingSession, setIsInitializingSession] = useState(true);
   const [intakeData, setIntakeData] = useState<IntakeData | null>(null);
+  const [showMatchModal, setShowMatchModal] = useState(false);
   const isMountedRef = useRef(true);
   const [scriptStatus, setScriptStatus] = useState<
     "pending" | "ready" | "error"
@@ -807,6 +812,15 @@ export function ChatKitPanel({
     }
   }, [chatkit.control, isInitializingSession]);
 
+  // Auto-open match modal when chatkit becomes ready (triggered by ?open_match=1)
+  const autoMatchFiredRef = useRef(false);
+  useEffect(() => {
+    if (autoOpenMatch && chatkit.control && !isInitializingSession && !autoMatchFiredRef.current) {
+      autoMatchFiredRef.current = true;
+      setShowMatchModal(true);
+    }
+  }, [autoOpenMatch, chatkit.control, isInitializingSession]);
+
   // Note: Intake context is now passed via workflow.state_variables during session creation
   // See /app/api/create-session/route.ts for implementation
 
@@ -882,6 +896,38 @@ export function ChatKitPanel({
         >
           <VoiceInputButtonSwitcher onTranscript={handleVoiceTranscript} className="mr-14 pointer-events-auto" />
         </div>
+      )}
+
+      {/* Match Button — floating, centered, near top of panel */}
+      <button
+        onClick={() => setShowMatchModal(true)}
+        className="match-button-glow absolute top-5 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2 rounded-full px-5 py-2 text-sm font-semibold text-white border border-white/20 pointer-events-auto select-none"
+        style={{
+          background: "linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #3b82f6 100%)",
+        }}
+        aria-label="Find matching clinical trials"
+      >
+        <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+        </svg>
+        Match
+      </button>
+
+      {/* Match Profile Modal */}
+      {showMatchModal && (
+        <MatchProfileModal
+          onConfirm={async (_profile: MatchProfile, message: string) => {
+            setShowMatchModal(false);
+            if (chatkit.control) {
+              try {
+                await chatkit.sendUserMessage({ text: message });
+              } catch (err) {
+                console.error("[MatchButton] sendUserMessage failed:", err);
+              }
+            }
+          }}
+          onClose={() => setShowMatchModal(false)}
+        />
       )}
       
       <ErrorOverlay
