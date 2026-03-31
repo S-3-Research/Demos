@@ -1,10 +1,63 @@
 {
   "latestUpdates": [
     {
+      "version": "v1.0.0",
+      "date": "March 31, 2026",
+      "title": "Landing Page Visual Overhaul & Match Flow Polish",
+      "isLatest": true,
+      "items": [
+        "Added cinematic entrance animations with staggered fade-in-up effects on landing page",
+        "New ambient light beam background element for depth and atmosphere",
+        "3D tilt card interaction on feature cards for immersive feel",
+        "Redesigned Match Profile Modal with improved layout and copy",
+        "Header controls polish: improved spacing, icon sizing, and dark/light transitions",
+        "Fixed unescaped JSX entities causing production build failures"
+      ]
+    },
+    {
+      "version": "v0.9.0",
+      "date": "March 28, 2026",
+      "title": "Trial Match Flow & MatchProfileModal",
+      "isLatest": false,
+      "items": [
+        "Added 'Match me to Trials' CTA button on landing page",
+        "Implemented MatchProfileModal for collecting patient profile before trial matching",
+        "Skip-intake flow: users can jump straight to trial matching with ?skip_intake=1&open_match=1",
+        "Modal collects age, diagnosis, location and sends user directly to matched trials"
+      ]
+    },
+    {
+      "version": "v0.8.0",
+      "date": "March 20, 2026",
+      "title": "UI Polish, Animations & Dev Test Improvements",
+      "isLatest": false,
+      "items": [
+        "Landing page glassmorphism card hover lift animation",
+        "Improved light/dark mode transition smoothness across all components",
+        "Session Test Runner page UI/UX overhaul with cleaner layout",
+        "Fixed sendUserMessage race condition using advanceTimerRef debounce",
+        "Pagination support for clinical trials search results",
+        "API robustness improvements: raw clinical trials response handling, undefined payload guards"
+      ]
+    },
+    {
+      "version": "v0.7.0",
+      "date": "March 5, 2026",
+      "title": "Clinical Trials Search Pagination & API Robustness",
+      "isLatest": false,
+      "items": [
+        "Added pagination support for clinical trials search tool",
+        "Improved API error handling against undefined or malformed upstream payloads",
+        "Updated copyright year to 2026",
+        "Added automated chat session test runner with dataset support",
+        "Test history page at /dev-test/history for reviewing past test runs"
+      ]
+    },
+    {
       "version": "v0.6.0",
       "date": "February 5, 2026",
       "title": "Dynamic Personalization & Complete UI Redesign",
-      "isLatest": true,
+      "isLatest": false,
       "items": [
         "Personalized starting questions based on user intent (trial matching vs. learning)",
         "Dynamic greetings adapted to user role (patient vs. caregiver)",
