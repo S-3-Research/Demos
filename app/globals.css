@@ -150,3 +150,13 @@ body {
 .match-button-glow {
   animation: match-glow-pulse 2.4s ease-in-out infinite;
 }
+
+/* Match button — conic spin animation for shimmer border */
+@keyframes match-border-spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+.animate-spin-slow {
+  animation: match-border-spin 2s linear infinite;
+}
