@@ -4,7 +4,7 @@ export const DEMOS = {
     name: 'Trial Chat',
     description: 'AI-powered chat interface for clinical trials',
     path: '/trial-chat',
-    hidden: true,
+    hidden: false,
   },
   'trial-hub': {
     id: 'trial-hub',
