@@ -37,7 +37,7 @@ export default function Header() {
     <header className="flex-none px-0 py-4 flex items-center justify-between mx-auto max-w-6xl w-[95%] z-50 transition-all duration-300 ease-in-out">
       {/* Left: Logo Area */}
       <div className="flex items-center gap-3">
-        <Link href="/" className="flex items-center gap-3 group">
+        <Link href="/trial-chat" className="flex items-center gap-3 group">
             <div className="relative w-10 h-10 flex items-center justify-center bg-gradient-to-br from-slate-200 to-white dark:from-slate-700 dark:to-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-white/10 group-hover:scale-105 transition-transform duration-300">
                 <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 text-slate-700 dark:text-slate-100" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>

@@ -9,18 +9,18 @@ export const CREATE_SESSION_ENDPOINT = "/api/create-session";
 // Default starter prompts (fallback for users without intake data)
 export const DEFAULT_STARTER_PROMPTS: StartScreenPrompt[] = [
   {
-    label: "What is ADRD?",
-    prompt: "Can you explain what ADRD is and why clinical trials are important?",
+    label: "Can you explain what Alzheimer's disease is and why clinical trials are important?",
+    prompt: "Can you explain what Alzheimer's disease is and why clinical trials are important?",
     icon: "circle-question",
   },
   {
-    label: "Find trials for me",
+    label: "Find clinical trials that might be right for me?",
     prompt: "Find clinical trials that might be right for me?",
     icon: "search",
   },
   {
-    label: "Trial participation",
-    prompt: "What should I expect when participating in a clinical trial?",
+    label: "What are clinical trials and what should I expect if I participate in one?",
+    prompt: "What are clinical trials and what should I expect if I participate in one?",
     icon: "notebook",
   },
 ];
@@ -28,17 +28,17 @@ export const DEFAULT_STARTER_PROMPTS: StartScreenPrompt[] = [
 // Starter prompts for trial matching intent - user role
 const TRIAL_MATCHING_USER_PROMPTS: StartScreenPrompt[] = [
   {
-    label: "Find trials for me",
+    label: "I'd like to find clinical trials that match my health profile",
     prompt: "I'd like to find clinical trials that match my health profile",
     icon: "search",
   },
   {
-    label: "Check eligibility",
-    prompt: "What are the eligibility criteria for ADRD trials?",
+    label: "What are the eligibility criteria for Alzheimer's disease trials?",
+    prompt: "What are the eligibility criteria for Alzheimer's disease trials?",
     icon: "notebook",
   },
   {
-    label: "Trial locations",
+    label: "Are there trials near my location?",
     prompt: "Are there trials near my location?",
     icon: "circle-question",
   },
@@ -47,17 +47,17 @@ const TRIAL_MATCHING_USER_PROMPTS: StartScreenPrompt[] = [
 // Starter prompts for trial matching intent - caregiver role
 const TRIAL_MATCHING_CAREGIVER_PROMPTS: StartScreenPrompt[] = [
   {
-    label: "Find trials for them",
+    label: "Help me find clinical trials suitable for the person I care for",
     prompt: "Help me find clinical trials suitable for the person I care for",
     icon: "search",
   },
   {
-    label: "Check eligibility",
-    prompt: "What eligibility criteria should I know about for ADRD trials?",
+    label: "What eligibility criteria should I know about for Alzheimer's disease trials?",
+    prompt: "What eligibility criteria should I know about for Alzheimer's disease trials?",
     icon: "notebook",
   },
   {
-    label: "Trial locations",
+    label: "Are there trials near our location?",
     prompt: "Are there trials near our location?",
     icon: "circle-question",
   },
@@ -66,17 +66,17 @@ const TRIAL_MATCHING_CAREGIVER_PROMPTS: StartScreenPrompt[] = [
 // Starter prompts for learning intent - user role
 const LEARN_USER_PROMPTS: StartScreenPrompt[] = [
   {
-    label: "What is ADRD?",
-    prompt: "Can you explain what ADRD is and why clinical trials matter?",
+    label: "Can you explain what Alzheimer's disease is and why clinical trials matter?",
+    prompt: "Can you explain what Alzheimer's disease is and why clinical trials matter?",
     icon: "circle-question",
   },
   {
-    label: "Trial process",
+    label: "What should I expect if I participate in a clinical trial?",
     prompt: "What should I expect if I participate in a clinical trial?",
     icon: "notebook",
   },
   {
-    label: "Safety & risks",
+    label: "What are the potential risks and benefits of joining a trial?",
     prompt: "What are the potential risks and benefits of joining a trial?",
     icon: "search",
   },
@@ -85,17 +85,17 @@ const LEARN_USER_PROMPTS: StartScreenPrompt[] = [
 // Starter prompts for learning intent - caregiver role
 const LEARN_CAREGIVER_PROMPTS: StartScreenPrompt[] = [
   {
-    label: "What is ADRD?",
-    prompt: "Can you explain ADRD and why clinical trials are important?",
+    label: "Can you explain Alzheimer's disease and why clinical trials are important?",
+    prompt: "Can you explain Alzheimer's disease and why clinical trials are important?",
     icon: "circle-question",
   },
   {
-    label: "Trial process",
+    label: "What happens when someone participates in a clinical trial?",
     prompt: "What happens when someone participates in a clinical trial?",
     icon: "notebook",
   },
   {
-    label: "Caregiver role",
+    label: "What is my role as a caregiver in a clinical trial?",
     prompt: "What is my role as a caregiver in a clinical trial?",
     icon: "search",
   },

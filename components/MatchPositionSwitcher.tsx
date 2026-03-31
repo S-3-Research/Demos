@@ -17,16 +17,16 @@ export function MatchPositionSwitcher() {
   };
 
   const tabs: { key: MatchPosition; label: string }[] = [
-    { key: "original", label: "原始 (顶部居中)" },
-    { key: "option2", label: "选项 2 (Chat Header)" },
-    { key: "option3", label: "选项 3 (FAB)" },
-    { key: "option4", label: "选项 4 (全局 Header)" },
+    { key: "original", label: "Default (top center)" },
+    { key: "option2", label: "Option 2 (Chat Header)" },
+    { key: "option3", label: "Option 3 (FAB)" },
+    { key: "option4", label: "Option 4 (Global Header)" },
   ];
 
   return (
     <div className="flex items-center gap-3 px-4 py-2 border-b border-slate-200/60 dark:border-slate-700/60 bg-white/70 dark:bg-slate-900/70 backdrop-blur-sm shrink-0">
       <span className="text-xs font-semibold text-slate-400 dark:text-slate-500 hidden sm:block whitespace-nowrap">
-        👀 Match 位置:
+        👀 Match position:
       </span>
       <div className="flex gap-1.5">
         {tabs.map(({ key, label }) => (
