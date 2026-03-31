@@ -246,7 +246,7 @@ export default function Home() {
                         isLight ? 'bg-blue-50 border-blue-200 text-blue-600' : 'bg-blue-500/10 border-blue-400/20 text-blue-200'
                     }`} style={{animationDelay: '0.1s'}}>
                         <i className="ph ph-brain text-lg"></i>
-                        Alzheimer's disease Clinical Navigator
+                        Alzheimer&apos;s disease Clinical Navigator
                     </div>
 
                     {/* Main Giant Title */}
@@ -299,7 +299,7 @@ export default function Home() {
                                 </div>
                                 <div>
                                     <h3 className={`text-sm font-semibold transition-colors duration-300 ${isLight ? 'text-slate-700' : 'text-slate-200'}`}>Personalized Education</h3>
-                                    <p className={`text-xs transition-colors duration-300 ${isLight ? 'text-slate-400' : 'text-slate-500'}`}>Learn about Alzheimer's disease on your terms.</p>
+                                    <p className={`text-xs transition-colors duration-300 ${isLight ? 'text-slate-400' : 'text-slate-500'}`}>Learn about Alzheimer&apos;s disease on your terms.</p>
                                 </div>
                             </div>
 
@@ -336,7 +336,7 @@ export default function Home() {
                             <Link href="/trial-chat/chat" className="w-full block group/btn relative overflow-hidden rounded-xl bg-gradient-to-r from-slate-200 to-slate-400 p-[1px] focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-900">
                                 <div className="relative h-full w-full rounded-xl bg-slate-900 px-6 py-4 transition-all group-hover/btn:bg-slate-800">
                                     <div className="flex items-center justify-between">
-                                        <span className="font-semibold text-slate-200 group-hover/btn:text-white transition-colors">Learn about Alzheimer's disease</span>
+                                        <span className="font-semibold text-slate-200 group-hover/btn:text-white transition-colors">Learn about Alzheimer&apos;s disease</span>
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4 text-slate-200 group-hover/btn:translate-x-1 transition-transform">
                                             <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
                                         </svg>
