@@ -201,23 +201,37 @@ export default function Header() {
 
         {/* Match Button — visible only in option4 layout */}
         {matchPosition === 'option4' && (
-          <div className="overflow-hidden rounded-full transition-transform hover:scale-105 active:scale-95 shadow-md shadow-blue-500/20 hidden md:block">
+          <div className="shimmer-border-btn-pill transition-transform hover:scale-105 active:scale-95 shadow-md shadow-blue-500/20 hidden md:block">
             <button
               onClick={() => window.dispatchEvent(new Event('open-match-modal'))}
-              className="group relative inline-flex items-center justify-center overflow-hidden rounded-full focus:outline-none h-9 px-4"
+              className="flex items-center justify-center gap-1.5 h-9 px-4 rounded-full bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors text-sm focus:outline-none"
               aria-label="Find matching clinical trials"
             >
-              <span className="absolute animate-spin-slow bg-[conic-gradient(from_90deg_at_50%_50%,#2563eb_0%,#7dd3fc_50%,#2563eb_100%)] opacity-90 group-hover:opacity-100 transition-opacity" style={{inset: '-1000%'}} />
-              <span className="absolute inset-[2px] rounded-full bg-white dark:bg-slate-900 transition-colors group-hover:bg-slate-50 dark:group-hover:bg-slate-800" />
-              <span className="relative flex items-center justify-center gap-1.5 text-sm">
-                <svg className="w-4 h-4 text-blue-600 fill-current" viewBox="0 0 24 24">
-                  <path d="M13 10V3L4 14h7v7l9-11h-7z"/>
-                </svg>
-                <span className="font-bold tracking-wide bg-gradient-to-r from-blue-600 to-sky-500 bg-clip-text text-transparent">Match</span>
-              </span>
+              <svg className="w-4 h-4 text-blue-600 fill-current" viewBox="0 0 24 24">
+                <path d="M13 10V3L4 14h7v7l9-11h-7z"/>
+              </svg>
+              <span className="font-bold tracking-wide bg-gradient-to-r from-blue-600 to-sky-500 bg-clip-text text-transparent">Match</span>
             </button>
           </div>
         )}
+
+        {/* Mobile Settings Icon */}
+        <DropdownMenu.Root>
+             <DropdownMenu.Trigger asChild>
+                <button className="p-2 rounded-full text-slate-500 hover:bg-slate-200/50 dark:hover:bg-white/5 transition-colors block md:hidden">
+                    <svg className="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                    </svg>
+                </button>
+             </DropdownMenu.Trigger>
+             <DropdownMenu.Portal>
+                <DropdownMenu.Content className="z-[60] min-w-[200px] rounded-xl border py-2 shadow-xl border-slate-200 bg-white/95 backdrop-blur-xl dark:border-slate-700 dark:bg-slate-900/95" align="end">
+                  <DropdownMenu.Item asChild><Link href="/" className="flex items-center gap-2 px-3 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800">Home</Link></DropdownMenu.Item>
+                  <DropdownMenu.Item asChild><Link href="/trial-chat/personalization" className="flex items-center gap-2 px-3 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800">Personalization</Link></DropdownMenu.Item>
+                  <DropdownMenu.Item asChild><Link href="/trial-chat/settings" className="flex items-center gap-2 px-3 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800">Settings</Link></DropdownMenu.Item>
+                </DropdownMenu.Content>
+             </DropdownMenu.Portal>
+        </DropdownMenu.Root>
 
         {/* Theme Toggle Button (Quick access) */}
         <button 
@@ -233,7 +247,6 @@ export default function Header() {
             </svg>
         </button>
         
-
         {/* Font Size Toggle (Quick access) */}
         <button
             onClick={() => setFontSize(fontSize === 'small' ? 'medium' : fontSize === 'medium' ? 'large' : 'small')}
@@ -245,25 +258,6 @@ export default function Header() {
             </span>
         </button>
 
-        
-        {/* Mobile Settings Icon */}
-        <DropdownMenu.Root>
-             <DropdownMenu.Trigger asChild>
-                <button className="-ml-2 p-2.5 rounded-full text-slate-500 hover:bg-slate-200/50 dark:hover:bg-white/5 transition-colors block md:hidden">
-                    <svg className="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
-                    </svg>
-                </button>
-             </DropdownMenu.Trigger>
-             <DropdownMenu.Portal>
-                <DropdownMenu.Content className="z-[60] min-w-[200px] rounded-xl border py-2 shadow-xl border-slate-200 bg-white/95 backdrop-blur-xl dark:border-slate-700 dark:bg-slate-900/95" align="end">
-                  <DropdownMenu.Item asChild><Link href="/" className="flex items-center gap-2 px-3 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800">Home</Link></DropdownMenu.Item>
-                  <DropdownMenu.Item asChild><Link href="/trial-chat/personalization" className="flex items-center gap-2 px-3 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800">Personalization</Link></DropdownMenu.Item>
-                  <DropdownMenu.Item asChild><Link href="/trial-chat/settings" className="flex items-center gap-2 px-3 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800">Settings</Link></DropdownMenu.Item>
-                </DropdownMenu.Content>
-             </DropdownMenu.Portal>
-        </DropdownMenu.Root>
-        
         {/* Avatar */}
         <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-blue-500 to-purple-500 p-[2px]">
             <div className="w-full h-full rounded-full bg-slate-100 dark:bg-slate-900 overflow-hidden flex items-center justify-center">

@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 
 export type MatchPosition = "original" | "option2" | "option3" | "option4";
@@ -9,6 +10,7 @@ export function MatchPositionSwitcher() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const current = (searchParams.get("match_pos") ?? "original") as MatchPosition;
+  const [hidden, setHidden] = useState(false);
 
   const set = (pos: MatchPosition) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -22,6 +24,20 @@ export function MatchPositionSwitcher() {
     { key: "option3", label: "Option 3 (FAB)" },
     { key: "option4", label: "Option 4 (Global Header)" },
   ];
+
+  if (hidden) {
+    return (
+      <div className="flex justify-end px-4 py-1 border-b border-slate-200/60 dark:border-slate-700/60 bg-white/70 dark:bg-slate-900/70 backdrop-blur-sm shrink-0">
+        <button
+          onClick={() => setHidden(false)}
+          title="Show match position switcher"
+          className="text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
+        >
+          👀 Show switcher
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="flex items-center gap-3 px-4 py-2 border-b border-slate-200/60 dark:border-slate-700/60 bg-white/70 dark:bg-slate-900/70 backdrop-blur-sm shrink-0">
@@ -43,6 +59,15 @@ export function MatchPositionSwitcher() {
           </button>
         ))}
       </div>
+      <button
+        onClick={() => setHidden(true)}
+        title="Hide switcher"
+        className="ml-auto text-slate-300 hover:text-slate-500 dark:text-slate-600 dark:hover:text-slate-400 transition-colors"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
     </div>
   );
 }

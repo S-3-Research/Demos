@@ -892,21 +892,17 @@ export function ChatKitPanel({
       {matchPosition === 'option2' && (
         <div className="flex items-center rounded-t-3xl justify-between px-5 py-2.5 bg-white/60 dark:bg-slate-900/60 backdrop-blur-sm border-b border-slate-200/50 dark:border-slate-700/50 shrink-0 z-20 overflow-hidden">
           <span className="text-sm font-semibold text-slate-600 dark:text-slate-300">Chat Panel</span>
-          <div className="overflow-hidden rounded-full transition-transform hover:scale-105 active:scale-95 shadow-md shadow-blue-500/20">
-          <button
-            onClick={() => setShowMatchModal(true)}
-            className="group relative inline-flex items-center justify-center overflow-hidden rounded-full focus:outline-none h-9 px-4"
-            aria-label="Find matching clinical trials"
-          >
-            <span className="absolute animate-spin-slow bg-[conic-gradient(from_90deg_at_50%_50%,#2563eb_0%,#7dd3fc_50%,#2563eb_100%)] opacity-90 group-hover:opacity-100 transition-opacity" style={{inset: '-1000%'}} />
-            <span className="absolute inset-[2px] rounded-full bg-white dark:bg-slate-900 transition-colors group-hover:bg-slate-50 dark:group-hover:bg-slate-800" />
-            <span className="relative flex items-center justify-center gap-1.5 text-sm">
+          <div className="shimmer-border-btn-pill transition-transform hover:scale-105 active:scale-95 shadow-md shadow-blue-500/20">
+            <button
+              onClick={() => setShowMatchModal(true)}
+              className="flex items-center justify-center gap-1.5 h-9 px-4 rounded-full bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors text-sm focus:outline-none"
+              aria-label="Find matching clinical trials"
+            >
               <svg className="w-4 h-4 text-blue-600 fill-current" viewBox="0 0 24 24">
                 <path d="M13 10V3L4 14h7v7l9-11h-7z"/>
               </svg>
               <span className="font-bold tracking-wide bg-gradient-to-r from-blue-600 to-sky-500 bg-clip-text text-transparent">Match</span>
-            </span>
-          </button>
+            </button>
           </div>
         </div>
       )}
@@ -934,40 +930,32 @@ export function ChatKitPanel({
 
       {/* ── Option 1 (original): Match button floating top-center ── */}
       {matchPosition === 'original' && (
-        <div className="absolute top-5 left-1/2 -translate-x-1/2 z-20 pointer-events-auto overflow-hidden rounded-full transition-transform hover:scale-105 active:scale-95 shadow-xl shadow-blue-500/40">
+        <div className="absolute top-5 left-1/2 -translate-x-1/2 z-20 pointer-events-auto shimmer-border-btn-pill transition-transform hover:scale-105 active:scale-95 shadow-xl shadow-blue-500/40">
           <button
             onClick={() => setShowMatchModal(true)}
-            className="group inline-flex items-center justify-center rounded-full focus:outline-none h-12 px-6 select-none"
+            className="flex items-center justify-center gap-2 h-12 px-6 rounded-full bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors text-base focus:outline-none select-none"
             aria-label="Find matching clinical trials"
           >
-            <span className="absolute animate-spin-slow bg-[conic-gradient(from_90deg_at_50%_50%,#2563eb_0%,#7dd3fc_50%,#2563eb_100%)] opacity-90 group-hover:opacity-100 transition-opacity" style={{inset: '-1000%'}} />
-            <span className="absolute inset-[2px] rounded-full bg-white dark:bg-slate-900 transition-colors group-hover:bg-slate-50 dark:group-hover:bg-slate-800" />
-            <span className="relative flex items-center justify-center gap-2 text-base">
-              <svg className="w-[18px] h-[18px] text-blue-600 fill-current" viewBox="0 0 24 24">
-                <path d="M13 10V3L4 14h7v7l9-11h-7z"/>
-              </svg>
-              <span className="font-bold tracking-wide bg-gradient-to-r from-blue-600 to-sky-500 bg-clip-text text-transparent">Match</span>
-            </span>
+            <svg className="w-[18px] h-[18px] text-blue-600 fill-current" viewBox="0 0 24 24">
+              <path d="M13 10V3L4 14h7v7l9-11h-7z"/>
+            </svg>
+            <span className="font-bold tracking-wide bg-gradient-to-r from-blue-600 to-sky-500 bg-clip-text text-transparent">Match</span>
           </button>
         </div>
       )}
 
       {/* ── Option 3: FAB bottom-right ── */}
       {matchPosition === 'option3' && (
-        <div className="absolute bottom-20 right-5 z-20 pointer-events-auto overflow-hidden rounded-full transition-transform hover:scale-105 active:scale-95 shadow-xl shadow-blue-500/40">
+        <div className="absolute bottom-20 right-5 z-20 pointer-events-auto shimmer-border-btn-pill transition-transform hover:scale-105 active:scale-95 shadow-xl shadow-blue-500/40">
           <button
             onClick={() => setShowMatchModal(true)}
-            className="group inline-flex items-center justify-center rounded-full focus:outline-none h-12 px-6 select-none"
+            className="flex items-center justify-center gap-2 h-12 px-6 rounded-full bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors text-base focus:outline-none select-none"
             aria-label="Find matching clinical trials"
           >
-            <span className="absolute animate-spin-slow bg-[conic-gradient(from_90deg_at_50%_50%,#2563eb_0%,#7dd3fc_50%,#2563eb_100%)] opacity-90 group-hover:opacity-100 transition-opacity" style={{inset: '-1000%'}} />
-            <span className="absolute inset-[2px] rounded-full bg-white dark:bg-slate-900 transition-colors group-hover:bg-slate-50 dark:group-hover:bg-slate-800" />
-            <span className="relative flex items-center justify-center gap-2 text-base">
-              <svg className="w-[18px] h-[18px] text-blue-600 fill-current" viewBox="0 0 24 24">
-                <path d="M13 10V3L4 14h7v7l9-11h-7z"/>
-              </svg>
-              <span className="font-bold tracking-wide bg-gradient-to-r from-blue-600 to-sky-500 bg-clip-text text-transparent">Match</span>
-            </span>
+            <svg className="w-[18px] h-[18px] text-blue-600 fill-current" viewBox="0 0 24 24">
+              <path d="M13 10V3L4 14h7v7l9-11h-7z"/>
+            </svg>
+            <span className="font-bold tracking-wide bg-gradient-to-r from-blue-600 to-sky-500 bg-clip-text text-transparent">Match</span>
           </button>
         </div>
       )}

@@ -152,11 +152,36 @@ body {
 }
 
 /* Match button — conic spin animation for shimmer border */
+@property --shimmer-angle {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+
 @keyframes match-border-spin {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
+  from { rotate: 0deg; }
+  to   { rotate: 360deg; }
 }
 
 .animate-spin-slow {
   animation: match-border-spin 2s linear infinite;
+}
+
+@keyframes shimmer-border-spin {
+  from { --shimmer-angle: 0deg; }
+  to   { --shimmer-angle: 360deg; }
+}
+
+.shimmer-border-btn {
+  background: conic-gradient(from var(--shimmer-angle, 0deg) at 50% 50%, #2563eb 0%, #38bdf8 40%, #7dd3fc 50%, #38bdf8 60%, #2563eb 100%);
+  animation: shimmer-border-spin 1.8s linear infinite;
+  padding: 2px;
+  border-radius: 12px;
+}
+
+.shimmer-border-btn-pill {
+  background: conic-gradient(from var(--shimmer-angle, 0deg) at 50% 50%, #2563eb 0%, #38bdf8 40%, #7dd3fc 50%, #38bdf8 60%, #2563eb 100%);
+  animation: shimmer-border-spin 1.8s linear infinite;
+  padding: 2px;
+  border-radius: 9999px;
 }

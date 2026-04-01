@@ -82,20 +82,14 @@ export function MatchProfileModal({ onConfirm, onClose }: MatchProfileModalProps
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md"
+      className="fixed inset-0 z-50 bg-black/60 backdrop-blur-md overflow-y-auto"
       onClick={handleBackdropClick}
     >
-      {/* Card */}
-      <div className="relative w-full max-w-sm mx-4 rounded-2xl shadow-2xl overflow-hidden">
+      {/* Centering wrapper — padding ensures modal never clips at top/bottom on mobile */}
+      <div className="flex min-h-full items-center justify-center p-4">
 
-        {/* Spinning conic border layer */}
-        <div
-          className="absolute inset-[-2px] rounded-2xl animate-spin-slow pointer-events-none"
-          style={{
-            background: 'conic-gradient(from 90deg at 50% 50%, #2563eb 0%, #7dd3fc 50%, #2563eb 100%)',
-            opacity: 0.5,
-          }}
-        />
+      {/* Card */}
+      <div className="relative w-full max-w-sm rounded-2xl shadow-2xl" onClick={e => e.stopPropagation()}>
 
         {/* Card body */}
         <div className="relative rounded-2xl bg-white dark:bg-[#0f1623] border border-blue-100/40 dark:border-blue-900/30 p-8">
@@ -196,22 +190,14 @@ export function MatchProfileModal({ onConfirm, onClose }: MatchProfileModalProps
             </div>
           </div>
 
-          {/* Confirm button — same shimmer style as Match button */}
-          <div className="mt-6 overflow-hidden rounded-xl transition-transform hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-blue-500/25">
-            <button
-              onClick={handleConfirm}
-              className="group relative w-full overflow-hidden rounded-xl focus:outline-none py-3"
-            >
-              <span
-                className="absolute animate-spin-slow"
-                style={{
-                  inset: '-1000%',
-                  background: 'conic-gradient(from 90deg at 50% 50%, #2563eb 0%, #7dd3fc 50%, #2563eb 100%)',
-                  opacity: 0.95,
-                }}
-              />
-              <span className="absolute inset-[2px] rounded-[10px] bg-white dark:bg-slate-900 transition-colors group-hover:bg-slate-50 dark:group-hover:bg-slate-800" />
-              <span className="relative flex items-center justify-center gap-2 text-sm font-bold">
+          {/* Confirm button — rotating gradient border via padding technique, no overflow-hidden needed */}
+          <div className="mt-6 shadow-lg shadow-blue-500/25 transition-transform hover:scale-[1.02] active:scale-[0.98]" style={{ borderRadius: '12px' }}>
+            <div className="shimmer-border-btn">
+              <button
+                onClick={handleConfirm}
+                className="group w-full focus:outline-none py-3 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors flex items-center justify-center gap-2 text-sm font-bold"
+                style={{ borderRadius: '10px' }}
+              >
                 <svg className="w-4 h-4 text-blue-600 fill-current" viewBox="0 0 24 24">
                   <path d="M13 10V3L4 14h7v7l9-11h-7z"/>
                 </svg>
@@ -221,8 +207,8 @@ export function MatchProfileModal({ onConfirm, onClose }: MatchProfileModalProps
                 <svg className="w-4 h-4 text-sky-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
                 </svg>
-              </span>
-            </button>
+              </button>
+            </div>
           </div>
 
           {/* Clear button */}
@@ -245,6 +231,7 @@ export function MatchProfileModal({ onConfirm, onClose }: MatchProfileModalProps
           </div>
 
         </div>
+      </div>
       </div>
     </div>
   );

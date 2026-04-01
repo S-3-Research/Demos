@@ -345,30 +345,19 @@ export default function Home() {
                             </Link>
 
                             {/* Button 2: Match me to Trials — blue shimmer */}
-                            <div className="overflow-hidden rounded-xl transition-transform hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-blue-500/25">
+                            <div className="shimmer-border-btn transition-transform hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-blue-500/25">
                                 <Link
                                     href="/trial-chat/chat?skip_intake=1&open_match=1"
-                                    className="group relative w-full flex overflow-hidden rounded-xl focus:outline-none py-4 px-6"
+                                    className={`flex items-center justify-between w-full py-4 px-6 rounded-[10px] transition-colors focus:outline-none ${isLight ? 'bg-white hover:bg-slate-50' : 'bg-[#0f1623] hover:bg-slate-800'}`}
                                 >
-                                    <span
-                                        className="absolute animate-spin-slow pointer-events-none"
-                                        style={{
-                                            inset: '-1000%',
-                                            background: 'conic-gradient(from 90deg at 50% 50%, #2563eb 0%, #7dd3fc 50%, #2563eb 100%)',
-                                            opacity: 0.95,
-                                        }}
-                                    />
-                                    <span className={`absolute inset-[2px] rounded-[10px] transition-colors pointer-events-none ${isLight ? 'bg-white group-hover:bg-slate-50' : 'bg-[#0f1623] group-hover:bg-slate-800'}`} />
-                                    <span className="relative flex items-center justify-between w-full">
-                                        <span className="flex items-center gap-2 font-semibold">
-                                            <span className={`bg-gradient-to-r bg-clip-text text-transparent ${isLight ? 'from-blue-600 to-sky-500' : 'from-blue-400 to-sky-300'}`}>
-                                                Match me to trials
-                                            </span>
+                                    <span className="flex items-center gap-2 font-semibold">
+                                        <span className={`bg-gradient-to-r bg-clip-text text-transparent ${isLight ? 'from-blue-600 to-sky-500' : 'from-blue-400 to-sky-300'}`}>
+                                            Match me to trials
                                         </span>
-                                        <svg className={`w-4 h-4 fill-current ${isLight ? 'text-blue-500' : 'text-blue-400'}`} viewBox="0 0 24 24">
-                                            <path d="M13 10V3L4 14h7v7l9-11h-7z"/>
-                                        </svg>
                                     </span>
+                                    <svg className={`w-4 h-4 fill-current ${isLight ? 'text-blue-500' : 'text-blue-400'}`} viewBox="0 0 24 24">
+                                        <path d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                                    </svg>
                                 </Link>
                             </div>
                         </div>
