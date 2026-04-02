@@ -901,7 +901,7 @@ export function ChatKitPanel({
               <svg className="w-4 h-4 text-blue-600 fill-current" viewBox="0 0 24 24">
                 <path d="M13 10V3L4 14h7v7l9-11h-7z"/>
               </svg>
-              <span className="font-bold tracking-wide bg-gradient-to-r from-blue-600 to-sky-500 bg-clip-text text-transparent">Match</span>
+              <span className="font-bold tracking-wide bg-gradient-to-r from-blue-600 to-sky-500 bg-clip-text text-transparent">Match me to trials</span>
             </button>
           </div>
         </div>
@@ -939,7 +939,7 @@ export function ChatKitPanel({
             <svg className="w-[18px] h-[18px] text-blue-600 fill-current" viewBox="0 0 24 24">
               <path d="M13 10V3L4 14h7v7l9-11h-7z"/>
             </svg>
-            <span className="font-bold tracking-wide bg-gradient-to-r from-blue-600 to-sky-500 bg-clip-text text-transparent">Match</span>
+            <span className="font-bold tracking-wide bg-gradient-to-r from-blue-600 to-sky-500 bg-clip-text text-transparent">Match me to trials</span>
           </button>
         </div>
       )}
@@ -955,7 +955,7 @@ export function ChatKitPanel({
             <svg className="w-[18px] h-[18px] text-blue-600 fill-current" viewBox="0 0 24 24">
               <path d="M13 10V3L4 14h7v7l9-11h-7z"/>
             </svg>
-            <span className="font-bold tracking-wide bg-gradient-to-r from-blue-600 to-sky-500 bg-clip-text text-transparent">Match</span>
+            <span className="font-bold tracking-wide bg-gradient-to-r from-blue-600 to-sky-500 bg-clip-text text-transparent">Match me to trials</span>
           </button>
         </div>
       )}

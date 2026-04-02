@@ -105,10 +105,57 @@ export default function Home() {
         .landing-light .text-gradient-logo {
             background-image: linear-gradient(135deg, #334155 0%, #64748b 100%);
         }
+
+        /* ── Custom scrollbar ── */
+        .landing-scroll {
+            scrollbar-width: thin;
+            scrollbar-color: transparent transparent;
+        }
+        .landing-scroll::-webkit-scrollbar { width: 3px; }
+        .landing-scroll::-webkit-scrollbar-track { background: transparent; }
+        .landing-scroll::-webkit-scrollbar-thumb {
+            background: transparent;
+            border-radius: 9999px;
+            transition: background 0.4s ease, width 0.4s ease;
+        }
+        .landing-scroll:hover {
+            scrollbar-color: rgba(100,116,139,0.3) transparent;
+        }
+        .landing-scroll:hover::-webkit-scrollbar { width: 4px; }
+        .landing-scroll:hover::-webkit-scrollbar-thumb {
+            background: rgba(100,116,139,0.3);
+        }
+        .landing-scroll.is-scrolling {
+            scrollbar-color: rgba(100,116,139,0.6) transparent;
+        }
+        .landing-scroll.is-scrolling::-webkit-scrollbar { width: 5px; }
+        .landing-scroll.is-scrolling::-webkit-scrollbar-thumb {
+            background: rgba(100,116,139,0.6);
+        }
+        /* light mode */
+        .landing-scroll.landing-light-scroll:hover {
+            scrollbar-color: rgba(71,85,105,0.3) transparent;
+        }
+        .landing-scroll.landing-light-scroll:hover::-webkit-scrollbar-thumb {
+            background: rgba(71,85,105,0.3);
+        }
+        .landing-scroll.landing-light-scroll.is-scrolling {
+            scrollbar-color: rgba(71,85,105,0.55) transparent;
+        }
+        .landing-scroll.landing-light-scroll.is-scrolling::-webkit-scrollbar-thumb {
+            background: rgba(71,85,105,0.55);
+        }
       `}} />
 
-      <div className={`min-h-screen md:h-screen w-full md:overflow-hidden flex items-center justify-center p-0 md:p-6 lg:p-8 transition-colors duration-500 md:min-w-[1080px] ${isLight ? 'bg-slate-100' : 'bg-slate-950'}`}>
-          <main className={`landing-light-wrapper relative w-full md:h-full max-w-[1920px] mx-auto md:rounded-[2rem] overflow-hidden shadow-2xl flex flex-col transition-colors duration-500 ${isLight ? 'landing-light bg-white/80 ring-1 ring-slate-200' : 'bg-slate-900 ring-1 ring-white/10'}`}>
+      <div
+        onScroll={(e) => {
+          const el = e.currentTarget;
+          el.classList.add('is-scrolling');
+          clearTimeout((el as any)._scrollTimer);
+          (el as any)._scrollTimer = setTimeout(() => el.classList.remove('is-scrolling'), 600);
+        }}
+        className={`landing-scroll ${isLight ? 'landing-light-scroll' : ''} min-h-screen md:h-screen w-full md:overflow-auto flex items-start justify-center p-0 md:p-6 lg:p-8 transition-colors duration-500 md:min-w-[1080px] ${isLight ? 'bg-slate-100' : 'bg-slate-950'}`}>
+          <main className={`landing-light-wrapper relative w-full md:h-full md:min-h-[980px] max-w-[1920px] mx-auto md:rounded-[2rem] overflow-hidden shadow-2xl flex flex-col transition-colors duration-500 ${isLight ? 'landing-light bg-white/80 ring-1 ring-slate-200' : 'bg-slate-900 ring-1 ring-white/10'}`}>
             
             {/* 1. Background Image Layer with Cinematic Blur */}
             <div className="absolute inset-0 z-0">
