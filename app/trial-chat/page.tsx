@@ -149,10 +149,10 @@ export default function Home() {
 
       <div
         onScroll={(e) => {
-          const el = e.currentTarget;
+          const el = e.currentTarget as HTMLDivElement & { _scrollTimer?: ReturnType<typeof setTimeout> };
           el.classList.add('is-scrolling');
-          clearTimeout((el as any)._scrollTimer);
-          (el as any)._scrollTimer = setTimeout(() => el.classList.remove('is-scrolling'), 600);
+          clearTimeout(el._scrollTimer);
+          el._scrollTimer = setTimeout(() => el.classList.remove('is-scrolling'), 600);
         }}
         className={`landing-scroll ${isLight ? 'landing-light-scroll' : ''} min-h-screen md:h-screen w-full md:overflow-auto flex items-start justify-center p-0 md:p-6 lg:p-8 transition-colors duration-500 md:min-w-[1080px] ${isLight ? 'bg-slate-100' : 'bg-slate-950'}`}>
           <main className={`landing-light-wrapper relative w-full md:h-full md:min-h-[980px] max-w-[1920px] mx-auto md:rounded-[2rem] overflow-hidden shadow-2xl flex flex-col transition-colors duration-500 ${isLight ? 'landing-light bg-white/80 ring-1 ring-slate-200' : 'bg-slate-900 ring-1 ring-white/10'}`}>
