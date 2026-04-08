@@ -12,16 +12,16 @@ import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { useColorScheme } from "@/contexts/ColorSchemeContext";
 import { useFontSize } from "@/contexts/FontSizeContext";
 import { useVoiceInputMode } from "@/contexts/VoiceInputModeContext";
-import { MatchPositionSwitcher } from "@/components/MatchPositionSwitcher";
-import { useSearchParams } from "next/navigation";
+
+// Set to true to re-enable sign-in, false to show "coming soon" notice
+const SIGN_IN_ENABLED = false;
 
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
+  const [showSignInNotice, setShowSignInNotice] = useState(false);
   const { preference, setPreference } = useColorScheme();
   const { fontSize, setFontSize } = useFontSize();
   const { mode, setMode } = useVoiceInputMode();
-  const searchParams = useSearchParams();
-  const matchPosition = searchParams.get("match_pos") ?? "original";
 
   const toggleTheme = () => {
     setPreference(preference === "dark" ? "light" : "dark");
@@ -33,7 +33,6 @@ export default function Header() {
 
   return (
     <>
-    <MatchPositionSwitcher />
     <header className="flex-none px-0 py-4 flex items-center justify-between mx-auto max-w-6xl w-[95%] z-50 transition-all duration-300 ease-in-out">
       {/* Left: Logo Area */}
       <div className="flex items-center gap-3">
@@ -199,22 +198,6 @@ export default function Header() {
         {/* Divider */}
         <div className="mr-4 h-5 w-[1px] bg-slate-300 dark:bg-white/10 hidden md:block"></div>
 
-        {/* Match Button — visible only in option4 layout */}
-        {matchPosition === 'option4' && (
-          <div className="shimmer-border-btn-pill transition-transform hover:scale-105 active:scale-95 shadow-md shadow-blue-500/20 hidden md:block">
-            <button
-              onClick={() => window.dispatchEvent(new Event('open-match-modal'))}
-              className="flex items-center justify-center gap-1.5 h-9 px-4 rounded-full bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors text-sm focus:outline-none"
-              aria-label="Find matching clinical trials"
-            >
-              <svg className="w-4 h-4 text-blue-600 fill-current" viewBox="0 0 24 24">
-                <path d="M13 10V3L4 14h7v7l9-11h-7z"/>
-              </svg>
-              <span className="font-bold tracking-wide bg-gradient-to-r from-blue-600 to-sky-500 bg-clip-text text-transparent">Match me to Trials</span>
-            </button>
-          </div>
-        )}
-
         {/* Mobile Settings Icon */}
         <DropdownMenu.Root>
              <DropdownMenu.Trigger asChild>
@@ -259,27 +242,47 @@ export default function Header() {
         </button>
 
         {/* Avatar */}
-        <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-blue-500 to-purple-500 p-[2px]">
-            <div className="w-full h-full rounded-full bg-slate-100 dark:bg-slate-900 overflow-hidden flex items-center justify-center">
-                 <SignedOut>
-                    <SignInButton mode="modal">
-                        <button className="w-full h-full flex items-center justify-center text-[10px] font-bold text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white transition-colors">
-                           IN
-                        </button>
-                    </SignInButton>
-                </SignedOut>
-                <SignedIn>
-                     <UserButton 
-                        afterSignOutUrl="/" 
-                        appearance={{ 
-                            elements: { 
-                                avatarBox: "w-full h-full",
-                                userButtonTrigger: "w-full h-full rounded-full focus:shadow-none focus:outline-none opacity-100"
-                            } 
-                        }} 
-                     />
-                </SignedIn>
+        <div className="relative">
+            <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-blue-500 to-purple-500 p-[2px]">
+                <div className="w-full h-full rounded-full bg-slate-100 dark:bg-slate-900 overflow-hidden flex items-center justify-center">
+                    <SignedOut>
+                        {SIGN_IN_ENABLED ? (
+                            <SignInButton mode="modal">
+                                <button className="w-full h-full flex items-center justify-center text-[10px] font-bold text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white transition-colors">
+                                    IN
+                                </button>
+                            </SignInButton>
+                        ) : (
+                            <button
+                                onClick={() => {
+                                    setShowSignInNotice(true);
+                                    setTimeout(() => setShowSignInNotice(false), 3000);
+                                }}
+                                className="w-full h-full flex items-center justify-center text-[10px] font-bold text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white transition-colors"
+                            >
+                                IN
+                            </button>
+                        )}
+                    </SignedOut>
+                    <SignedIn>
+                        <UserButton
+                            afterSignOutUrl="/"
+                            appearance={{
+                                elements: {
+                                    avatarBox: "w-full h-full",
+                                    userButtonTrigger: "w-full h-full rounded-full focus:shadow-none focus:outline-none opacity-100"
+                                }
+                            }}
+                        />
+                    </SignedIn>
+                </div>
             </div>
+            {showSignInNotice && (
+                <div className="absolute right-0 top-11 z-[70] w-56 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-xl px-3.5 py-3 text-xs text-slate-600 dark:text-slate-300 animate-in fade-in-0 zoom-in-95">
+                    <div className="font-semibold text-slate-800 dark:text-white mb-1">Sign-in coming soon</div>
+                    Sign-in is temporarily disabled. Stay tuned!
+                </div>
+            )}
         </div>
       </div>
     </header>
