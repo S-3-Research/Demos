@@ -159,8 +159,8 @@ export function VoiceInputButtonWhisper({ onTranscript, className = "" }: VoiceI
           ${isRecording
             ? "bg-white text-red-500 shadow-lg shadow-red-500/20 ring-1 ring-red-500/40 scale-105"
             : isProcessing
-            ? "bg-white text-gray-400 shadow-lg cursor-wait"
-            : "bg-white text-purple-500 hover:text-purple-600 hover:shadow-lg hover:shadow-purple-500/15 ring-1 ring-gray-200 hover:ring-purple-500/35 hover:scale-105"
+            ? "bg-white text-blue-400 shadow-lg shadow-blue-500/15 cursor-wait"
+            : "bg-white text-blue-500 hover:text-blue-600 hover:shadow-lg hover:shadow-blue-500/15 ring-1 ring-gray-200 hover:ring-blue-500/35 hover:scale-105"
           }
           ${className}
         `}
@@ -210,7 +210,7 @@ export function VoiceInputButtonWhisper({ onTranscript, className = "" }: VoiceI
       {/* Processing indicator */}
       {isProcessing && (
         <div className="absolute bottom-full mb-1.5 left-1/2 -translate-x-1/2 animate-in fade-in slide-in-from-bottom-1 duration-200">
-          <div className="rounded-lg bg-gradient-to-br from-purple-600/70 to-purple-700/70 backdrop-blur-md px-3.5 py-2 text-xs text-white shadow-lg border border-white/30">
+          <div className="rounded-lg bg-gradient-to-br from-blue-600/70 to-sky-500/70 backdrop-blur-md px-3.5 py-2 text-xs text-white shadow-lg border border-white/30">
             <div className="flex items-center gap-2">
               <svg className="animate-spin h-3 w-3" fill="none" viewBox="0 0 24 24">
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />

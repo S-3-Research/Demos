@@ -13,8 +13,12 @@ import { useColorScheme } from "@/contexts/ColorSchemeContext";
 import { useFontSize } from "@/contexts/FontSizeContext";
 import { useVoiceInputMode } from "@/contexts/VoiceInputModeContext";
 
+// Set to true to re-enable sign-in, false to show "coming soon" notice
+const SIGN_IN_ENABLED = false;
+
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
+  const [showSignInNotice, setShowSignInNotice] = useState(false);
   const { preference, setPreference } = useColorScheme();
   const { fontSize, setFontSize } = useFontSize();
   const { mode, setMode } = useVoiceInputMode();
@@ -28,10 +32,11 @@ export default function Header() {
   };
 
   return (
+    <>
     <header className="flex-none px-0 py-4 flex items-center justify-between mx-auto max-w-6xl w-[95%] z-50 transition-all duration-300 ease-in-out">
       {/* Left: Logo Area */}
       <div className="flex items-center gap-3">
-        <Link href="/" className="flex items-center gap-3 group">
+        <Link href="/trial-chat" className="flex items-center gap-3 group">
             <div className="relative w-10 h-10 flex items-center justify-center bg-gradient-to-br from-slate-200 to-white dark:from-slate-700 dark:to-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-white/10 group-hover:scale-105 transition-transform duration-300">
                 <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 text-slate-700 dark:text-slate-100" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
@@ -45,10 +50,10 @@ export default function Header() {
       </div>
 
       {/* Right: Actions */}
-      <div className="flex items-center gap-3 md:gap-4">
+      <div className="flex items-center gap-3 md:gap-3">
         
         {/* Navigation Links */}
-        <nav className="hidden md:flex items-center gap-1 mr-2">
+        <nav className="hidden md:flex items-center gap-1">
             <Link href="/trial-chat" className="flex items-center gap-2 px-3 py-2 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-200/50 dark:hover:bg-white/5 transition-all text-sm font-medium">
                 {/* Outlined Home Icon */}
                 <svg className="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
@@ -79,9 +84,9 @@ export default function Header() {
                         <div className="mb-2 text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Font Size</div>
                         <div className="flex bg-slate-100 dark:bg-slate-800 rounded-lg p-1">
                             {([
-                                { value: "small", label: "A", detail: "Small" },
-                                { value: "medium", label: "A+", detail: "Medium" },
-                                { value: "large", label: "A++", detail: "Large" }
+                                { value: "small", label: "A-", detail: "Small" },
+                                { value: "medium", label: "A", detail: "Medium" },
+                                { value: "large", label: "A+", detail: "Large" }
                             ] as const).map(({ value, label, detail }) => (
                                 <button
                                     key={value}
@@ -191,26 +196,12 @@ export default function Header() {
         </nav>
 
         {/* Divider */}
-        <div className="h-5 w-[1px] bg-slate-300 dark:bg-white/10 hidden md:block"></div>
+        <div className="mr-4 h-5 w-[1px] bg-slate-300 dark:bg-white/10 hidden md:block"></div>
 
-        {/* Theme Toggle Button (Quick access) */}
-        <button 
-            onClick={toggleTheme} 
-            className="p-2.5 rounded-full text-slate-500 hover:bg-slate-200/50 dark:hover:bg-white/5 transition-colors" 
-            title="Toggle Dark Mode"
-        >
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 hidden dark:block text-amber-300">
-                <path d="M12 2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM7.5 12a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM18.894 6.166a.75.75 0 00-1.06-1.06l-1.591 1.59a.75.75 0 101.06 1.061l1.591-1.59zM21.75 12a.75.75 0 01-.75.75h-2.25a.75.75 0 010-1.5H21a.75.75 0 01.75.75zM17.834 18.894a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 10-1.061 1.06l1.59 1.591zM12 18a.75.75 0 01.75.75V21a.75.75 0 01-1.5 0v-2.25A.75.75 0 0112 18zM7.758 17.303a.75.75 0 00-1.061-1.06l-1.591 1.59a.75.75 0 001.06 1.061l1.591-1.59zM6 12a.75.75 0 01-.75.75H3a.75.75 0 010-1.5h2.25A.75.75 0 016 12zM6.697 7.757a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 00-1.061 1.06l1.59 1.591z" />
-            </svg>
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 p-0.5 block dark:hidden text-slate-600">
-                <path fillRule="evenodd" d="M9.528 1.718a.75.75 0 01.162.819A8.97 8.97 0 009 6a9 9 0 009 9 8.97 8.97 0 003.463-.69.75.75 0 01.981.98 10.503 10.503 0 01-9.694 6.46c-5.799 0-10.5-4.7-10.5-10.5 0-4.368 2.667-8.112 6.46-9.694a.75.75 0 01.818.162z" clipRule="evenodd" />
-            </svg>
-        </button>
-        
         {/* Mobile Settings Icon */}
         <DropdownMenu.Root>
              <DropdownMenu.Trigger asChild>
-                <button className="-ml-2 p-2.5 rounded-full text-slate-500 hover:bg-slate-200/50 dark:hover:bg-white/5 transition-colors block md:hidden">
+                <button className="p-2 rounded-full text-slate-500 hover:bg-slate-200/50 dark:hover:bg-white/5 transition-colors block md:hidden">
                     <svg className="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
                     </svg>
@@ -224,31 +215,77 @@ export default function Header() {
                 </DropdownMenu.Content>
              </DropdownMenu.Portal>
         </DropdownMenu.Root>
+
+        {/* Theme Toggle Button (Quick access) */}
+        <button 
+            onClick={toggleTheme} 
+            className="w-9 h-9 rounded-full border flex items-center justify-center transition-all duration-200 hover:scale-110 active:scale-95 bg-slate-100 border-slate-300 text-slate-600 hover:bg-slate-200 hover:shadow-md hover:shadow-slate-200 dark:bg-white/5 dark:border-white/20 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:shadow-black/20" 
+            title="Toggle Dark Mode"
+        >
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 hidden dark:block text-amber-300">
+                <path d="M12 2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM7.5 12a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM18.894 6.166a.75.75 0 00-1.06-1.06l-1.591 1.59a.75.75 0 101.06 1.061l1.591-1.59zM21.75 12a.75.75 0 01-.75.75h-2.25a.75.75 0 010-1.5H21a.75.75 0 01.75.75zM17.834 18.894a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 10-1.061 1.06l1.59 1.591zM12 18a.75.75 0 01.75.75V21a.75.75 0 01-1.5 0v-2.25A.75.75 0 0112 18zM7.758 17.303a.75.75 0 00-1.061-1.06l-1.591 1.59a.75.75 0 001.06 1.061l1.591-1.59zM6 12a.75.75 0 01-.75.75H3a.75.75 0 010-1.5h2.25A.75.75 0 016 12zM6.697 7.757a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 00-1.061 1.06l1.59 1.591z" />
+            </svg>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 block dark:hidden text-slate-600">
+                <path fillRule="evenodd" d="M9.528 1.718a.75.75 0 01.162.819A8.97 8.97 0 009 6a9 9 0 009 9 8.97 8.97 0 003.463-.69.75.75 0 01.981.98 10.503 10.503 0 01-9.694 6.46c-5.799 0-10.5-4.7-10.5-10.5 0-4.368 2.667-8.112 6.46-9.694a.75.75 0 01.818.162z" clipRule="evenodd" />
+            </svg>
+        </button>
         
+        {/* Font Size Toggle (Quick access) */}
+        <button
+            onClick={() => setFontSize(fontSize === 'small' ? 'medium' : fontSize === 'medium' ? 'large' : 'small')}
+            className="w-9 h-9 rounded-full border flex items-center justify-center transition-all duration-200 hover:scale-110 active:scale-95 bg-slate-100 border-slate-300 text-slate-600 hover:bg-slate-200 hover:shadow-md hover:shadow-slate-200 dark:bg-white/5 dark:border-white/20 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:shadow-black/20"
+            title={`Font size: ${fontSize}`}
+        >
+            <span className="font-bold select-none leading-none text-[13px]">
+                {fontSize === 'small' ? 'A-' : fontSize === 'medium' ? 'A' : 'A+'}
+            </span>
+        </button>
+
         {/* Avatar */}
-        <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-blue-500 to-purple-500 p-[2px]">
-            <div className="w-full h-full rounded-full bg-slate-100 dark:bg-slate-900 overflow-hidden flex items-center justify-center">
-                 <SignedOut>
-                    <SignInButton mode="modal">
-                        <button className="w-full h-full flex items-center justify-center text-[10px] font-bold text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white transition-colors">
-                           IN
-                        </button>
-                    </SignInButton>
-                </SignedOut>
-                <SignedIn>
-                     <UserButton 
-                        afterSignOutUrl="/" 
-                        appearance={{ 
-                            elements: { 
-                                avatarBox: "w-full h-full",
-                                userButtonTrigger: "w-full h-full rounded-full focus:shadow-none focus:outline-none opacity-100"
-                            } 
-                        }} 
-                     />
-                </SignedIn>
+        <div className="relative">
+            <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-blue-500 to-purple-500 p-[2px]">
+                <div className="w-full h-full rounded-full bg-slate-100 dark:bg-slate-900 overflow-hidden flex items-center justify-center">
+                    <SignedOut>
+                        {SIGN_IN_ENABLED ? (
+                            <SignInButton mode="modal">
+                                <button className="w-full h-full flex items-center justify-center text-[10px] font-bold text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white transition-colors">
+                                    IN
+                                </button>
+                            </SignInButton>
+                        ) : (
+                            <button
+                                onClick={() => {
+                                    setShowSignInNotice(true);
+                                    setTimeout(() => setShowSignInNotice(false), 3000);
+                                }}
+                                className="w-full h-full flex items-center justify-center text-[10px] font-bold text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white transition-colors"
+                            >
+                                IN
+                            </button>
+                        )}
+                    </SignedOut>
+                    <SignedIn>
+                        <UserButton
+                            afterSignOutUrl="/"
+                            appearance={{
+                                elements: {
+                                    avatarBox: "w-full h-full",
+                                    userButtonTrigger: "w-full h-full rounded-full focus:shadow-none focus:outline-none opacity-100"
+                                }
+                            }}
+                        />
+                    </SignedIn>
+                </div>
             </div>
+            {showSignInNotice && (
+                <div className="absolute right-0 top-11 z-[70] w-56 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-xl px-3.5 py-3 text-xs text-slate-600 dark:text-slate-300 animate-in fade-in-0 zoom-in-95">
+                    <div className="font-semibold text-slate-800 dark:text-white mb-1">Sign-in coming soon</div>
+                    Sign-in is temporarily disabled. Stay tuned!
+                </div>
+            )}
         </div>
       </div>
     </header>
+    </>
   );
 }

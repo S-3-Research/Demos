@@ -12,7 +12,7 @@ interface VoiceInputModeContextType {
 const VoiceInputModeContext = createContext<VoiceInputModeContextType | undefined>(undefined);
 
 export function VoiceInputModeProvider({ children }: { children: ReactNode }) {
-  const [mode, setModeState] = useState<VoiceInputMode>("web-speech");
+  const [mode, setModeState] = useState<VoiceInputMode>("whisper");
 
   // Load from localStorage on mount
   useEffect(() => {

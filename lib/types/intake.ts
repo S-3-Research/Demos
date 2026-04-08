@@ -3,9 +3,9 @@ export type ResponseStyle = 'concise' | 'balanced' | 'verbose';
 export type UserIntent = 'trial_matching' | 'learn_about_trials';
 
 export interface IntakeData {
-  role: UserRole;
-  response_style: ResponseStyle;
-  intent: UserIntent;
+  role: UserRole | null;
+  response_style: ResponseStyle | null;
+  intent: UserIntent | null;
   completed_at?: string;
 }
 

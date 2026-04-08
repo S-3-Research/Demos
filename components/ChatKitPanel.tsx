@@ -21,6 +21,8 @@ import type { ColorScheme } from "@/hooks/useColorScheme";
 import { useFontSize } from "@/contexts/FontSizeContext";
 import { useVoiceInputMode } from "@/contexts/VoiceInputModeContext";
 import { correctMedicalTerms } from "@/lib/medicalTermsCorrection";
+import { MatchProfileModal } from "./MatchProfileModal";
+import type { MatchProfile } from "./MatchProfileModal";
 
 export type FactAction = {
   type: "save";
@@ -34,6 +36,7 @@ type ChatKitPanelProps = {
   onResponseEnd: () => void;
   onThemeRequest: (scheme: ColorScheme) => void;
   onOpenResourcePanel: () => void;
+  autoOpenMatch?: boolean;
 };
 
 type ErrorState = {
@@ -76,6 +79,7 @@ export function ChatKitPanel({
   onResponseEnd,
   onThemeRequest,
   onOpenResourcePanel,
+  autoOpenMatch = false,
 }: ChatKitPanelProps) {
   const { isSignedIn } = useUser();
   const { fontSize } = useFontSize();
@@ -83,6 +87,7 @@ export function ChatKitPanel({
   const [errors, setErrors] = useState<ErrorState>(() => createInitialErrors());
   const [isInitializingSession, setIsInitializingSession] = useState(true);
   const [intakeData, setIntakeData] = useState<IntakeData | null>(null);
+  const [showMatchModal, setShowMatchModal] = useState(false);
   const isMountedRef = useRef(true);
   const [scriptStatus, setScriptStatus] = useState<
     "pending" | "ready" | "error"
@@ -273,12 +278,6 @@ export function ChatKitPanel({
           workflow: { id: WORKFLOW_ID },
           intake_data: parsedIntakeData, // Pass to backend for processing
           guest_user_id: guestUserId, // Pass stable guest ID to preserve history
-          chatkit_configuration: {
-            // enable attachments
-            file_upload: {
-              enabled: true,
-            },
-          },
         };
         
         console.log('[ChatKitPanel] Sending to /api/create-session:', JSON.stringify(requestBody, null, 2));
@@ -386,10 +385,6 @@ export function ChatKitPanel({
     },
     composer: {
       placeholder: PLACEHOLDER_INPUT,
-      attachments: {
-        // Enable attachments
-        enabled: true,
-      },
     },
     threadItemActions: {
       feedback: true,  // 启用反馈按钮（👍👎）
@@ -807,6 +802,15 @@ export function ChatKitPanel({
     }
   }, [chatkit.control, isInitializingSession]);
 
+  // Auto-open match modal when chatkit becomes ready (triggered by ?open_match=1)
+  const autoMatchFiredRef = useRef(false);
+  useEffect(() => {
+    if (autoOpenMatch && chatkit.control && !isInitializingSession && !autoMatchFiredRef.current) {
+      autoMatchFiredRef.current = true;
+      setShowMatchModal(true);
+    }
+  }, [autoOpenMatch, chatkit.control, isInitializingSession]);
+
   // Note: Intake context is now passed via workflow.state_variables during session creation
   // See /app/api/create-session/route.ts for implementation
 
@@ -863,7 +867,25 @@ export function ChatKitPanel({
   }, [chatkit, isInitializingSession]);
   
   return (
-    <div className="chatkit-panel-container relative pb-8 flex h-full w-full rounded-3xl flex-col overflow-hidden bg-white/40 backdrop-blur-2xl border border-slate-200/60 shadow-2xl transition-colors dark:bg-[#181D26] dark:border-slate-700/60 z-0" style={{ boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 15px rgba(0, 0, 0, 0.1)' }}>
+    <div className="flex flex-col h-full gap-0">
+      {/* ── Mobile only: Header bar with Match button ── */}
+      <div className="flex md:hidden items-center rounded-t-3xl justify-between px-5 py-2.5 bg-white/60 dark:bg-slate-900/60 backdrop-blur-sm border-b border-slate-200/50 dark:border-slate-700/50 shrink-0 z-20 overflow-hidden">
+        <span className="text-sm font-semibold text-slate-600 dark:text-slate-300">Chat Panel</span>
+        <div className="shimmer-border-btn-pill transition-transform hover:scale-105 active:scale-95 shadow-md shadow-blue-500/20">
+          <button
+            onClick={() => setShowMatchModal(true)}
+            className="flex items-center justify-center gap-1.5 h-9 px-4 rounded-full bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors text-sm focus:outline-none"
+            aria-label="Find matching clinical trials"
+          >
+            <svg className="w-4 h-4 text-blue-600 fill-current" viewBox="0 0 24 24">
+              <path d="M13 10V3L4 14h7v7l9-11h-7z"/>
+            </svg>
+            <span className="font-bold tracking-wide bg-gradient-to-r from-blue-600 to-sky-500 bg-clip-text text-transparent">Match me to trials</span>
+          </button>
+        </div>
+      </div>
+
+    <div className="chatkit-panel-container relative pb-8 flex flex-1 w-full h-full rounded-b-3xl md:rounded-3xl flex-col overflow-hidden bg-white/40 backdrop-blur-2xl border border-slate-200/60 shadow-2xl transition-colors dark:bg-[#181D26] dark:border-slate-700/60 z-0" style={{ boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 15px rgba(0, 0, 0, 0.1)' }}>
       <ChatKit
         key={widgetInstanceKey}
         control={chatkit.control}
@@ -883,6 +905,37 @@ export function ChatKitPanel({
           <VoiceInputButtonSwitcher onTranscript={handleVoiceTranscript} className="mr-14 pointer-events-auto" />
         </div>
       )}
+
+      {/* ── Desktop only: Match button floating top-center ── */}
+      <div className="hidden md:block absolute top-2.5 left-1/2 -translate-x-1/2 z-20 pointer-events-auto shimmer-border-btn-pill transition-transform hover:scale-105 active:scale-95 shadow-xl shadow-blue-500/40">
+        <button
+          onClick={() => setShowMatchModal(true)}
+          className="flex items-center justify-center gap-2 h-12 px-6 rounded-full bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors text-base focus:outline-none select-none"
+          aria-label="Find matching clinical trials"
+        >
+          <svg className="w-[18px] h-[18px] text-blue-600 fill-current" viewBox="0 0 24 24">
+            <path d="M13 10V3L4 14h7v7l9-11h-7z"/>
+          </svg>
+          <span className="font-bold tracking-wide bg-gradient-to-r from-blue-600 to-sky-500 bg-clip-text text-transparent">Match me to trials</span>
+        </button>
+      </div>
+
+      {/* Match Profile Modal */}
+      {showMatchModal && (
+        <MatchProfileModal
+          onConfirm={async (_profile: MatchProfile, message: string) => {
+            setShowMatchModal(false);
+            if (chatkit.control) {
+              try {
+                await chatkit.sendUserMessage({ text: message });
+              } catch (err) {
+                console.error("[MatchButton] sendUserMessage failed:", err);
+              }
+            }
+          }}
+          onClose={() => setShowMatchModal(false)}
+        />
+      )}
       
       <ErrorOverlay
         error={blockingError}
@@ -894,6 +947,7 @@ export function ChatKitPanel({
         onRetry={blockingError && errors.retryable ? handleResetChat : null}
         retryLabel="Restart chat"
       />
+    </div>
     </div>
   );
 }
