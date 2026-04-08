@@ -44,11 +44,11 @@ const TRIAL_MATCHING_USER_PROMPTS: StartScreenPrompt[] = [
   },
 ];
 
-// Starter prompts for trial matching intent - caregiver role
+// Starter prompts for trial matching intent - looking for someone else
 const TRIAL_MATCHING_CAREGIVER_PROMPTS: StartScreenPrompt[] = [
   {
-    label: "Help me find clinical trials suitable for the person I care for",
-    prompt: "Help me find clinical trials suitable for the person I care for",
+    label: "Help me find clinical trials suitable for someone I know",
+    prompt: "Help me find clinical trials suitable for someone I know",
     icon: "search",
   },
   {
@@ -57,8 +57,8 @@ const TRIAL_MATCHING_CAREGIVER_PROMPTS: StartScreenPrompt[] = [
     icon: "notebook",
   },
   {
-    label: "Are there trials near our location?",
-    prompt: "Are there trials near our location?",
+    label: "Are there trials available near us?",
+    prompt: "Are there trials available near us?",
     icon: "circle-question",
   },
 ];
@@ -82,7 +82,7 @@ const LEARN_USER_PROMPTS: StartScreenPrompt[] = [
   },
 ];
 
-// Starter prompts for learning intent - caregiver role
+// Starter prompts for learning intent - looking for someone else
 const LEARN_CAREGIVER_PROMPTS: StartScreenPrompt[] = [
   {
     label: "Can you explain Alzheimer's disease and why clinical trials are important?",
@@ -95,8 +95,8 @@ const LEARN_CAREGIVER_PROMPTS: StartScreenPrompt[] = [
     icon: "notebook",
   },
   {
-    label: "What is my role as a caregiver in a clinical trial?",
-    prompt: "What is my role as a caregiver in a clinical trial?",
+    label: "How can I help someone I know prepare for or consider joining a trial?",
+    prompt: "How can I help someone I know prepare for or consider joining a trial?",
     icon: "search",
   },
 ];
@@ -104,10 +104,10 @@ const LEARN_CAREGIVER_PROMPTS: StartScreenPrompt[] = [
 // Greetings based on intent and role
 const GREETINGS = {
   trial_matching_user: "Welcome to TrialChat! I'm here to help you find clinical trials that match your needs. Let's get started!",
-  trial_matching_caregiver: "Welcome to TrialChat! I'm here to help you find suitable clinical trials for your loved one. How can I assist you?",
-  learn_about_trials_user: "Welcome to TrialChat! I'm here to answer your questions about ADRD and clinical trials. What would you like to learn?",
-  learn_about_trials_caregiver: "Welcome to TrialChat! I'm here to help you understand ADRD clinical trials and your role as a caregiver. What can I explain?",
-  default: "Welcome to TrialChat! I'm here to help you navigate ADRD clinical trials. How can I assist you today?",
+  trial_matching_caregiver: "Welcome to TrialChat! I'm here to help you find suitable clinical trials for someone you know. How can I assist?",
+  learn_about_trials_user: "Welcome to TrialChat! I'm here to answer your questions about Alzheimer's disease and clinical trials. What would you like to learn?",
+  learn_about_trials_caregiver: "Welcome to TrialChat! I'm here to help you learn about Alzheimer's disease clinical trials. What can I explain?",
+  default: "Welcome to TrialChat! I'm here to help you navigate Alzheimer's disease clinical trials. How can I assist you today?",
 };
 
 // Helper function to get starter prompts based on user preferences
@@ -118,13 +118,30 @@ export const getStarterPromptsForUser = (intakeData: IntakeData | null): StartSc
 
   const { intent, role } = intakeData;
 
+  // intent is the primary signal; null role falls back to user perspective
   if (intent === 'trial_matching') {
     return role === 'caregiver' ? TRIAL_MATCHING_CAREGIVER_PROMPTS : TRIAL_MATCHING_USER_PROMPTS;
-  } else if (intent === 'learn_about_trials') {
+  }
+  if (intent === 'learn_about_trials') {
     return role === 'caregiver' ? LEARN_CAREGIVER_PROMPTS : LEARN_USER_PROMPTS;
   }
-
+  if (role === 'caregiver') {
+    // Role signal without intent leans towards caregiver prompts
+    return TRIAL_MATCHING_CAREGIVER_PROMPTS;
+  }
+  if (role === 'user') {
+    // Role signal without intent leans towards user prompts
+    return TRIAL_MATCHING_USER_PROMPTS;
+  }
+  // intent is null — no directional signal, use default
   return DEFAULT_STARTER_PROMPTS;
+};
+
+// Greetings for partial intake (intent known, role unknown)
+const PARTIAL_GREETINGS = {
+  trial_matching: "Welcome to TrialChat! I'm here to help you find clinical trials. Let's get started!",
+  learn_about_trials: "Welcome to TrialChat! I'm here to answer your questions about Alzheimer's disease and clinical trials. What would you like to learn?",
+  caregiver_only: "Welcome to TrialChat! I'm here to help you find information about Alzheimer's disease clinical trials for someone you know. How can I assist?",
 };
 
 // Helper function to get greeting based on user preferences
@@ -134,12 +151,25 @@ export const getGreetingForUser = (intakeData: IntakeData | null): string => {
   }
 
   const { intent, role } = intakeData;
-  const key = `${intent}_${role}` as keyof typeof GREETINGS;
 
-  return GREETINGS[key] || GREETINGS.default;
+  // Both known — use specific greeting
+  if (intent && role) {
+    const key = `${intent}_${role}` as keyof typeof GREETINGS;
+    return GREETINGS[key] || GREETINGS.default;
+  }
+
+  // Intent known, role unknown — intent-based greeting
+  if (intent === 'trial_matching') return PARTIAL_GREETINGS.trial_matching;
+  if (intent === 'learn_about_trials') return PARTIAL_GREETINGS.learn_about_trials;
+
+  // Role known (caregiver), intent unknown
+  if (role === 'caregiver') return PARTIAL_GREETINGS.caregiver_only;
+
+  // Everything null
+  return GREETINGS.default;
 };
 
-export const PLACEHOLDER_INPUT = "Ask about clinical trials, ADRD, or get personalized guidance...";
+export const PLACEHOLDER_INPUT = "Ask about clinical trials or Alzheimer's disease...";
 
 // Keep these for backward compatibility
 export const STARTER_PROMPTS = DEFAULT_STARTER_PROMPTS;

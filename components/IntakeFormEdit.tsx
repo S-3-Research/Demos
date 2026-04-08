@@ -11,9 +11,9 @@ interface IntakeFormEditProps {
 }
 
 export function IntakeFormEdit({ initialData, onSave, onCancel, isSaving = false }: IntakeFormEditProps) {
-  const [role, setRole] = useState<UserRole>(initialData.role);
-  const [responseStyle, setResponseStyle] = useState<ResponseStyle>(initialData.response_style);
-  const [intent, setIntent] = useState<UserIntent>(initialData.intent);
+  const [role, setRole] = useState<UserRole | null>(initialData.role);
+  const [responseStyle, setResponseStyle] = useState<ResponseStyle | null>(initialData.response_style);
+  const [intent, setIntent] = useState<UserIntent | null>(initialData.intent);
 
   const handleSave = () => {
     const data: IntakeData = {
@@ -60,7 +60,7 @@ export function IntakeFormEdit({ initialData, onSave, onCancel, isSaving = false
               Myself
             </div>
             <div className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-              I&apos;m looking for clinical trials for my own condition
+              I&apos;m looking for clinical trials for myself
             </div>
           </button>
 
@@ -77,10 +77,10 @@ export function IntakeFormEdit({ initialData, onSave, onCancel, isSaving = false
                 ? 'text-blue-600 dark:text-blue-400'
                 : 'text-gray-900 dark:text-white'
             }`}>
-              Someone I care for
+              Someone else
             </div>
             <div className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-              I&apos;m a caregiver helping someone find clinical trials
+              I&apos;m helping someone else to find information about clinical trials
             </div>
           </button>
         </div>

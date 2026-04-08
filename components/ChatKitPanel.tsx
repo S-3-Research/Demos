@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useSearchParams } from "next/navigation";
 import { ChatKit, useChatKit } from "@openai/chatkit-react";
 import { useUser } from "@clerk/nextjs";
 import {
@@ -83,8 +82,6 @@ export function ChatKitPanel({
   autoOpenMatch = false,
 }: ChatKitPanelProps) {
   const { isSignedIn } = useUser();
-  const searchParams = useSearchParams();
-  const matchPosition = (searchParams.get("match_pos") ?? "original") as "original" | "option2" | "option3" | "option4";
   const { fontSize } = useFontSize();
   const processedFacts = useRef(new Set<string>());
   const [errors, setErrors] = useState<ErrorState>(() => createInitialErrors());
@@ -281,12 +278,6 @@ export function ChatKitPanel({
           workflow: { id: WORKFLOW_ID },
           intake_data: parsedIntakeData, // Pass to backend for processing
           guest_user_id: guestUserId, // Pass stable guest ID to preserve history
-          chatkit_configuration: {
-            // enable attachments
-            file_upload: {
-              enabled: true,
-            },
-          },
         };
         
         console.log('[ChatKitPanel] Sending to /api/create-session:', JSON.stringify(requestBody, null, 2));
@@ -394,10 +385,6 @@ export function ChatKitPanel({
     },
     composer: {
       placeholder: PLACEHOLDER_INPUT,
-      attachments: {
-        // Enable attachments
-        enabled: true,
-      },
     },
     threadItemActions: {
       feedback: true,  // 启用反馈按钮（👍👎）
@@ -824,13 +811,6 @@ export function ChatKitPanel({
     }
   }, [autoOpenMatch, chatkit.control, isInitializingSession]);
 
-  // Listen for global match button event (option4: button lives in Header)
-  useEffect(() => {
-    const handler = () => setShowMatchModal(true);
-    window.addEventListener('open-match-modal', handler);
-    return () => window.removeEventListener('open-match-modal', handler);
-  }, []);
-
   // Note: Intake context is now passed via workflow.state_variables during session creation
   // See /app/api/create-session/route.ts for implementation
 
@@ -888,26 +868,24 @@ export function ChatKitPanel({
   
   return (
     <div className="flex flex-col h-full gap-0">
-      {/* ── Option 2: Header bar with Match button on the right ── */}
-      {matchPosition === 'option2' && (
-        <div className="flex items-center rounded-t-3xl justify-between px-5 py-2.5 bg-white/60 dark:bg-slate-900/60 backdrop-blur-sm border-b border-slate-200/50 dark:border-slate-700/50 shrink-0 z-20 overflow-hidden">
-          <span className="text-sm font-semibold text-slate-600 dark:text-slate-300">Chat Panel</span>
-          <div className="shimmer-border-btn-pill transition-transform hover:scale-105 active:scale-95 shadow-md shadow-blue-500/20">
-            <button
-              onClick={() => setShowMatchModal(true)}
-              className="flex items-center justify-center gap-1.5 h-9 px-4 rounded-full bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors text-sm focus:outline-none"
-              aria-label="Find matching clinical trials"
-            >
-              <svg className="w-4 h-4 text-blue-600 fill-current" viewBox="0 0 24 24">
-                <path d="M13 10V3L4 14h7v7l9-11h-7z"/>
-              </svg>
-              <span className="font-bold tracking-wide bg-gradient-to-r from-blue-600 to-sky-500 bg-clip-text text-transparent">Match me to trials</span>
-            </button>
-          </div>
+      {/* ── Mobile only: Header bar with Match button ── */}
+      <div className="flex md:hidden items-center rounded-t-3xl justify-between px-5 py-2.5 bg-white/60 dark:bg-slate-900/60 backdrop-blur-sm border-b border-slate-200/50 dark:border-slate-700/50 shrink-0 z-20 overflow-hidden">
+        <span className="text-sm font-semibold text-slate-600 dark:text-slate-300">Chat Panel</span>
+        <div className="shimmer-border-btn-pill transition-transform hover:scale-105 active:scale-95 shadow-md shadow-blue-500/20">
+          <button
+            onClick={() => setShowMatchModal(true)}
+            className="flex items-center justify-center gap-1.5 h-9 px-4 rounded-full bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors text-sm focus:outline-none"
+            aria-label="Find matching clinical trials"
+          >
+            <svg className="w-4 h-4 text-blue-600 fill-current" viewBox="0 0 24 24">
+              <path d="M13 10V3L4 14h7v7l9-11h-7z"/>
+            </svg>
+            <span className="font-bold tracking-wide bg-gradient-to-r from-blue-600 to-sky-500 bg-clip-text text-transparent">Match me to trials</span>
+          </button>
         </div>
-      )}
+      </div>
 
-    <div className={`chatkit-panel-container relative pb-8 flex flex-1 w-full h-full ${matchPosition === 'option2' ? 'rounded-b-3xl' : 'rounded-3xl'} flex-col overflow-hidden bg-white/40 backdrop-blur-2xl border border-slate-200/60 shadow-2xl transition-colors dark:bg-[#181D26] dark:border-slate-700/60 z-0`} style={{ boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 15px rgba(0, 0, 0, 0.1)' }}>
+    <div className="chatkit-panel-container relative pb-8 flex flex-1 w-full h-full rounded-b-3xl md:rounded-3xl flex-col overflow-hidden bg-white/40 backdrop-blur-2xl border border-slate-200/60 shadow-2xl transition-colors dark:bg-[#181D26] dark:border-slate-700/60 z-0" style={{ boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 15px rgba(0, 0, 0, 0.1)' }}>
       <ChatKit
         key={widgetInstanceKey}
         control={chatkit.control}
@@ -928,37 +906,19 @@ export function ChatKitPanel({
         </div>
       )}
 
-      {/* ── Option 1 (original): Match button floating top-center ── */}
-      {matchPosition === 'original' && (
-        <div className="absolute top-5 left-1/2 -translate-x-1/2 z-20 pointer-events-auto shimmer-border-btn-pill transition-transform hover:scale-105 active:scale-95 shadow-xl shadow-blue-500/40">
-          <button
-            onClick={() => setShowMatchModal(true)}
-            className="flex items-center justify-center gap-2 h-12 px-6 rounded-full bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors text-base focus:outline-none select-none"
-            aria-label="Find matching clinical trials"
-          >
-            <svg className="w-[18px] h-[18px] text-blue-600 fill-current" viewBox="0 0 24 24">
-              <path d="M13 10V3L4 14h7v7l9-11h-7z"/>
-            </svg>
-            <span className="font-bold tracking-wide bg-gradient-to-r from-blue-600 to-sky-500 bg-clip-text text-transparent">Match me to trials</span>
-          </button>
-        </div>
-      )}
-
-      {/* ── Option 3: FAB bottom-right ── */}
-      {matchPosition === 'option3' && (
-        <div className="absolute bottom-20 right-5 z-20 pointer-events-auto shimmer-border-btn-pill transition-transform hover:scale-105 active:scale-95 shadow-xl shadow-blue-500/40">
-          <button
-            onClick={() => setShowMatchModal(true)}
-            className="flex items-center justify-center gap-2 h-12 px-6 rounded-full bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors text-base focus:outline-none select-none"
-            aria-label="Find matching clinical trials"
-          >
-            <svg className="w-[18px] h-[18px] text-blue-600 fill-current" viewBox="0 0 24 24">
-              <path d="M13 10V3L4 14h7v7l9-11h-7z"/>
-            </svg>
-            <span className="font-bold tracking-wide bg-gradient-to-r from-blue-600 to-sky-500 bg-clip-text text-transparent">Match me to trials</span>
-          </button>
-        </div>
-      )}
+      {/* ── Desktop only: Match button floating top-center ── */}
+      <div className="hidden md:block absolute top-2.5 left-1/2 -translate-x-1/2 z-20 pointer-events-auto shimmer-border-btn-pill transition-transform hover:scale-105 active:scale-95 shadow-xl shadow-blue-500/40">
+        <button
+          onClick={() => setShowMatchModal(true)}
+          className="flex items-center justify-center gap-2 h-12 px-6 rounded-full bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors text-base focus:outline-none select-none"
+          aria-label="Find matching clinical trials"
+        >
+          <svg className="w-[18px] h-[18px] text-blue-600 fill-current" viewBox="0 0 24 24">
+            <path d="M13 10V3L4 14h7v7l9-11h-7z"/>
+          </svg>
+          <span className="font-bold tracking-wide bg-gradient-to-r from-blue-600 to-sky-500 bg-clip-text text-transparent">Match me to trials</span>
+        </button>
+      </div>
 
       {/* Match Profile Modal */}
       {showMatchModal && (

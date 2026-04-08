@@ -155,25 +155,26 @@ export default function Home() {
           el._scrollTimer = setTimeout(() => el.classList.remove('is-scrolling'), 600);
         }}
         className={`landing-scroll ${isLight ? 'landing-light-scroll' : ''} min-h-screen md:h-screen w-full md:overflow-auto flex items-start justify-center p-0 md:p-6 lg:p-8 transition-colors duration-500 md:min-w-[1080px] ${isLight ? 'bg-slate-100' : 'bg-slate-950'}`}>
-          <main className={`landing-light-wrapper relative w-full md:h-full md:min-h-[980px] max-w-[1920px] mx-auto md:rounded-[2rem] overflow-hidden shadow-2xl flex flex-col transition-colors duration-500 ${isLight ? 'landing-light bg-white/80 ring-1 ring-slate-200' : 'bg-slate-900 ring-1 ring-white/10'}`}>
+          <main className={`landing-light-wrapper relative w-full md:min-h-full max-w-[1920px] mx-auto md:rounded-[2rem] overflow-hidden shadow-2xl flex flex-col transition-colors duration-500 ${isLight ? 'landing-light bg-white/80 ring-1 ring-slate-200' : 'bg-slate-900 ring-1 ring-white/10'}`}>
             
             {/* 1. Background Image Layer with Cinematic Blur */}
             <div className="absolute inset-0 z-0">
                 <img 
-                    src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=2576&auto=format&fit=crop" 
+                    // src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=2576&auto=format&fit=crop" 
+                    src="/images/landing_bg_female_2.jpg"
                     alt="Background Ambience" 
-                    className={`w-full h-full object-cover transition-opacity duration-500 ${isLight ? 'opacity-70 mix-blend-luminosity' : 'opacity-70 mix-blend-overlay'}`}
+                    className={`w-full h-full object-cover transition-opacity duration-500 ${isLight ? 'opacity-100 mix-blend-luminosity' : 'opacity-100 mix-blend-overlay'}`}
                     style={{ objectPosition: '50% 20%' }}
                 />
                 {/* Gradient overlays */}
                 {isLight ? (
                     <>
-                        <div className="absolute inset-0 bg-gradient-to-r from-slate-50 via-white/80 to-white/60"></div>
+                        <div className="absolute inset-0 bg-gradient-to-r from-slate-0 via-white/20 to-white/60"></div>
                         <div className="absolute inset-0 bg-gradient-to-t from-slate-100 via-transparent to-slate-50/60"></div>
                     </>
                 ) : (
                     <>
-                        <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-900/80 to-slate-900/60"></div>
+                        <div className="absolute inset-0 bg-gradient-to-l from-slate-950 via-slate-900/70 to-slate-900/50"></div>
                         <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-slate-950/30"></div>
                     </>
                 )}
@@ -287,7 +288,7 @@ export default function Home() {
             <div className="relative z-10 flex-1 flex flex-col md:flex-row items-end md:items-center justify-between px-6 md:px-16 pb-12 md:pb-0">
                 
                 {/* Left Side: Massive Typography */}
-                <div className="w-full md:w-1/2 flex flex-col justify-end h-full md:pb-24 space-y-4">
+                <div className="w-full md:w-1/2 flex flex-col justify-end md:pb-24 space-y-4 self-end">
                     {/* Subtitle Tag */}
                     <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full border text-xs font-semibold tracking-wider uppercase w-fit animate-custom-fade-in-up transition-colors duration-300 ${
                         isLight ? 'bg-blue-50 border-blue-200 text-blue-600' : 'bg-blue-500/10 border-blue-400/20 text-blue-200'
@@ -412,7 +413,7 @@ export default function Home() {
                 </div>{/* end card hover div */}
 
                 {/* Trust Badges — below the card */}
-                <div className={`mt-6 flex flex-wrap justify-center gap-x-6 gap-y-2 text-[10px] md:text-xs font-medium uppercase tracking-widest transition-colors duration-300 ${isLight ? 'text-slate-400' : 'text-slate-500'}`}>
+                <div className={`mt-6 mb-6 flex flex-wrap justify-center gap-x-6 gap-y-2 text-[10px] md:text-xs font-medium uppercase tracking-widest transition-colors duration-300 ${isLight ? 'text-slate-400' : 'text-slate-500'}`}>
                         {/* <div className="flex items-center gap-1.5">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" className="w-4 h-4 text-slate-400">
                                 <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/>
