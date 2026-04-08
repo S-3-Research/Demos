@@ -1115,8 +1115,8 @@ export default function DevTestPage() {
                   </label>
                   <div className="flex items-center gap-2 flex-wrap">
                     <select
-                      value={intakeData.role}
-                      onChange={(e) => setIntakeData((prev) => ({ ...prev, role: e.target.value as IntakeData["role"] }))}
+                      value={intakeData.role ?? ''}
+                      onChange={(e) => setIntakeData((prev) => ({ ...prev, role: (e.target.value || null) as IntakeData["role"] }))}
                       disabled={runnerStatus === "running"}
                       className="bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-200 rounded-lg h-8 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
                     >
@@ -1124,8 +1124,8 @@ export default function DevTestPage() {
                       <option value="caregiver">Caregiver</option>
                     </select>
                     <select
-                      value={intakeData.response_style}
-                      onChange={(e) => setIntakeData((prev) => ({ ...prev, response_style: e.target.value as IntakeData["response_style"] }))}
+                      value={intakeData.response_style ?? ''}
+                      onChange={(e) => setIntakeData((prev) => ({ ...prev, response_style: (e.target.value || null) as IntakeData["response_style"] }))}
                       disabled={runnerStatus === "running"}
                       className="bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-200 rounded-lg h-8 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
                     >
@@ -1134,8 +1134,8 @@ export default function DevTestPage() {
                       <option value="verbose">Verbose</option>
                     </select>
                     <select
-                      value={intakeData.intent}
-                      onChange={(e) => setIntakeData((prev) => ({ ...prev, intent: e.target.value as IntakeData["intent"] }))}
+                      value={intakeData.intent ?? ''}
+                      onChange={(e) => setIntakeData((prev) => ({ ...prev, intent: (e.target.value || null) as IntakeData["intent"] }))}
                       disabled={runnerStatus === "running"}
                       className="bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-200 rounded-lg h-8 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
                     >

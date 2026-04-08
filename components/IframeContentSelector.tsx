@@ -25,12 +25,12 @@ export function selectIframeUrl(intakeData: IntakeData | null): string {
   }
 
   // Get base URL from role
-  const baseUrl = BASE_URL_MAP[intakeData.role] || BASE_URL_MAP['default'];
+  const baseUrl = BASE_URL_MAP[intakeData.role ?? 'default'] || BASE_URL_MAP['default'];
 
   // Build URL with query parameters
   const url = new URL(baseUrl);
-  url.searchParams.set('intent', intakeData.intent);
-  url.searchParams.set('style', intakeData.response_style);
+  if (intakeData.intent) url.searchParams.set('intent', intakeData.intent);
+  if (intakeData.response_style) url.searchParams.set('style', intakeData.response_style);
 
   return url.toString();
 }
