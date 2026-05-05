@@ -1,4 +1,4 @@
-export type TabId = 'arch' | 'modes' | 'lifecycle' | 'stacks' | 'api' | 'schema' | 'deploy' | 'test' | 'docker' | 'src' | 'debug'
+export type TabId = 'arch' | 'modes' | 'lifecycle' | 'stacks' | 'api' | 'schema' | 'deploy' | 'test' | 'docker' | 'src' | 'debug' | 'capacity'
 
 export const TABS: { id: TabId; label: string }[] = [
   { id: 'arch',      label: 'Architecture' },
@@ -12,6 +12,7 @@ export const TABS: { id: TabId; label: string }[] = [
   { id: 'docker',    label: 'Dockerfile' },
   { id: 'src',       label: 'Source Structure' },
   { id: 'debug',     label: 'Debug Mode' },
+  { id: 'capacity',  label: 'Capacity' },
 ]
 
 export const CODE = {
