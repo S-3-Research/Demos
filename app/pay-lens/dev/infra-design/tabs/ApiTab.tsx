@@ -18,7 +18,7 @@ export function ApiTab() {
             <td><span className="tag tag-orange" style={{ fontWeight: 700 }}>POST</span></td>
             <td className="mono">/jobs/submit</td>
             <td className="mono">submit-handler</td>
-            <td>Submit Batch scan job. Returns <Ic>{'{"jobId":"…","status":"SUBMITTED"}'}</Ic> immediately.</td>
+            <td>Submit Batch scan job. Returns <Ic>{'"jobId":"…","status":"SUBMITTED"}'}</Ic> immediately. Supports <Ic>options.debugNav</Ic> to enable nav screenshot debug mode.</td>
           </tr>
           <tr>
             <td><span className="tag tag-blue" style={{ fontWeight: 700 }}>GET</span></td>
@@ -60,12 +60,27 @@ export function ApiTab() {
       </table>
 
       <div className="card" style={{ marginTop: 24 }}>
+        <div style={{ fontSize: '15px', fontWeight: 700, marginBottom: 4 }}>/jobs/submit — Request Body</div>
+        <div style={{ fontSize: '12.5px', color: 'var(--text-muted)', marginBottom: 10 }}>All fields optional except <Ic>url</Ic>.</div>
+        <pre style={{ fontSize: 12, background: 'var(--bg-secondary)', borderRadius: 8, padding: '12px 14px', overflowX: 'auto', margin: 0 }}>{`{
+  "url": "https://example.com/product/foo",  // required
+  "options": {                               // optional
+    "debugNav": true  // enable nav screenshot debug mode
+  }
+}`}</pre>
+      </div>
+
+      <div className="card" style={{ marginTop: 24 }}>
         <div style={{ fontSize: '15px', fontWeight: 700, marginBottom: 4 }}>/detections/summary — Query Parameters</div>
         <div style={{ fontSize: '12.5px', color: 'var(--text-muted)', marginBottom: 14 }}>
           <strong>Merge logic:</strong> Jobs with DynamoDB status <Ic>SUBMITTED</Ic> or <Ic>RUNNING</Ic> are enriched via <Ic>Batch.describeJobs()</Ic>
           with real-time status, <Ic>logStreamName</Ic>, and <Ic>statusReason</Ic>.
           Completed jobs use DynamoDB data directly (<Ic>batchDetail: null</Ic>).<br />
-          每条 job 响应包含顶层 <Ic>logStreamName</Ic> 字段，优先读取 DynamoDB 中持久化的值（由 status-sync Lambda 在任务终态时写入），若任务仍在运行则取 Batch 实时 API 中的值，否则为 <Ic>null</Ic>。
+          Each job response includes a top-level <Ic>logStreamName</Ic> field — reads the persisted DynamoDB value first (written by the status-sync Lambda on terminal state); falls back to the live Batch API value if the job is still running; otherwise <Ic>null</Ic>.<br />
+          The following two fields are passed through directly from DynamoDB (no computation):
+          <Ic>navFinalState: item[&apos;navFinalState&apos;] ?? null</Ic> —{' '}
+          the final <Ic>PageState</Ic> reached by <Ic>navigateToCheckoutSM</Ic>; equals <Ic>CHECKOUT_PAYMENT_STEP</Ic> on success.{' '}
+          <Ic>navBlockReason: item[&apos;navBlockReason&apos;] ?? null</Ic> — human-readable nav failure reason (e.g. <Ic>SIGN_IN_WALL</Ic>, <Ic>CART_EMPTY</Ic>, <Ic>EXHAUSTED</Ic>); <Ic>null</Ic> on success.
         </div>
         <table className="data-table">
           <thead><tr><th>Param</th><th>Type</th><th>Required</th><th>Default</th><th>Description</th></tr></thead>

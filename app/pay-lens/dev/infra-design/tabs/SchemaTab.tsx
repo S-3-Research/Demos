@@ -22,6 +22,8 @@ export function SchemaTab() {
           <tr><td className="mono">signalCount</td><td><span className="type-tag type-n">N</span></td><td></td><td>Total signals collected</td></tr>
           <tr><td className="mono">s3Paths</td><td><span className="type-tag type-m">M</span></td><td></td><td>Map of artifact filename → S3 URI (evidence.csv, entities.json, etc.)</td></tr>
           <tr><td className="mono">logStreamName</td><td><span className="type-tag type-s">S</span></td><td></td><td>CloudWatch Batch 日志流名称，由 status-sync Lambda 在终态时写入，格式 <Ic>payment-detection-job/default/&lt;hash&gt;</Ic></td></tr>
+          <tr><td className="mono">navFinalState</td><td><span className="type-tag type-s">S</span></td><td></td><td>Last <Ic>PageState</Ic> reached by <Ic>navigateToCheckoutSM</Ic> — <Ic>CHECKOUT_PAYMENT_STEP</Ic> on success; terminal failure state (<Ic>SIGN_IN_WALL</Ic>, <Ic>CART_EMPTY</Ic>, <Ic>EXHAUSTED</Ic>) on <Ic>NavError</Ic>. Omitted when nav step is skipped.</td></tr>
+          <tr><td className="mono">navBlockReason</td><td><span className="type-tag type-s">S</span></td><td></td><td>Human-readable nav failure reason string; omitted on success.</td></tr>
           <tr><td className="mono">ttl</td><td><span className="type-tag type-n">N</span></td><td></td><td>Unix seconds — auto-expire after 90 days</td></tr>
         </tbody>
       </table>

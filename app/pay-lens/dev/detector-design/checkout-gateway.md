@@ -105,6 +105,7 @@ PRODUCT_URL env var
         ▼
 ┌── Output ──────────────────────────────────────────────┐
 │  result-summary.json  — all DetectedEntity + metadata   │
+│                         + navFinalState / navBlockReason │
 │  entities.json        — structured entity list          │
 │  network-log.json     — network signals + request list  │
 │  evidence.csv         — one row per signal              │
@@ -438,13 +439,31 @@ Before this change: fixed `waitForTimeout(800 ms)` — too short for cloud laten
 | `CART_PAGE` | Cart URL + cart items present | — |
 | `CART_EMPTY` | Cart URL but no items | ❌ fail |
 | `CHECKOUT_PAGE` | Checkout URL, payment options not yet visible (still filling forms) | — |
-| `CHECKOUT_PAYMENT_STEP` | Checkout URL + payment options visible | ✅ success |
-| `SIGN_IN_WALL` | Login / sign-in required | ❌ fail |
+| `CHECKOUT_PAYMENT_STEP` | Checkout URL + payment options visible | ✅ success — recorded as `navFinalState` |
+| `SIGN_IN_WALL` | Login / sign-in required | ❌ fail — `navFinalState` = state at throw |
 | `BLOCKED_MODAL` | Age gate / cookie consent / overlay | ⚠️ disabled |
 | `UNKNOWN` | None of the above | — |
 
 > **`BLOCKED_MODAL` is currently disabled** — detection was producing false positives on generic page buttons.
 > Age-gate / cookie-consent dismissal is handled upstream, before `navigateToCheckoutSM` is called.
+
+### DynamoDB Job Result — Field Reference
+
+Fields written by `writeJobResult()` in `storage.ts` to the `PayLensJobs` table:
+
+| Field | Type | Source | Notes |
+|---|---|---|---|
+| `jobId` | `string` | runner | Primary key (ULID) |
+| `productUrl` | `string` | runner | Input URL |
+| `status` | `'ok'\|'error'` | runner | Overall job outcome |
+| `entities` | `DetectedEntity[]` | runner | Gateway detection results |
+| `navFinalState` | `PageState \| undefined` | `checkout_nav` | Last state reached by `navigateToCheckoutSM`; `CHECKOUT_PAYMENT_STEP` on success, terminal failure state on `NavError` |
+| `navBlockReason` | `string \| undefined` | `checkout_nav` | Human-readable reason when `NavError` is thrown (e.g. `'SIGN_IN_WALL'`, `'CART_EMPTY'`, `'EXHAUSTED'`); `undefined` on success |
+| `createdAt` | `string` | runner | ISO-8601 timestamp |
+| `ttl` | `number` | runner | Unix epoch (90-day expiry) |
+
+> `navFinalState` and `navBlockReason` are always written together —
+> both are `undefined` when the nav step is skipped entirely.
 
 ### State Detection Order (`detectPageState`)
 

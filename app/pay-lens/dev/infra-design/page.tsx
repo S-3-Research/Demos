@@ -13,6 +13,7 @@ import { DeployTab } from './tabs/DeployTab'
 import { TestTab } from './tabs/TestTab'
 import { DockerTab } from './tabs/DockerTab'
 import { SrcTab } from './tabs/SrcTab'
+import { DebugTab } from './tabs/DebugTab'
 
 export default function InfraDesignVisual() {
   const [activeTab, setActiveTab] = useState<TabId>('arch')
@@ -58,6 +59,7 @@ export default function InfraDesignVisual() {
         {activeTab === 'test'      && <TestTab />}
         {activeTab === 'docker'    && <DockerTab />}
         {activeTab === 'src'       && <SrcTab />}
+        {activeTab === 'debug'     && <DebugTab />}
       </div>
     </div>
   )

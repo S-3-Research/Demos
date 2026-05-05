@@ -94,6 +94,8 @@
 | `signalCount` | N | 信号总数 |
 | `s3Paths` | M | artifact 文件名 → S3 URI 映射 |
 | `logStreamName` | S | CloudWatch Batch 日志流名称，由 status-sync Lambda 在终态时写入，格式 `payment-detection-job/default/<hash>` |
+| `navFinalState` | S | `navigateToCheckoutSM` 最终到达的 PageState；成功时为 `CHECKOUT_PAYMENT_STEP`，失败时为终止失败态（如 `SIGN_IN_WALL`、`CART_EMPTY`、`EXHAUSTED`） |
+| `navBlockReason` | S | 导航失败时的可读原因字符串；成功时不写入 |
 | `ttl` | N | Unix 秒，90天后自动过期 |
 
 **entities 字段结构（方案 A 统一格式）：**
@@ -134,6 +136,13 @@ category 取値：`gateway` / `wallet` / `bnpl` / `card-brand` / `platform`
 **Merge 逻辑：** 进行中的 job（DynamoDB status 为 SUBMITTED/RUNNING）会调用 `Batch.describeJobs()` 补充实时 status、logStreamName、statusReason；已完成的 job 直接用 DynamoDB 数据，`batchDetail: null`。
 
 每条 job 响应包含顶层 `logStreamName` 字段，优先读取 DynamoDB 中持久化的值（由 status-sync Lambda 在任务终态时写入），若任务仍在运行则取 Batch 实时 API 中的值，否则为 `null`。CloudWatch 日志链接格式：
+
+每条 job 响应同时透传以下 DynamoDB 字段（直接读取，不做计算）：
+
+| 字段 | 来源 | 说明 |
+|------|------|------|
+| `navFinalState` | `item['navFinalState'] ?? null` | `navigateToCheckoutSM` 最终到达的 PageState；成功时为 `CHECKOUT_PAYMENT_STEP`，`NavError` 时为终止失败态 |
+| `navBlockReason` | `item['navBlockReason'] ?? null` | 导航失败时的可读原因字符串（如 `SIGN_IN_WALL`、`CART_EMPTY`、`EXHAUSTED`）；成功时为 `null` |
 ```
 https://us-west-2.console.aws.amazon.com/cloudwatch/home?region=us-west-2#logEventViewer:group=/aws/batch/job;stream=<logStreamName>
 ```

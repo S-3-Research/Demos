@@ -33,6 +33,8 @@ interface Job {
   // from summary API
   logStreamName?: string
   batchDetail?: { status: string; logStreamName?: string; statusReason?: string } | null
+  navFinalState?: string
+  navBlockReason?: string
 }
 
 type TimeRange = '24h' | '7d' | '30d' | '90d' | 'custom'
@@ -176,6 +178,7 @@ export default function PayLensDevPage() {
   const [url, setUrl] = useState('https://www.k9reproduction.com/product-page/wondfo-canine-progesterone-trilevel-qc-test-kit')
   const [submitting, setSubmitting] = useState(false)
   const [submitMsg, setSubmitMsg] = useState<{ type: 'ok' | 'err'; text: string } | null>(null)
+  const [debugNav, setDebugNav] = useState(false)
 
   const [jobs, setJobs] = useState<Job[]>([])
   const [loading, setLoading] = useState(false)
@@ -239,7 +242,7 @@ export default function PayLensDevPage() {
       const res = await apiFetch(`${API_BASE}/jobs/submit`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url }),
+        body: JSON.stringify({ url, ...(debugNav ? { options: { debugNav: true } } : {}) }),
       })
       // parse body safely — 202 may have empty or non-JSON body
       let data: Record<string, unknown> = {}
@@ -450,6 +453,15 @@ export default function PayLensDevPage() {
               {submitting ? <span className="spinner" /> : null}
               {submitting ? 'Submitting…' : 'Submit Job'}
             </button>
+            <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: 'var(--text-muted)', cursor: 'pointer', userSelect: 'none' }}>
+              <input
+                type="checkbox"
+                checked={debugNav}
+                onChange={e => setDebugNav(e.target.checked)}
+                style={{ cursor: 'pointer' }}
+              />
+              Debug Nav
+            </label>
           </div>
           {submitMsg && (
             <div className={`alert ${submitMsg.type === 'ok' ? 'alert-ok' : 'alert-err'}`}>
@@ -606,6 +618,12 @@ export default function PayLensDevPage() {
                                       {job.batchDetail?.statusReason && (
                                         <div className="kv" style={{ gridColumn: '1 / -1' }}><div className="kv-label">Status Reason</div><div className="kv-val" style={{ color: '#b52a1c' }}>{job.batchDetail.statusReason}</div></div>
                                       )}
+                                      {job.navFinalState && (
+                                        <div className="kv"><div className="kv-label">Nav Final State</div><div className="kv-val mono" style={{ color: job.navFinalState === 'CHECKOUT_PAYMENT_STEP' ? '#1d7d45' : '#b52a1c' }}>{job.navFinalState}</div></div>
+                                      )}
+                                      {job.navBlockReason && (
+                                        <div className="kv"><div className="kv-label">Nav Block Reason</div><div className="kv-val" style={{ color: '#b52a1c' }}>{job.navBlockReason}</div></div>
+                                      )}
                                     </div>
                                     {(() => {
                                       const entities = getAllEntities(job)
@@ -628,7 +646,7 @@ export default function PayLensDevPage() {
                                       <div>
                                         <div className="kv-label" style={{ marginBottom: 7 }}>Artifacts</div>
                                         <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-                                          {Object.entries(job.s3Paths).map(([key, s3Uri]) => {
+                                          {Object.entries(job.s3Paths).sort(([a], [b]) => a.localeCompare(b)).map(([key, s3Uri]) => {
                                             const fileName = String(s3Uri).split('/').pop() ?? key
                                             const isLoadingThis = artifactLoading === key
                                             return (
