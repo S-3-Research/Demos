@@ -91,8 +91,8 @@ function elapsed(a?: number, b?: number) {
 
 type Entity = { name: string; category: string; available: boolean; confidence: string }
 const CONF_RANK: Record<string, number> = { high: 3, medium: 2, low: 1 }
-export const CAT_EMOJI: Record<string, string> = { gateway: '🏦', wallet: '💳', bnpl: '⏳', 'card-brand': '🎴', platform: '🛒' }
-export const CONF_DOT: Record<string, string> = { high: '🟢', medium: '🟡', low: '⚪' }
+const CAT_EMOJI: Record<string, string> = { gateway: '🏦', wallet: '💳', bnpl: '⏳', 'card-brand': '🎴', platform: '🛒' }
+const CONF_DOT: Record<string, string> = { high: '🟢', medium: '🟡', low: '⚪' }
 
 function EntityPill({ e }: { e: Entity }) {
   const [tip, setTip] = useState<{ x: number; y: number } | null>(null)

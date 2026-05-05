@@ -292,7 +292,7 @@ const DetailPanel = ({ domain, onClose }: { domain: typeof DOMAINS_DATA[0] | nul
             </div>
             <div className="space-y-1.5">
               <p className="text-emerald-400">{'<script src="https://www.paypal.com/sdk/js"></script>'}</p>
-              <p className="text-indigo-400 mt-3">// Trigger condition met</p>
+              <p className="text-indigo-400 mt-3">{'// Trigger condition met'}</p>
               <p>{'fetch("https://api.paypal.com/v1/payments")'}</p>
             </div>
           </div>

@@ -146,7 +146,7 @@ export function StateMachineTab({ lang, rrActive, rrUsed, rrStatus, simulateRR }
           <div style={{ fontSize: 12, display: 'flex', flexDirection: 'column', gap: 10 }}>
             <div style={{ background: 'rgba(0,113,227,.05)', borderRadius: 8, padding: '10px 14px', border: '1px solid rgba(0,113,227,.1)' }}>
               <div style={{ color: 'var(--accent)', fontWeight: 700, marginBottom: 4 }}>{L('URL Changed', 'URL 已改变')}</div>
-              waitForLoadState('domcontentloaded') + 3s cap
+              {"waitForLoadState('domcontentloaded') + 3s cap"}
             </div>
             <div style={{ background: 'rgba(94,44,165,.05)', borderRadius: 8, padding: '10px 14px', border: '1px solid rgba(94,44,165,.1)' }}>
               <div style={{ color: 'var(--purple)', fontWeight: 700, marginBottom: 4 }}>{L('URL Unchanged', 'URL 未改变')}</div>

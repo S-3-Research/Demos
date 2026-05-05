@@ -22,7 +22,7 @@ export function FlowTab({ lang, openModal, switchTab }: Props) {
             <div className="dv-flow-row">
               <div>
                 <div className="dv-step-title">{L('Register Network Listeners', '注册网络监听器')}</div>
-                <div className="dv-step-desc">browser.newContext() · page.on('request') · context.on('page') · attachResponseListener()</div>
+                <div className="dv-step-desc">{'browser.newContext() · page.on(\'request\') · context.on(\'page\') · attachResponseListener()'}</div>
               </div>
             </div>
           </div>

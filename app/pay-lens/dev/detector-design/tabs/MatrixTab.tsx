@@ -70,7 +70,7 @@ export function MatrixTab({ lang, openModal }: Props) {
             <div>{L('① Filter signals that include a visible field (DOM signals)', '① 过滤出含 visible 字段的 DOM 信号')}</div>
             <div>{L('② DOM signal count = 0 → ', '② DOM 信号数 = 0 → ')}<strong style={{ color: 'var(--red)' }}>available = false</strong>{L(' (network/text only)', '（仅网络/文本匹配）')}</div>
             <div>{L('③ Any DOM signal visible = true → ', '③ 任意 DOM 信号 visible = true → ')}<strong style={{ color: 'var(--green)' }}>available = true</strong></div>
-            <div>{L('④ All DOM signals visible = false → ', '④ 所有 DOM 信号 visible = false → ')}<strong style={{ color: 'var(--red)' }}>available = false</strong><br />&nbsp;&nbsp;&nbsp;unavailableReason = 'css-hidden'</div>
+            <div>{L('④ All DOM signals visible = false → ', '④ 所有 DOM 信号 visible = false → ')}<strong style={{ color: 'var(--red)' }}>available = false</strong><br />&nbsp;&nbsp;&nbsp;{'unavailableReason = \'css-hidden\''}</div>
           </div>
           <hr className="dv-divider" style={{ margin: '14px 0' }} />
           <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 10 }}>unavailableReason {L('Enum', '枚举')}</div>
