@@ -156,32 +156,154 @@ const ArchitectureOverview = () => (
 // V2 Architecture Overview
 const V2ArchitectureOverview = () => (
   <div className="space-y-12">
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
       <div>
         <SectionTitle 
           icon={Users} 
           title="Nurse Workflow" 
-          subtitle="From training to site assignment via SMS." 
+          subtitle="Maintain profile and receive assignments." 
         />
         <div className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
-          <FlowStep number={1} title="Receive Training Invite" details={["Opt in to participate in matching system"]} />
-          <FlowStep number={2} title="Enter Profile" details={["Input home address", "Set service radius", "Upload license credentials"]} />
-          <FlowStep number={3} title="Complete Training" details={["System marks nurse as certified", "Profile activated for matching"]} />
-          <FlowStep number={4} title="When Site Matches" details={["Receive SMS with date range + site address", "MRN scheduling link provided", "Link to update address/radius preferences"]} />
+          <FlowStep number={1} title="Receive Invite & Sign Up" details={["Receive invite from admin and sign up"]} />
+          <FlowStep number={2} title="Complete Profile" details={["Complete profile, credentials, and capabilities"]} />
+          <FlowStep number={3} title="Set Availability" details={["Toggle availability status as needed"]} />
+          <FlowStep number={4} title="Keep Info Up to Date" details={["Update location, credentials, or availability when needed"]} />
         </div>
       </div>
 
       <div>
         <SectionTitle 
           icon={LayoutDashboard} 
-          title="Match Operator Workflow" 
-          subtitle="Simple site-based matching activation process." 
+          title="Admin Workflow" 
+          subtitle="Manage nurses, match, and drive execution." 
         />
         <div className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
-          <FlowStep number={1} title="Enter Site Information" details={["Input site address", "Specify required license type"]} />
-          <FlowStep number={2} title="Activate Match" details={["Trigger matching algorithm"]} />
-          <FlowStep number={3} title="System Notification" details={["System sends SMS to certified nurses within radius", "Automatic notification to eligible candidates"]} />
+          <FlowStep number={1} title="Sync Eligible Nurses" details={["Sync nurse roster from Google Sheet"]} />
+          <FlowStep number={2} title="Invite Nurses" details={["Send invites for nurses to join the platform"]} />
+          <FlowStep number={3} title="Create Trial" details={["Define trial requirements and site location"]} />
+          <FlowStep number={4} title="Run Matching" details={["Manually assign nurses or run AI matching to fill gaps"]} />
+          <FlowStep number={5} title="Create Match Records" details={["A match record is created per assigned nurse"]} />
+          <FlowStep number={6} title="Advance Match Status" details={["Draft → Contacting → Confirmed / Failed", "Reassign and create new match record if a match fails"]} />
         </div>
+      </div>
+
+      <div>
+        <SectionTitle 
+          icon={Globe} 
+          title="Client / Sponsor Workflow" 
+          subtitle="View coverage and track execution." 
+        />
+        <div className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
+          <FlowStep number={1} title="View Active Nurse Network" details={["Browse available nurse distribution on the map"]} />
+          <FlowStep number={2} title="Check Coverage" details={["Enter a site address to assess nearby nurse coverage"]} />
+          <FlowStep number={3} title="View Match History" details={["Review past matching records and outcomes"]} />
+        </div>
+      </div>
+    </div>
+
+    {/* Nurse Data Overview */}
+    <div>
+      <div className="mb-8">
+        <div className="flex items-center gap-3 mb-2">
+          <div className="p-2 bg-blue-600 rounded-lg text-white">
+            <Database size={20} />
+          </div>
+          <h2 className="text-2xl font-bold text-slate-800 tracking-tight">Nurse Data Overview</h2>
+        </div>
+        <p className="text-slate-500 font-medium ml-12">How nurse data is structured — and who controls what.</p>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Block 1: Training Source */}
+        <div className="rounded-[2rem] border-2 border-green-200 bg-green-50/40 overflow-hidden">
+          <div className="bg-green-600 px-6 py-4">
+            <p className="text-[10px] font-black uppercase tracking-widest text-green-100 mb-1">Part 1</p>
+            <h3 className="text-white font-bold text-base">Training Source</h3>
+            <p className="text-green-100 text-xs mt-0.5">Managed by your team via Google Sheet</p>
+          </div>
+          <div className="divide-y divide-green-100">
+            {[
+              { field: "Name / Email", note: "Basic nurse identification" },
+              { field: "Training Status", note: "Whether training is completed" },
+              { field: "Approval Status", note: "Whether the nurse is approved" },
+              { field: "License Info", note: "Credentials (optional)" },
+              { field: "Last Updated", note: "Most recent sync timestamp" },
+            ].map((row, i) => (
+              <div key={i} className="px-6 py-3 flex justify-between items-start gap-4">
+                <span className="text-sm font-semibold text-slate-700 shrink-0">{row.field}</span>
+                <span className="text-xs text-slate-400 text-right">{row.note}</span>
+              </div>
+            ))}
+          </div>
+          <div className="px-6 py-4 bg-green-100/60 flex items-start gap-2">
+            <CheckCircle size={14} className="text-green-600 mt-0.5 shrink-0" />
+            <p className="text-xs text-green-800 font-semibold leading-relaxed">This data is fully managed by your team via Google Sheet. The system only reads it.</p>
+          </div>
+        </div>
+
+        {/* Block 2: Nurse Profile */}
+        <div className="rounded-[2rem] border-2 border-blue-200 bg-blue-50/40 overflow-hidden">
+          <div className="bg-blue-600 px-6 py-4">
+            <p className="text-[10px] font-black uppercase tracking-widest text-blue-100 mb-1">Part 2</p>
+            <h3 className="text-white font-bold text-base">Nurse Profile</h3>
+            <p className="text-blue-100 text-xs mt-0.5">Maintained by nurses in the system</p>
+          </div>
+          <div className="divide-y divide-blue-100">
+            {[
+              { field: "Account Status", note: "Registered / activated" },
+              { field: "Address", note: "Location used for matching" },
+              { field: "Availability", note: "Currently accepting assignments" },
+              { field: "Capability", note: "Types of tasks the nurse can perform" },
+            ].map((row, i) => (
+              <div key={i} className="px-6 py-3 flex justify-between items-start gap-4">
+                <span className="text-sm font-semibold text-slate-700 shrink-0">{row.field}</span>
+                <span className="text-xs text-slate-400 text-right">{row.note}</span>
+              </div>
+            ))}
+          </div>
+          <div className="px-6 py-4 bg-blue-100/60 flex items-start gap-2">
+            <Activity size={14} className="text-blue-600 mt-0.5 shrink-0" />
+            <p className="text-xs text-blue-800 font-semibold leading-relaxed">Used by the system to make matching decisions.</p>
+          </div>
+        </div>
+
+        {/* Block 3: Match Record */}
+        <div className="rounded-[2rem] border-2 border-slate-200 bg-slate-50/40 overflow-hidden">
+          <div className="bg-slate-800 px-6 py-4">
+            <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">Part 3</p>
+            <h3 className="text-white font-bold text-base">Match Record</h3>
+            <p className="text-slate-300 text-xs mt-0.5">Generated per assignment</p>
+          </div>
+          <div className="divide-y divide-slate-100">
+            {[
+              { field: "Trial", note: "Which trial this belongs to" },
+              { field: "Nurse", note: "The assigned nurse" },
+              { field: "Distance / Travel Time", note: "Proximity to site" },
+              { field: "Status", note: "Contacting / Confirmed / Failed" },
+              { field: "Contact Notes", note: "Manual outreach log" },
+            ].map((row, i) => (
+              <div key={i} className="px-6 py-3 flex justify-between items-start gap-4">
+                <span className="text-sm font-semibold text-slate-700 shrink-0">{row.field}</span>
+                <span className="text-xs text-slate-400 text-right">{row.note}</span>
+              </div>
+            ))}
+          </div>
+          <div className="px-6 py-4 bg-slate-100/60 flex items-start gap-2">
+            <FileText size={14} className="text-slate-600 mt-0.5 shrink-0" />
+            <p className="text-xs text-slate-700 font-semibold leading-relaxed">Each assignment is tracked as a record with a full status history.</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Summary callout */}
+      <div className="mt-6 bg-slate-900 rounded-[2rem] px-8 py-6 text-white flex items-start gap-4">
+        <div className="p-2 bg-blue-500 rounded-xl shrink-0 mt-0.5">
+          <Zap size={16} fill="currentColor" />
+        </div>
+        <p className="text-sm leading-relaxed text-slate-200">
+          <span className="text-white font-bold">In short: </span>
+          Training and approval are fully managed by your team via Google Sheet — the system only reads that data. Nurses maintain their own profiles for matching. Every assignment is tracked as an individual record with a full status trail.
+        </p>
       </div>
     </div>
   </div>
