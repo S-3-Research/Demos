@@ -251,36 +251,36 @@ const workflowSteps = [
   },
 ];
 
+// NodeCard component extracted outside V2WorkflowChart to prevent unnecessary re-renders
+const NodeCard = ({ step, isActive, onToggle }: { step: typeof workflowSteps[0]; isActive: boolean; onToggle: () => void }) => {
+  const isBlue = step.phaseColor === 'blue';
+  return (
+    <button
+      onClick={onToggle}
+      className={`flex-1 min-w-0 text-left rounded-xl border-2 p-4 transition-all duration-150 cursor-pointer ${
+        isActive
+          ? isBlue
+            ? 'border-blue-500 bg-blue-600 shadow-lg shadow-blue-100'
+            : 'border-violet-500 bg-violet-600 shadow-lg shadow-violet-100'
+          : 'border-slate-200 bg-white hover:border-slate-300 hover:shadow-sm'
+      }`}
+    >
+      <div className={`w-6 h-6 rounded-full flex items-center justify-center font-bold text-[10px] mb-3 ${
+        isActive ? 'bg-white/20 text-white' : isBlue ? 'bg-blue-600 text-white' : 'bg-violet-600 text-white'
+      }`}>{step.id}</div>
+      <p className={`text-xs font-bold leading-tight mb-2 ${isActive ? 'text-white' : 'text-slate-800'}`}>{step.title}</p>
+      <span className={`text-[9px] font-semibold px-1.5 py-0.5 rounded-full ${
+        isActive ? 'bg-white/20 text-white' : step.badgeColor
+      }`}>{step.badge}</span>
+    </button>
+  );
+};
+
 const V2WorkflowChart = () => {
   const [selected, setSelected] = React.useState<number | null>(null);
   const selectedStep = workflowSteps.find(s => s.id === selected);
   const phase1 = workflowSteps.filter(s => s.phase === 1);
   const phase2 = workflowSteps.filter(s => s.phase === 2);
-
-  const NodeCard = ({ step }: { step: typeof workflowSteps[0] }) => {
-    const isBlue = step.phaseColor === 'blue';
-    const isActive = selected === step.id;
-    return (
-      <button
-        onClick={() => setSelected(isActive ? null : step.id)}
-        className={`flex-1 min-w-0 text-left rounded-xl border-2 p-4 transition-all duration-150 cursor-pointer ${
-          isActive
-            ? isBlue
-              ? 'border-blue-500 bg-blue-600 shadow-lg shadow-blue-100'
-              : 'border-violet-500 bg-violet-600 shadow-lg shadow-violet-100'
-            : 'border-slate-200 bg-white hover:border-slate-300 hover:shadow-sm'
-        }`}
-      >
-        <div className={`w-6 h-6 rounded-full flex items-center justify-center font-bold text-[10px] mb-3 ${
-          isActive ? 'bg-white/20 text-white' : isBlue ? 'bg-blue-600 text-white' : 'bg-violet-600 text-white'
-        }`}>{step.id}</div>
-        <p className={`text-xs font-bold leading-tight mb-2 ${isActive ? 'text-white' : 'text-slate-800'}`}>{step.title}</p>
-        <span className={`text-[9px] font-semibold px-1.5 py-0.5 rounded-full ${
-          isActive ? 'bg-white/20 text-white' : step.badgeColor
-        }`}>{step.badge}</span>
-      </button>
-    );
-  };
 
   return (
     <div>
@@ -293,7 +293,11 @@ const V2WorkflowChart = () => {
         <div className="flex items-stretch gap-2">
           {phase1.map((step, i) => (
             <React.Fragment key={step.id}>
-              <NodeCard step={step} />
+              <NodeCard 
+                step={step} 
+                isActive={selected === step.id}
+                onToggle={() => setSelected(selected === step.id ? null : step.id)}
+              />
               {i < phase1.length - 1 && (
                 <div className="flex items-center shrink-0 text-slate-300"><ArrowRight size={16} /></div>
               )}
@@ -316,7 +320,11 @@ const V2WorkflowChart = () => {
         <div className="flex items-stretch gap-2">
           {phase2.map((step, i) => (
             <React.Fragment key={step.id}>
-              <NodeCard step={step} />
+              <NodeCard 
+                step={step} 
+                isActive={selected === step.id}
+                onToggle={() => setSelected(selected === step.id ? null : step.id)}
+              />
               {i < phase2.length - 1 && (
                 <div className="flex items-center shrink-0 text-slate-300"><ArrowRight size={16} /></div>
               )}
@@ -673,19 +681,36 @@ export default function App() {
   const [activeSection, setActiveSection] = useState('roadmap');
 
   useEffect(() => {
-    if (version !== 'v2' || activeTab !== 'architecture') return;
+    // Only set up intersection observers if v2 and architecture tab are active
+    if (version !== 'v2' || activeTab !== 'architecture') {
+      return;
+    }
+
     const ids = ['roadmap', 'workflow', 'schema'];
-    const observers = ids.map(id => {
+    const observers: (IntersectionObserver | null)[] = [];
+
+    ids.forEach(id => {
       const el = document.getElementById(id);
-      if (!el) return null;
+      if (!el) return;
+      
       const obs = new IntersectionObserver(
-        ([entry]) => { if (entry.isIntersecting) setActiveSection(id); },
+        ([entry]) => {
+          if (entry.isIntersecting) {
+            setActiveSection(id);
+          }
+        },
         { rootMargin: '-20% 0px -60% 0px', threshold: 0 }
       );
+      
       obs.observe(el);
-      return obs;
+      observers.push(obs);
     });
-    return () => observers.forEach(o => o?.disconnect());
+
+    return () => {
+      observers.forEach(o => {
+        if (o) o.disconnect();
+      });
+    };
   }, [version, activeTab]);
 
   return (
