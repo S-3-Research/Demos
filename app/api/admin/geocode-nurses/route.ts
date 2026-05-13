@@ -1,19 +1,12 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-)
-
-const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN!
-
-async function geocode(city?: string, state?: string, zip?: string): Promise<[number, number] | null> {
+async function geocode(city?: string, state?: string, zip?: string, mapboxToken?: string): Promise<[number, number] | null> {
   const parts = [city, state, zip].filter(Boolean)
   if (parts.length === 0) return null
 
   const query = encodeURIComponent(parts.join(', ') + ', USA')
-  const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${query}.json?country=US&limit=1&access_token=${MAPBOX_TOKEN}`
+  const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${query}.json?country=US&limit=1&access_token=${mapboxToken}`
 
   try {
     const res = await fetch(url)
@@ -28,6 +21,12 @@ async function geocode(city?: string, state?: string, zip?: string): Promise<[nu
 }
 
 export async function POST() {
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  )
+  const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN!
+
   // Fetch all nurses without coordinates
   const { data: nurses, error } = await supabase
     .from('nurse_applications')
@@ -42,7 +41,7 @@ export async function POST() {
   let failed = 0
 
   for (const nurse of nurses ?? []) {
-    const coords = await geocode(nurse.city, nurse.state, nurse.zip)
+    const coords = await geocode(nurse.city, nurse.state, nurse.zip, MAPBOX_TOKEN)
     if (coords) {
       const { error: updateError } = await supabase
         .from('nurse_applications')
