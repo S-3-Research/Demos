@@ -2,11 +2,6 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { getSessionFromCookie } from '@/lib/nurseSession'
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-)
-
 // 允许更新的字段白名单（防止护士改 status、email_verified 等系统字段）
 const UPDATABLE_FIELDS = [
   'phone', 'role', 'specialty', 'years_experience', 'languages',
@@ -15,7 +10,15 @@ const UPDATABLE_FIELDS = [
 ] as const
 
 /** GET /api/nurse-profile — 读取护士自己的资料 */
+function makeSupabase() {
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  )
+}
+
 export async function GET() {
+  const supabase = makeSupabase()
   const session = await getSessionFromCookie()
   if (!session) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -38,6 +41,7 @@ export async function GET() {
 
 /** PATCH /api/nurse-profile — 更新护士自己的资料 */
 export async function PATCH(req: NextRequest) {
+  const supabase = makeSupabase()
   const session = await getSessionFromCookie()
   if (!session) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })

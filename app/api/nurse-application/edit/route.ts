@@ -2,11 +2,6 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { getSessionFromCookie } from '@/lib/nurseSession'
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-)
-
 // 所有字段 — pending / reviewing / waitlisted 可改
 const ALL_EDITABLE = [
   'phone', 'role', 'specialty', 'years_experience', 'languages',
@@ -20,6 +15,10 @@ const CONTACT_EDITABLE = [
 ] as const
 
 export async function PATCH(req: NextRequest) {
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  )
   const session = await getSessionFromCookie()
   if (!session) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })

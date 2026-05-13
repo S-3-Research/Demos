@@ -2,14 +2,13 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { sendTrainingInviteEmail } from '@/lib/email/sendTrainingInviteEmail'
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-)
-
 const TRAINING_URL_PLACEHOLDER = 'https://training.achieve.org/cohort-4'
 
 export async function POST(req: NextRequest) {
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  )
   const body = await req.json()
   const { id, trainingUrl } = body as { id: string; trainingUrl?: string }
 

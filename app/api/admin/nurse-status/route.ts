@@ -1,11 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-)
-
 // Fields admin is allowed to update directly
 const ALLOWED_FIELDS = new Set([
   'status',
@@ -28,6 +23,10 @@ const ALLOWED_FIELDS = new Set([
 ])
 
 export async function PATCH(req: NextRequest) {
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  )
   const body = await req.json()
   const { id, updates } = body as { id: string; updates: Record<string, unknown> }
 

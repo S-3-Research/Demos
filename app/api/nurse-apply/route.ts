@@ -4,14 +4,13 @@ import { signMagicToken } from '@/lib/nurseToken'
 import { sendVerificationEmail } from '@/lib/email/sendVerificationEmail'
 import { sendAlreadyRegisteredEmail } from '@/lib/email/sendAlreadyRegisteredEmail'
 
-// 使用 service_role key 绕过 RLS，只在服务端使用
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-)
-
 export async function POST(req: NextRequest) {
   try {
+    // 使用 service_role key 绕过 RLS，只在服务端使用
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    )
     const body = await req.json()
 
     const {
