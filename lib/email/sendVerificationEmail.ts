@@ -1,6 +1,5 @@
-import { Resend } from 'resend'
-
-const resend = new Resend(process.env.RESEND_API_KEY)
+import { SendEmailCommand } from '@aws-sdk/client-ses'
+import { sesClient, SES_FROM, SES_REPLY_TO } from './sesClient'
 
 export async function sendVerificationEmail({
   to,
@@ -11,15 +10,18 @@ export async function sendVerificationEmail({
   firstName: string
   magicLink: string
 }) {
-  const { error } = await resend.emails.send({
-    from: 'ACHIEVE <onboarding@resend.dev>',
-    to,
-    subject: 'Confirm your ACHIEVE application',
-    html: buildEmailHtml({ firstName, magicLink }),
-  })
-
-  if (error) {
-    console.error('[sendVerificationEmail] Resend error:', error)
+  try {
+    await sesClient.send(new SendEmailCommand({
+      Source: SES_FROM,
+      Destination: { ToAddresses: [to] },
+      ReplyToAddresses: [SES_REPLY_TO],
+      Message: {
+        Subject: { Data: 'Confirm your ACHIEVE application', Charset: 'UTF-8' },
+        Body: { Html: { Data: buildEmailHtml({ firstName, magicLink }), Charset: 'UTF-8' } },
+      },
+    }))
+  } catch (error) {
+    console.error('[sendVerificationEmail] SES error:', error)
     throw new Error('Failed to send verification email')
   }
 }

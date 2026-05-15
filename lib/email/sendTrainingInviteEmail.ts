@@ -1,6 +1,5 @@
-import { Resend } from 'resend'
-
-const resend = new Resend(process.env.RESEND_API_KEY)
+import { SendEmailCommand } from '@aws-sdk/client-ses'
+import { sesClient, SES_FROM, SES_REPLY_TO } from './sesClient'
 
 export async function sendTrainingInviteEmail({
   to,
@@ -11,15 +10,18 @@ export async function sendTrainingInviteEmail({
   firstName: string
   trainingUrl: string
 }) {
-  const { error } = await resend.emails.send({
-    from: 'ACHIEVE <onboarding@resend.dev>',
-    to,
-    subject: 'Your ACHIEVE Training Has Been Scheduled',
-    html: buildEmailHtml({ firstName, trainingUrl }),
-  })
-
-  if (error) {
-    console.error('[sendTrainingInviteEmail] Resend error:', error)
+  try {
+    await sesClient.send(new SendEmailCommand({
+      Source: SES_FROM,
+      Destination: { ToAddresses: [to] },
+      ReplyToAddresses: [SES_REPLY_TO],
+      Message: {
+        Subject: { Data: 'Your ACHIEVE Training Has Been Scheduled', Charset: 'UTF-8' },
+        Body: { Html: { Data: buildEmailHtml({ firstName, trainingUrl }), Charset: 'UTF-8' } },
+      },
+    }))
+  } catch (error) {
+    console.error('[sendTrainingInviteEmail] SES error:', error)
     throw new Error('Failed to send training invite email')
   }
 }
