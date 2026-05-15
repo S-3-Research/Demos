@@ -1,6 +1,5 @@
-import { Resend } from 'resend'
-
-const resend = new Resend(process.env.RESEND_API_KEY)
+import { SendEmailCommand } from '@aws-sdk/client-ses'
+import { sesClient, SES_FROM, SES_REPLY_TO } from './sesClient'
 
 export async function sendAlreadyRegisteredEmail({
   to,
@@ -11,15 +10,18 @@ export async function sendAlreadyRegisteredEmail({
   firstName: string
   magicLink: string
 }) {
-  const { error } = await resend.emails.send({
-    from: 'ACHIEVE <onboarding@resend.dev>',
-    to,
-    subject: 'You already have an ACHIEVE application',
-    html: buildEmailHtml({ firstName, magicLink }),
-  })
-
-  if (error) {
-    console.error('[sendAlreadyRegisteredEmail] Resend error:', error)
+  try {
+    await sesClient.send(new SendEmailCommand({
+      Source: SES_FROM,
+      Destination: { ToAddresses: [to] },
+      ReplyToAddresses: [SES_REPLY_TO],
+      Message: {
+        Subject: { Data: 'You already have an ACHIEVE application', Charset: 'UTF-8' },
+        Body: { Html: { Data: buildEmailHtml({ firstName, magicLink }), Charset: 'UTF-8' } },
+      },
+    }))
+  } catch (error) {
+    console.error('[sendAlreadyRegisteredEmail] SES error:', error)
     throw new Error('Failed to send email')
   }
 }
