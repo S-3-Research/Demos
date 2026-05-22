@@ -1,71 +1,41 @@
-import { AUTONOMY_CONTROLS } from '../_config'
+const TESTIMONIALS = [
+  { quote: 'It was the best thing I could have done for my career. I finally felt like my skills were being used at their full potential.', attrib: 'RN, Clinical Research Transition', sub: '10-year bedside RN' },
+  { quote: 'Working on something that could potentially change the future of standard care is rewarding.', attrib: 'RN, Decentralized Trials', sub: 'ICU RN — Clinical Research Nurse' },
+  { quote: "It's a very nice way to be able to see the outcomes and improve patient lives.", attrib: 'Research Nurse', sub: 'Community Health RN' },
+]
 
 export default function AutonomySection() {
   return (
-    <section
-      className="autonomy-bg relative py-[100px] px-[72px] max-[600px]:px-6"
-      style={{ background: 'var(--ink)' }}
-    >
-      <div className="max-w-[1160px] mx-auto grid grid-cols-2 gap-[80px] items-start max-[1000px]:grid-cols-1 max-[1000px]:gap-12">
-        {/* Left */}
-        <div>
-          <div
-            className="inline-block font-barlow font-bold text-[10px] tracking-[.26em] uppercase mb-6 px-3 py-2 border rounded-[2px]"
-            style={{
-              color: 'var(--teal-light)',
-              borderColor: 'rgba(11,110,120,0.3)',
-              background: 'rgba(11,110,120,0.1)',
-            }}
-          >
-            The Real Difference
+    <section className="py-[60px] px-6 bg-[#f7f9fb]">
+      <div className="max-w-[1100px] mx-auto grid grid-cols-[280px_1fr] gap-10 items-start">
+        {/* Built for nurses card */}
+        <div className="bg-[#0d2a3f] rounded-[14px] px-6 py-7 text-white">
+          <h3 className="font-[family-name:var(--font-display,'DM_Serif_Display',Georgia,serif)] text-[1.3rem] mb-4 leading-[1.2]">
+            Built for Nurses Ready to Do More.
+          </h3>
+          <div className="bg-[#d4920a] rounded-lg px-4 py-[14px] mb-4 flex items-center gap-[10px]">
+            <div className="font-[family-name:var(--font-display,'DM_Serif_Display',Georgia,serif)] text-[2rem] text-[#0d2a3f] leading-none font-black">30</div>
+            <div className="text-[13px] text-[#0d2a3f] font-semibold leading-[1.3]">Inaugural sponsored seats — full tuition covered.</div>
           </div>
-
-          <p
-            className="font-cormorant font-bold leading-[.95] mb-6"
-            style={{ fontSize: 'clamp(38px, 4.5vw, 64px)', color: 'var(--cream)' }}
-          >
-            You are in{' '}
-            <em className="block" style={{ color: 'var(--teal-light)' }}>control.</em>
-          </p>
-
-          <div className="w-9 h-px mb-7" style={{ background: 'var(--teal)' }} />
-
-          <p className="text-[15px] leading-[1.75]" style={{ color: 'var(--muted)' }}>
-            ACHIEVE is structured to fit alongside your existing clinical role — virtual, self-paced,
-            and designed for practicing nurses. You decide the pace and the level of engagement.
-          </p>
+          <p className="text-[13px] text-white/70 leading-[1.5]">All applicants automatically waitlisted for future funded cohorts — no need to reapply.</p>
         </div>
 
-        {/* Right — control list */}
-        <div
-          className="border rounded-[2px] overflow-hidden"
-          style={{ borderColor: 'rgba(255,255,255,0.06)' }}
-        >
-          {AUTONOMY_CONTROLS.map((item, i) => (
-            <div
-              key={item.title}
-              className="flex items-start gap-4 px-6 py-5 border-b last:border-b-0 transition-colors duration-200 hover:bg-[rgba(11,110,120,0.06)]"
-              style={{ borderColor: 'rgba(255,255,255,0.06)' }}
-            >
-              <div
-                className="w-[42px] h-[42px] flex-shrink-0 flex items-center justify-center rounded-[2px] text-[18px]"
-                style={{ background: 'var(--teal-pale)', border: '1px solid rgba(11,110,120,0.25)' }}
-              >
-                {item.icon}
+        {/* Testimonials */}
+        <div>
+          <div className="text-[11px] font-bold tracking-[0.1em] uppercase text-[#d4920a] mb-4">
+            What Nurses Are Saying
+          </div>
+          <div className="grid grid-cols-3 gap-4">
+            {TESTIMONIALS.map((t) => (
+              <div key={t.attrib} className="bg-white rounded-xl p-5 border border-[#e8eef2]">
+                <div className="text-[32px] text-[#1a6b7a] leading-[0.8] mb-2">&ldquo;</div>
+                <p className="text-[13px] italic text-[#1a2a38] leading-[1.6] mb-3">{t.quote}</p>
+                <div className="text-[12px] text-[#6b7c8d] font-semibold">
+                  — {t.attrib}<br />{t.sub}
+                </div>
               </div>
-              <div>
-                <p
-                  className="font-barlow font-bold text-[13px] tracking-[.1em] uppercase mb-1"
-                  style={{ color: 'white' }}
-                >
-                  {item.title}
-                </p>
-                <p className="text-[13px] leading-[1.5]" style={{ color: 'var(--muted)' }}>
-                  {item.desc}
-                </p>
-              </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
     </section>

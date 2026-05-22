@@ -31,24 +31,20 @@ export default async function EditPage() {
   const isSelectedLimited = app.status === 'selected'
 
   return (
-    <div style={{ minHeight: '100vh', background: '#040E1B', color: 'white' }}>
+    <div className="min-h-screen bg-[#071828] text-white">
       {/* Header */}
-      <header
-        className="sticky top-0 z-[100] flex items-center justify-between px-12 max-[860px]:px-6 py-4 border-b"
-        style={{ background: 'var(--ink-mid)', borderColor: 'rgba(232,168,32,0.12)' }}
-      >
+      <header className="sticky top-0 z-[100] bg-[#0a1f30] border-b border-white/[0.07] flex items-center justify-between px-12 py-[14px]">
         <div>
-          <div className="font-cormorant font-bold text-[20px] tracking-[.05em]" style={{ color: 'var(--gold-bright)' }}>
+          <div className="font-[family-name:var(--font-display,'DM_Serif_Display',Georgia,serif)] text-xl text-white font-bold">
             ACHIEVE
           </div>
-          <div className="font-barlow font-bold text-[10px] tracking-[.22em] uppercase" style={{ color: 'var(--teal-light)' }}>
+          <div className="text-[10px] font-bold tracking-[0.22em] uppercase text-[#1a8c9e]">
             Update Your Application
           </div>
         </div>
         <Link
           href="/nurse-match/status"
-          className="font-barlow font-bold text-[11px] tracking-[.16em] uppercase transition-colors hover:text-white"
-          style={{ color: 'rgba(255,255,255,0.35)' }}
+          className="text-[11px] font-bold tracking-[0.16em] uppercase text-white/35 no-underline"
         >
           ← Back to Status
         </Link>
@@ -58,14 +54,11 @@ export default async function EditPage() {
 
         {/* Selected-mode notice */}
         {isSelectedLimited && (
-          <div
-            className="mb-8 px-5 py-4 border rounded-[2px]"
-            style={{ background: 'rgba(232,168,32,0.05)', borderColor: 'rgba(232,168,32,0.2)' }}
-          >
-            <p className="font-barlow font-bold text-[11px] tracking-[.16em] uppercase mb-1" style={{ color: 'var(--gold-bright)' }}>
+          <div className="bg-[rgba(212,146,10,0.07)] border border-[rgba(212,146,10,0.22)] rounded-lg px-5 py-4 mb-7">
+            <p className="text-[11px] font-bold tracking-[0.16em] uppercase text-[#d4920a] mb-1">
               Limited editing — application selected
             </p>
-            <p className="text-[13px] leading-[1.5]" style={{ color: 'rgba(255,255,255,0.5)' }}>
+            <p className="text-[13px] leading-relaxed text-white/45">
               You can update your contact info and availability. Qualification fields are locked.
             </p>
           </div>
@@ -73,14 +66,11 @@ export default async function EditPage() {
 
         {/* Reviewing notice */}
         {app.status === 'reviewing' && (
-          <div
-            className="mb-8 px-5 py-4 border rounded-[2px]"
-            style={{ background: 'rgba(11,110,120,0.07)', borderColor: 'rgba(11,110,120,0.25)' }}
-          >
-            <p className="font-barlow font-bold text-[11px] tracking-[.16em] uppercase mb-1" style={{ color: 'var(--teal-light)' }}>
+          <div className="bg-[rgba(26,140,158,0.07)] border border-[rgba(26,140,158,0.22)] rounded-lg px-5 py-4 mb-7">
+            <p className="text-[11px] font-bold tracking-[0.16em] uppercase text-[#1a8c9e] mb-1">
               Currently under review
             </p>
-            <p className="text-[13px] leading-[1.5]" style={{ color: 'rgba(255,255,255,0.5)' }}>
+            <p className="text-[13px] leading-relaxed text-white/45">
               Saving changes will move your application back to <strong className="text-white">pending</strong> review.
             </p>
           </div>

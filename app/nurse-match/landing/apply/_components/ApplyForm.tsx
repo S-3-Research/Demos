@@ -25,32 +25,25 @@ function collectForm(form: HTMLFormElement): StepData {
 
 function FieldLabel({ children }: { children: React.ReactNode }) {
   return (
-    <label
-      className="font-barlow font-bold text-[11px] tracking-[.16em] uppercase block mb-[7px]"
-      style={{ color: 'rgba(255,255,255,0.55)' }}
-    >
+    <label className="font-bold text-[11px] tracking-[.16em] uppercase block mb-[7px] text-white/45">
       {children}
     </label>
   )
 }
 
-const inputClass = `w-full rounded-[2px] px-4 py-[13px] text-[15px] font-dm text-white outline-none
-  transition-all duration-200 border
-  focus:border-[var(--teal-light)] focus:bg-[rgba(11,110,120,0.06)]`
-const inputStyle = {
-  background: 'rgba(255,255,255,0.04)',
-  borderColor: 'rgba(255,255,255,0.1)',
-}
+const inputClass = `w-full rounded-[6px] px-4 py-[13px] text-[15px] text-white outline-none
+  transition-all duration-200 border border-white/10 bg-white/5
+  focus:border-[#1a8c9e] focus:ring-2 focus:ring-[#1a8c9e]/10`
 
 function TextInput(props: React.InputHTMLAttributes<HTMLInputElement>) {
-  return <input className={inputClass} style={inputStyle} {...props} />
+  return <input className={inputClass} {...props} />
 }
 
 function SelectInput(props: React.SelectHTMLAttributes<HTMLSelectElement>) {
   return (
     <select
       className={`${inputClass} appearance-none`}
-      style={{ ...inputStyle, background: 'rgba(255,255,255,0.04)' }}
+      style={{ colorScheme: 'dark' }}
       {...props}
     />
   )
@@ -61,26 +54,21 @@ function RadioOption({
 }: { name: string; value: string; label: string; desc?: string; full?: boolean }) {
   return (
     <label
-      className={`flex items-start gap-3 px-4 py-[14px] border rounded-[2px] cursor-pointer
-        transition-all duration-200 has-[:checked]:bg-[rgba(11,110,120,0.1)]
-        has-[:checked]:border-[rgba(11,110,120,0.4)] hover:bg-[rgba(11,110,120,0.07)]
-        hover:border-[rgba(11,110,120,0.25)] ${full ? 'col-span-full' : ''}`}
-      style={{
-        background: 'rgba(255,255,255,0.03)',
-        borderColor: 'rgba(255,255,255,0.08)',
-      }}
+      className={`flex items-start gap-3 px-4 py-[14px] border rounded-[6px] cursor-pointer
+        transition-all duration-200 bg-white/[0.03] border-white/[0.08]
+        has-[:checked]:bg-[#1a8c9e]/10 has-[:checked]:border-[#1a8c9e]/40
+        hover:bg-[#1a8c9e]/[0.06] hover:border-[#1a8c9e]/25 ${full ? 'col-span-full' : ''}`}
     >
       <input
         type="radio"
         name={name}
         value={value}
-        className="mt-[2px] accent-[var(--teal-light)] flex-shrink-0"
-        style={{ width: '16px', height: '16px' }}
+        className="mt-[2px] flex-shrink-0 w-4 h-4 accent-[#1a8c9e]"
       />
-      <span className="text-[14px] leading-[1.45]" style={{ color: 'rgba(255,255,255,0.75)' }}>
+      <span className="text-[14px] leading-[1.45] text-white/60">
         {desc ? (
           <>
-            <strong className="block text-white mb-[2px]">{label}</strong>
+            <strong className="block mb-[2px] text-white">{label}</strong>
             {desc}
           </>
         ) : label}
@@ -92,23 +80,18 @@ function RadioOption({
 function CheckboxOption({ name, value, label }: { name: string; value: string; label: string }) {
   return (
     <label
-      className="flex items-center gap-[10px] px-3 py-[11px] border rounded-[2px] cursor-pointer
-        transition-all duration-200 has-[:checked]:bg-[rgba(11,110,120,0.1)]
-        has-[:checked]:border-[rgba(11,110,120,0.4)] hover:bg-[rgba(11,110,120,0.07)]
-        hover:border-[rgba(11,110,120,0.25)]"
-      style={{
-        background: 'rgba(255,255,255,0.03)',
-        borderColor: 'rgba(255,255,255,0.08)',
-      }}
+      className="flex items-center gap-[10px] px-3 py-[11px] border rounded-[6px] cursor-pointer
+        transition-all duration-200 bg-white/[0.03] border-white/[0.08]
+        has-[:checked]:bg-[#1a8c9e]/10 has-[:checked]:border-[#1a8c9e]/40
+        hover:bg-[#1a8c9e]/[0.06] hover:border-[#1a8c9e]/25"
     >
       <input
         type="checkbox"
         name={name}
         value={value}
-        className="accent-[var(--teal-light)] flex-shrink-0"
-        style={{ width: '15px', height: '15px' }}
+        className="flex-shrink-0 w-[15px] h-[15px] accent-[#1a8c9e]"
       />
-      <span className="text-[13px] leading-none" style={{ color: 'rgba(255,255,255,0.75)' }}>
+      <span className="text-[13px] leading-none text-white/60">
         {label}
       </span>
     </label>
@@ -155,21 +138,16 @@ export default function ApplyForm({
 function SectionHeader({ step, title, sub }: { step: string; title: React.ReactNode; sub: string }) {
   return (
     <div className="mb-8">
-      <p
-        className="font-barlow font-bold text-[10px] tracking-[.26em] uppercase mb-[10px]"
-        style={{ color: 'var(--teal-light)' }}
-      >
+      <p className="font-bold text-[10px] tracking-[.26em] uppercase mb-[10px] text-[#1a8c9e]">
         {step}
       </p>
       <h2
-        className="font-cormorant font-bold leading-[1.08] tracking-[-0.02em] mb-[6px]"
-        style={{ fontSize: 'clamp(26px, 3vw, 38px)', color: 'var(--cream)' }}
+        className="font-normal leading-[1.08] tracking-[-0.02em] mb-[6px] text-white"
+        style={{ fontFamily: 'var(--font-display, "DM Serif Display", Georgia, serif)', fontSize: 'clamp(26px, 3vw, 38px)' }}
       >
         {title}
       </h2>
-      <p className="text-[14px] leading-[1.6]" style={{ color: 'rgba(255,255,255,0.5)' }}>
-        {sub}
-      </p>
+      <p className="text-[14px] leading-[1.6] text-white/50">{sub}</p>
     </div>
   )
 }
@@ -188,13 +166,9 @@ function NavButtons({
           type="submit"
           disabled={disabled}
           className="btn-shimmer rounded-[2px] px-12 py-[18px] font-barlow font-black
-            text-[14px] tracking-[.2em] uppercase transition-all duration-200
-            hover:translate-y-[-2px] disabled:opacity-50 disabled:cursor-not-allowed"
-          style={{
-            background: 'linear-gradient(135deg, var(--gold), var(--gold-bright))',
-            color: 'var(--ink)',
-            boxShadow: '0 6px 28px rgba(196,154,26,.4)',
-          }}
+            text-[14px] tracking-[.2em] uppercase transition-all duration-200 bg-[#d4920a] text-[#071828]
+            hover:-translate-y-[2px] disabled:opacity-50 disabled:cursor-not-allowed"
+          style={{ boxShadow: '0 6px 28px rgba(212,146,10,0.3)' }}
         >
           {disabled ? 'Submitting…' : submitLabel}
         </button>
@@ -202,12 +176,9 @@ function NavButtons({
         <button
           type="submit"
           className="btn-shimmer rounded-[2px] px-9 py-4 font-barlow font-black
-            text-[13px] tracking-[.2em] uppercase text-white transition-all duration-200
-            hover:translate-y-[-2px]"
-          style={{
-            background: 'linear-gradient(135deg, var(--teal), var(--teal-light))',
-            boxShadow: '0 6px 24px rgba(11,110,120,.35)',
-          }}
+            text-[13px] tracking-[.2em] uppercase text-white transition-all duration-200 bg-[#1a8c9e]
+            hover:-translate-y-[2px]"
+          style={{ boxShadow: '0 6px 24px rgba(26,140,158,0.25)' }}
         >
           Continue →
         </button>
@@ -218,8 +189,7 @@ function NavButtons({
           onClick={onBack}
           className="px-5 py-3 font-barlow font-bold text-[12px] tracking-[.14em] uppercase
             bg-transparent border-none cursor-pointer transition-colors duration-200
-            hover:text-white"
-          style={{ color: 'rgba(255,255,255,0.4)' }}
+            hover:text-white text-white/40"
         >
           ← Back
         </button>
@@ -233,7 +203,7 @@ function StepIdentity({ onNext }: { onNext: (data: StepData) => void }) {
     <form className="form-section-enter" onSubmit={(e) => { e.preventDefault(); onNext(collectForm(e.currentTarget)) }}>
       <SectionHeader
         step="Step 1 of 5"
-        title={<>Let&apos;s start with <em style={{ color: 'var(--gold-bright)' }}>you.</em></>}
+        title={<>Let&apos;s start with <em style={{ color: '#d4920a' }}>you.</em></>}
         sub="Simple details to begin your application."
       />
       <div className="flex flex-col gap-5 mb-8">
@@ -254,7 +224,7 @@ function StepBackground({ onNext, onBack }: { onNext: (data: StepData) => void; 
     <form className="form-section-enter" onSubmit={(e) => { e.preventDefault(); onNext(collectForm(e.currentTarget)) }}>
       <SectionHeader
         step="Step 2 of 5"
-        title={<>Your professional <em style={{ color: 'var(--gold-bright)' }}>background.</em></>}
+        title={<>Your professional <em style={{ color: '#d4920a' }}>background.</em></>}
         sub="We select nurses across a wide range of specialties and experience levels."
       />
       <div className="flex flex-col gap-5 mb-8">
@@ -301,7 +271,7 @@ function StepLocation({ onNext, onBack }: { onNext: (data: StepData) => void; on
     <form className="form-section-enter" onSubmit={(e) => { e.preventDefault(); onNext(collectForm(e.currentTarget)) }}>
       <SectionHeader
         step="Step 3 of 5"
-        title={<>Where you <em style={{ color: 'var(--gold-bright)' }}>practice.</em></>}
+        title={<>Where you <em style={{ color: '#d4920a' }}>practice.</em></>}
         sub="Location helps us match you to active priority areas and cohort allocations near you."
       />
       <div className="flex flex-col gap-5 mb-8">
@@ -335,7 +305,7 @@ function StepMotivation({ onNext, onBack }: { onNext: (data: StepData) => void; 
     <form className="form-section-enter" onSubmit={(e) => { e.preventDefault(); onNext(collectForm(e.currentTarget)) }}>
       <SectionHeader
         step="Step 4 of 5"
-        title={<>What draws you <em style={{ color: 'var(--gold-bright)' }}>here.</em></>}
+        title={<>What draws you <em style={{ color: '#d4920a' }}>here.</em></>}
         sub="No right or wrong answers. This helps us understand what matters most to you."
       />
       <div className="flex flex-col gap-5 mb-8">
@@ -349,7 +319,6 @@ function StepMotivation({ onNext, onBack }: { onNext: (data: StepData) => void; 
             rows={4}
             placeholder="Share as much or as little as you'd like..."
             className={`${inputClass} resize-y min-h-[90px] leading-[1.6]`}
-            style={inputStyle}
           />
         </div>
         <div>
@@ -388,7 +357,7 @@ function StepAvailability({
     >
       <SectionHeader
         step="Step 5 of 5"
-        title={<>How this fits <em style={{ color: 'var(--gold-bright)' }}>your life.</em></>}
+        title={<>How this fits <em style={{ color: '#d4920a' }}>your life.</em></>}
         sub="This program is designed around your schedule. There's no wrong answer here."
       />
       <div className="flex flex-col gap-5 mb-8">
@@ -412,17 +381,8 @@ function StepAvailability({
         </div>
 
         {/* Preview */}
-        <div
-          className="p-[22px] rounded-[2px] border"
-          style={{
-            background: 'rgba(232,168,32,0.05)',
-            borderColor: 'rgba(232,168,32,0.15)',
-          }}
-        >
-          <p
-            className="font-barlow font-bold text-[10px] tracking-[.22em] uppercase mb-[14px]"
-            style={{ color: 'var(--gold-bright)' }}
-          >
+        <div className="p-[22px] rounded-[8px] border bg-[#d4920a]/[0.06] border-[#d4920a]/20">
+          <p className="font-bold text-[10px] tracking-[.22em] uppercase mb-[14px] text-[#d4920a]">
             Selected nurses receive:
           </p>
           <div className="flex flex-col gap-2">
@@ -432,8 +392,8 @@ function StepAvailability({
               'Paid, project-based clinical research opportunities',
               'A pathway to elevate your nursing career — on your terms',
             ].map((item) => (
-              <div key={item} className="flex items-start gap-[10px] text-[13px]" style={{ color: 'rgba(255,255,255,0.65)' }}>
-                <span className="flex-shrink-0" style={{ color: 'var(--gold-bright)' }}>◆</span>
+              <div key={item} className="flex items-start gap-[10px] text-[13px] text-white/55">
+                <span className="flex-shrink-0 text-[#d4920a]">◆</span>
                 {item}
               </div>
             ))}
@@ -444,12 +404,12 @@ function StepAvailability({
       <NavButtons onBack={onBack} submitLabel="Submit Application for Selection →" disabled={submitting} />
 
       {submitError && (
-        <p className="text-[13px] mt-3" style={{ color: 'rgba(255,100,100,0.8)' }}>
+        <p className="text-[13px] mt-3 text-[#f87171]">
           ⚠ {submitError}
         </p>
       )}
 
-      <p className="text-[11px] leading-[1.5] mt-[14px]" style={{ color: 'rgba(255,255,255,0.25)' }}>
+      <p className="text-[11px] leading-[1.5] mt-[14px] text-white/25">
         Selection is limited and reviewed on a rolling basis. Early applicants are prioritized.
         Additional qualified nurses may be invited to enroll at standard tuition.
       </p>
@@ -460,53 +420,49 @@ function StepAvailability({
 function Confirmation() {
   return (
     <div className="text-center px-10 py-[60px]">
-      <div className="text-[56px] mb-5">✦</div>
+      <div className="text-[56px] mb-5" style={{ color: '#d4920a' }}>✦</div>
       <h2
-        className="font-cormorant font-bold leading-none tracking-[-0.02em] mb-3"
-        style={{ fontSize: 'clamp(36px, 4vw, 52px)', color: 'var(--cream)' }}
+        className="font-bold leading-none tracking-[-0.02em] mb-3"
+        style={{ fontFamily: 'var(--font-display, "DM Serif Display", Georgia, serif)', fontSize: 'clamp(36px, 4vw, 52px)', color: 'white', fontWeight: 400 }}
       >
         Application{' '}
-        <em style={{ color: 'var(--teal-light)' }}>Received.</em>
+        <em style={{ color: '#1a8c9e' }}>Received.</em>
       </h2>
-      <p className="text-[16px] leading-[1.7] max-w-[520px] mx-auto mb-6" style={{ color: 'rgba(255,255,255,0.55)' }}>
+      <p className="text-[16px] leading-[1.7] max-w-[520px] mx-auto mb-6" style={{ color: 'rgba(255,255,255,0.5)' }}>
         Thank you for applying. Your application has been received and will be reviewed as part of
         our rolling selection process.
       </p>
       <div
-        className="inline-block font-barlow font-bold text-[12px] tracking-[.16em] uppercase
-          px-5 py-[10px] rounded-[2px] border mb-8"
+        className="inline-block font-bold text-[12px] tracking-[.16em] uppercase
+          px-5 py-[10px] rounded-[6px] border mb-8"
         style={{
-          background: 'rgba(11,110,120,0.1)',
-          borderColor: 'rgba(11,110,120,0.25)',
-          color: 'var(--teal-light)',
+          background: 'rgba(26,140,158,0.08)',
+          borderColor: 'rgba(26,140,158,0.25)',
+          color: '#1a8c9e',
         }}
       >
         Early applicants are reviewed first — you&apos;re ahead.
       </div>
       <div className="flex flex-col gap-[10px] max-w-[400px] mx-auto mb-8">
         {[
-          { icon: '📬', text: <>You&apos;ll receive a confirmation email shortly. <strong className="text-white">Check your inbox.</strong></> },
-          { icon: '⏱', text: <>Selections are reviewed on a <strong className="text-white">rolling basis.</strong> Early applicants are prioritized.</> },
-          { icon: '✦', text: <>If selected, you&apos;ll be notified with next steps to begin your <strong className="text-white">Research-Ready Nurse™ training.</strong></> },
+          { icon: '📬', text: <>You&apos;ll receive a confirmation email shortly. <strong style={{ color: 'white' }}>Check your inbox.</strong></> },
+          { icon: '⏱', text: <>Selections are reviewed on a <strong style={{ color: 'white' }}>rolling basis.</strong> Early applicants are prioritized.</> },
+          { icon: '✦', text: <>If selected, you&apos;ll be notified with next steps to begin your <strong style={{ color: 'white' }}>Research-Ready Nurse™ training.</strong></> },
         ].map((item, i) => (
           <div
             key={i}
-            className="flex items-start gap-3 px-4 py-3 text-left border rounded-[2px]"
-            style={{
-              background: 'rgba(255,255,255,0.03)',
-              borderColor: 'rgba(255,255,255,0.06)',
-            }}
+            className="flex items-start gap-3 px-4 py-3 text-left border rounded-[8px] bg-white/[0.04] border-white/[0.08]"
           >
-            <span className="text-[16px] flex-shrink-0" style={{ color: 'var(--gold-bright)' }}>{item.icon}</span>
-            <span className="text-[14px] leading-[1.5]" style={{ color: 'rgba(255,255,255,0.65)' }}>{item.text}</span>
+            <span className="text-[16px] flex-shrink-0" style={{ color: '#d4920a' }}>{item.icon}</span>
+            <span className="text-[14px] leading-[1.5]" style={{ color: 'rgba(255,255,255,0.55)' }}>{item.text}</span>
           </div>
         ))}
       </div>
       <Link
         href="/nurse-match/landing"
-        className="font-barlow font-bold text-[12px] tracking-[.16em] uppercase
-          transition-colors duration-200 hover:text-[var(--gold-bright)]"
-        style={{ color: 'var(--muted)' }}
+        className="font-bold text-[12px] tracking-[.16em] uppercase
+          transition-colors duration-200 hover:text-white"
+        style={{ color: 'rgba(255,255,255,0.35)' }}
       >
         ← Return to Overview
       </Link>

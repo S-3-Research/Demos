@@ -1,85 +1,54 @@
-import { STEPS } from '../_config'
+'use client'
+import { useState } from 'react'
+
+const FAQ_LEFT = [
+  { q: 'Who is eligible to apply?', a: 'Active U.S.-based RNs and NPs are welcome to apply. Nurses from all backgrounds — including bedside, community health, home health, infusion, oncology, ICU, med-surg, and public health — are encouraged to apply. No prior research experience is required.' },
+  { q: 'Is this a job?', a: 'No. This is a sponsored training program that certifies you and makes you eligible for paid, project-based clinical research opportunities. You decide when and how often you participate based on your availability.' },
+  { q: 'Are there paid opportunities?', a: 'Yes. Once certified, you become eligible for paid local research opportunities. Opportunities vary by geography, specialty, and study availability. You are matched to nearby opportunities — no searching required.' },
+  { q: 'Can I be contacted for local or nearby opportunities?', a: 'Yes. Once you complete the program and earn your Research-Ready Nurse™ certificate, you can be matched directly to nearby research opportunities in your community.' },
+  { q: 'Do I have to leave my current job?', a: 'No. The program is designed to fit around your existing nursing role. Training is virtual, self-paced, and asynchronous. Research opportunities are project-based and flexible.' },
+]
+
+const FAQ_RIGHT = [
+  { q: 'Do I need prior research experience?', a: 'No prior research experience is required. Nurses with or without research experience may apply. Selection is based on clinical background, readiness, geography, specialty, availability, and alignment with study needs.' },
+  { q: 'Is the $3,000 tuition really covered?', a: 'Yes. For the first 30 selected nurses, tuition is fully covered — a $3,000 value. There is no cost to apply or to complete the program if selected for a sponsored seat.' },
+  { q: 'How are nurses selected?', a: 'Selection is based on specialty, geography, availability, language skills, readiness, and alignment with current or future clinical research needs. Applications are reviewed on a rolling basis — early applicants receive priority consideration.' },
+  { q: 'What if I don’t get one of the sponsored seats?', a: 'You are still in the pipeline. Every nurse who applies is automatically considered for current and future funded cohorts — no need to reapply. As new cohorts open, qualified nurses may be invited into fully funded scholarship spots.' },
+  { q: 'How long does the training take?', a: 'Training is 8–10 hours total, delivered virtually and asynchronously. You complete it on your own schedule — no set class times, no live sessions required.' },
+]
+
+function FaqItem({ q, a }: { q: string; a: string }) {
+  const [open, setOpen] = useState(false)
+  return (
+    <div className="border-b border-[#e8eef2]">
+      <button
+        onClick={() => setOpen(!open)}
+        className="w-full text-left bg-transparent border-none py-4 text-[14px] font-semibold text-[#0d2a3f] cursor-pointer flex justify-between items-center gap-3"
+      >
+        {q}
+        <span
+          className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] shrink-0 transition-all duration-200 ${
+            open ? 'bg-[#1a6b7a] text-white rotate-180' : 'bg-[#e8eef2] text-[#0d2a3f]'
+          }`}
+        >&#9660;</span>
+      </button>
+      {open && (
+        <div className="text-[13px] text-[#6b7c8d] leading-[1.7] pb-4">{a}</div>
+      )}
+    </div>
+  )
+}
 
 export default function StepsSection() {
   return (
-    <section className="py-[100px] px-[72px] max-[600px]:px-6" style={{ background: 'var(--ink)' }}>
-      <div className="max-w-[1160px] mx-auto">
-        <div
-          className="inline-block font-barlow font-bold text-[10px] tracking-[.26em] uppercase mb-6 px-3 py-2 border rounded-[2px]"
-          style={{
-            color: 'var(--teal-light)',
-            borderColor: 'rgba(11,110,120,0.3)',
-            background: 'rgba(11,110,120,0.1)',
-          }}
-        >
-          The Path
-        </div>
-
-        <h2
-          className="font-cormorant font-bold leading-[.95] tracking-[-0.02em] mb-3"
-          style={{ fontSize: 'clamp(38px, 4.5vw, 62px)', color: 'white' }}
-        >
-          Apply. Get Selected.{' '}
-          <em style={{ color: 'var(--gold-bright)', fontStyle: 'italic' }}>Step In.</em>
+    <section className="py-[60px] px-6 bg-[#f7f9fb]">
+      <div className="max-w-[1100px] mx-auto">
+        <h2 className="font-[family-name:var(--font-display,'DM_Serif_Display',Georgia,serif)] text-[clamp(1.5rem,3vw,2rem)] text-[#0d2a3f] text-center mb-10">
+          Frequently Asked Questions
         </h2>
-
-        <div className="w-9 h-px mb-10" style={{ background: 'var(--teal)' }} />
-
-        {/* Steps row — matches original: gradient connector line, ink-mid ring shadow on nodes */}
-        <div
-          className="steps-layout"
-        >
-          {/* Connector line: teal → gold → teal, sits at top:28px (node center) */}
-          <div
-            className="steps-connector absolute z-0"
-            style={{
-              top: '28px',
-              left: '10%',
-              right: '10%',
-              height: '1px',
-              background: 'linear-gradient(90deg, var(--teal), var(--gold-bright), var(--teal))',
-            }}
-          />
-
-          {STEPS.map((step, i) => (
-            <div key={step.num} className="text-center relative z-[1] px-2">
-              {/* Node — ink-mid ring shadow punches through the connector line */}
-              <div
-                className={`w-14 h-14 rounded-full border flex items-center justify-center mx-auto mb-3
-                  font-cormorant font-bold text-[20px] leading-none transition-all duration-300
-                  ${i === 0 ? 'step-node-glow' : ''}`}
-                style={{
-                  background: i === 0
-                    ? 'linear-gradient(135deg, var(--teal), var(--teal-light))'
-                    : 'var(--ink)',
-                  borderColor: i === 0 ? 'var(--teal-light)' : 'rgba(11,110,120,0.3)',
-                  color: i === 0 ? 'white' : 'var(--teal-light)',
-                  boxShadow: '0 0 0 7px var(--ink)',
-                }}
-              >
-                {step.num}
-              </div>
-              <p
-                className="font-barlow font-extrabold text-[12px] tracking-[.08em] uppercase mb-[5px]"
-                style={{ color: 'white' }}
-              >
-                {step.title}
-              </p>
-              <p className="text-[11px] leading-[1.45]" style={{ color: 'var(--muted)' }}>
-                {step.desc}
-              </p>
-              <span
-                className="inline-block font-barlow font-bold text-[9px] tracking-[.1em] uppercase
-                  px-2 py-[2px] rounded-[1px] mt-[5px]"
-                style={{
-                  background: 'var(--teal-pale)',
-                  color: 'var(--teal-light)',
-                }}
-              >
-                {step.tag}
-              </span>
-            </div>
-          ))}
+        <div className="grid grid-cols-2 gap-x-10">
+          <div>{FAQ_LEFT.map((item) => <FaqItem key={item.q} q={item.q} a={item.a} />)}</div>
+          <div>{FAQ_RIGHT.map((item) => <FaqItem key={item.q} q={item.q} a={item.a} />)}</div>
         </div>
       </div>
     </section>

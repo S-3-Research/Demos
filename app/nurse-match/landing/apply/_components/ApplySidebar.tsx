@@ -6,70 +6,57 @@ export default function ApplySidebar() {
     <aside className="sticky top-[140px] max-[860px]:static space-y-4">
       {/* Countdown urgency */}
       <div
-        className="border rounded-[2px] p-4"
-        style={{
-          background: 'rgba(11,110,120,0.08)',
-          borderColor: 'rgba(11,110,120,0.2)',
-        }}
+        className="border rounded-[8px] p-4 bg-[#1a8c9e]/[0.07] border-[#1a8c9e]/20"
       >
         <p
-          className="font-barlow font-extrabold text-[11px] tracking-[.18em] uppercase mb-[10px]"
-          style={{ color: 'var(--teal-light)' }}
+          className="font-extrabold text-[11px] tracking-[.18em] uppercase mb-[10px] text-[#1a8c9e]"
         >
           ◆ Cohort 4 Closes In
         </p>
         <Countdown size="sm" />
-        <p className="text-[11px] leading-[1.5] mt-2" style={{ color: 'rgba(255,255,255,0.38)' }}>
+        <p className="text-[11px] leading-[1.5] mt-2 text-white/30">
           Seats are limited and highly competitive. Early applicants are reviewed first.
         </p>
       </div>
 
       {/* Sponsored card */}
       <div
-        className="rounded-[2px] overflow-hidden"
-        style={{
-          background: 'var(--cream)',
-          boxShadow: '0 0 0 1px rgba(196,154,26,.3), 0 20px 48px rgba(0,0,0,.5)',
-        }}
+        className="rounded-[8px] overflow-hidden border bg-[#0c2236] border-white/[0.08]"
       >
         <div
-          className="card-hd-line relative px-5 py-5 border-b overflow-hidden"
-          style={{
-            background: 'linear-gradient(135deg, var(--ink), var(--ink-light))',
-            borderColor: 'rgba(232,168,32,0.15)',
-          }}
+          className="relative px-5 py-5 border-b bg-[#0d2a3f] border-[#d4920a]/15"
         >
           <p
-            className="font-barlow font-bold text-[10px] tracking-[.22em] uppercase mb-2"
-            style={{ color: 'var(--teal-light)' }}
+            className="font-bold text-[10px] tracking-[.22em] uppercase mb-2 text-[#1a8c9e]"
           >
             ◆ Sponsored Program
           </p>
           <p
-            className="font-barlow font-bold text-[10px] tracking-[.2em] uppercase mb-1"
-            style={{ color: 'rgba(255,255,255,0.35)' }}
+            className="font-bold text-[10px] tracking-[.2em] uppercase mb-1"
+            style={{ color: 'rgba(255,255,255,0.5)' }}
           >
             Certification Value
           </p>
           <div className="flex items-baseline gap-2 mb-[6px]">
             <span
-              className="font-cormorant font-bold text-[36px] leading-none"
+              className="font-bold text-[36px] leading-none"
               style={{
-                color: 'var(--gold-bright)',
+                fontFamily: 'var(--font-display, "DM Serif Display", Georgia, serif)',
+                color: '#d4920a',
                 textDecoration: 'line-through',
-                textDecorationColor: 'rgba(232,168,32,0.4)',
+                textDecorationColor: 'rgba(212,146,10,0.5)',
               }}
             >
               {COHORT.tuitionValue}
             </span>
             <span
-              className="font-barlow font-black text-[18px] tracking-[.06em] uppercase"
-              style={{ color: 'var(--cream)' }}
+              className="font-black text-[18px] tracking-[.06em] uppercase"
+              style={{ color: 'white' }}
             >
               Covered.
             </span>
           </div>
-          <p className="text-[11px] italic" style={{ color: 'rgba(255,255,255,0.3)' }}>
+          <p className="text-[11px] italic" style={{ color: 'rgba(255,255,255,0.4)' }}>
             For the first {COHORT.seats} selected nurses · $0 out of pocket
           </p>
         </div>
@@ -83,12 +70,11 @@ export default function ApplySidebar() {
           ].map((item) => (
             <div
               key={item.label}
-              className="flex items-start gap-[10px] py-[10px] border-b last:border-b-0"
-              style={{ borderColor: 'rgba(0,0,0,0.06)' }}
+              className="flex items-start gap-[10px] py-[10px] border-b last:border-b-0 border-white/[0.06]"
             >
-              <span className="flex-shrink-0 mt-[1px]" style={{ color: 'var(--teal)', fontSize: '14px' }}>✓</span>
-              <span className="text-[13px] leading-[1.45]" style={{ color: '#444' }}>
-                <strong style={{ color: 'var(--ink)' }}>{item.label}</strong> {item.detail}
+              <span className="flex-shrink-0 mt-[1px] text-[#1a8c9e] text-[14px]">✓</span>
+              <span className="text-[13px] leading-[1.45] text-white/50">
+                <strong className="text-white">{item.label}</strong> {item.detail}
               </span>
             </div>
           ))}
@@ -97,17 +83,12 @@ export default function ApplySidebar() {
 
       {/* Confidence note */}
       <div
-        className="text-[12px] italic leading-[1.6] px-4 py-[14px] border rounded-[2px]"
-        style={{
-          background: 'rgba(255,255,255,0.02)',
-          borderColor: 'rgba(255,255,255,0.06)',
-          color: 'rgba(255,255,255,0.38)',
-        }}
+        className="text-[12px] italic leading-[1.6] px-4 py-[14px] border rounded-[8px] bg-white/[0.03] border-white/[0.07] text-white/35"
       >
         Most nurses who apply are new to clinical research. What matters is clinical excellence,
         curiosity, and a desire to grow.
         <br /><br />
-        <strong style={{ color: 'rgba(255,255,255,0.55)' }}>
+        <strong className="text-white/65">
           If that sounds like you — you are exactly who this was designed for.
         </strong>
       </div>
