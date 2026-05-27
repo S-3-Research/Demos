@@ -5,7 +5,7 @@ import { getSessionFromCookie } from '@/lib/nurseSession'
 // 允许更新的字段白名单（防止护士改 status、email_verified 等系统字段）
 const UPDATABLE_FIELDS = [
   'phone', 'role', 'specialty', 'years_experience', 'languages',
-  'state', 'city', 'zip', 'serves_underserved',
+  'address', 'state', 'city', 'zip', 'serves_underserved',
   'motivation_text', 'goal', 'hours_per_month', 'source',
 ] as const
 

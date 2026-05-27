@@ -12,6 +12,7 @@ type AppData = {
   specialty: string
   years_experience: number
   languages: string
+  address: string
   state: string
   city: string
   zip: string
@@ -44,6 +45,7 @@ export default function EditForm({ app, isSelectedLimited }: EditFormProps) {
     const fd = new FormData(e.currentTarget)
     const body: Record<string, unknown> = {
       phone: fd.get('phone'),
+      address: fd.get('address'),
       state: fd.get('state'),
       city: fd.get('city'),
       zip: fd.get('zip'),
@@ -104,6 +106,10 @@ export default function EditForm({ app, isSelectedLimited }: EditFormProps) {
           <div>
             <label className={labelClass}>Languages</label>
             <input name="languages" type="text" className={inputClass} defaultValue={Array.isArray(app.languages) ? app.languages.join(', ') : (app.languages ?? '')} placeholder="e.g. English, Spanish" />
+          </div>
+          <div>
+            <label className={labelClass}>Street Address</label>
+            <input name="address" type="text" className={inputClass} defaultValue={app.address} />
           </div>
           <div>
             <label className={labelClass}>City</label>

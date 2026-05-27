@@ -15,7 +15,7 @@ export default async function AdminPage() {
     .select(`
       id, first_name, last_name, email, phone,
       role, specialty, years_experience, languages,
-      state, city, zip, serves_underserved,
+      address, state, city, zip, serves_underserved,
       motivation_text, goal, hours_per_month, source,
       email_verified, status, cohort,
       applied_at, verified_at, reviewed_at, admin_notes,

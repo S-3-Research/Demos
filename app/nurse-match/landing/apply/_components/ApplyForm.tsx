@@ -276,15 +276,19 @@ function StepLocation({ onNext, onBack }: { onNext: (data: StepData) => void; on
       />
       <div className="flex flex-col gap-5 mb-8">
         <div>
+          <FieldLabel>Street Address</FieldLabel>
+          <TextInput required name="address" type="text" placeholder="123 Main St" />
+        </div>
+        <div>
           <FieldLabel>State</FieldLabel>
-          <SelectInput name="state" defaultValue="">
+          <SelectInput required name="state" defaultValue="">
             <option value="" disabled>Select your state</option>
             {US_STATES.map((s) => <option key={s}>{s}</option>)}
           </SelectInput>
         </div>
         <div className="field-row-2col grid gap-4">
-          <div><FieldLabel>City</FieldLabel><TextInput name="city" type="text" placeholder="Your city" /></div>
-          <div><FieldLabel>ZIP Code</FieldLabel><TextInput name="zip" type="text" placeholder="ZIP" maxLength={5} /></div>
+          <div><FieldLabel>City</FieldLabel><TextInput required name="city" type="text" placeholder="Your city" /></div>
+          <div><FieldLabel>ZIP Code</FieldLabel><TextInput required name="zip" type="text" placeholder="ZIP" maxLength={5} /></div>
         </div>
         <div>
           <FieldLabel>Are you currently serving patients in underserved or rural communities?</FieldLabel>

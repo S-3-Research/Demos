@@ -407,6 +407,9 @@ export function NurseDrawer({ nurse, onClose, onUpdate }: Props) {
               <hr className="border-slate-100" />
               <section>
                 <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-3">Location</p>
+                <div className="mb-3">
+                  <Field label="Street Address" value={nurse.address} />
+                </div>
                 <div className="grid grid-cols-3 gap-3">
                   <Field label="City"  value={nurse.city} />
                   <Field label="State" value={nurse.state} />

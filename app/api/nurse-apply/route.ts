@@ -16,7 +16,7 @@ export async function POST(req: NextRequest) {
     const {
       firstName, lastName, email, phone,
       role, specialty, yearsExperience, languages,
-      state, city, zip, servesUnderserved,
+      address, state, city, zip, servesUnderserved,
       motivationText, goal,
       hoursPerMonth, source,
     } = body
@@ -59,7 +59,7 @@ export async function POST(req: NextRequest) {
         role, specialty,
         years_experience: yearsExperience,
         languages: languages ?? [],
-        state, city, zip,
+        address, state, city, zip,
         serves_underserved: servesUnderserved,
         motivation_text: motivationText,
         goal,
