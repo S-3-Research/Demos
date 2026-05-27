@@ -9,10 +9,10 @@ const supabase = createClient(
 )
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; desc: string }> = {
-  pending:    { label: 'Under Review',    color: 'var(--teal-light)', desc: 'Your application has been received and is in our review queue. Early applicants are reviewed first.' },
-  reviewing:  { label: 'In Review',       color: '#E8A820',           desc: 'Our team is actively reviewing your application. You will hear from us within 5–7 business days.' },
-  selected:   { label: 'Selected ✦',      color: '#4ADE80',           desc: 'Congratulations! You have been selected for Cohort 4. Check your inbox for next steps.' },
-  waitlisted: { label: 'Waitlisted',      color: '#94A3B8',           desc: 'You are on our waitlist. We will notify you if a spot opens up.' },
+  pending:    { label: 'Under Review',    color: '#1a8c9e', desc: 'Your application has been received and is in our review queue. Early applicants are reviewed first.' },
+  reviewing:  { label: 'In Review',       color: '#d4920a', desc: 'Our team is actively reviewing your application. You will hear from us within 5–7 business days.' },
+  selected:   { label: 'Selected ✦',      color: '#4ade80', desc: 'Congratulations! You have been selected for Cohort 4. Check your inbox for next steps.' },
+  waitlisted: { label: 'Waitlisted',      color: '#94a3b8', desc: 'You are on our waitlist. We will notify you if a spot opens up.' },
   rejected:   { label: 'Not Selected',    color: 'rgba(255,255,255,0.3)', desc: 'Thank you for applying. We were unable to offer you a spot in this cohort.' },
 }
 
@@ -41,21 +41,18 @@ export default async function NurseStatusPage({
   const statusCfg = STATUS_CONFIG[app.status] ?? STATUS_CONFIG.pending
 
   return (
-    <div style={{ minHeight: '100vh', background: '#040E1B', color: 'white' }}>
+    <div className="min-h-screen bg-[#071828] text-white">
       {/* Header */}
-      <header
-        className="sticky top-0 z-[100] flex items-center justify-between px-12 max-[860px]:px-6 py-4 border-b"
-        style={{ background: 'var(--ink-mid)', borderColor: 'rgba(232,168,32,0.12)' }}
-      >
+      <header className="sticky top-0 z-[100] bg-[#0a1f30] border-b border-white/[0.07] flex items-center justify-between px-12 py-[14px]">
         <div>
-          <div className="font-cormorant font-bold text-[20px] tracking-[.05em]" style={{ color: 'var(--gold-bright)' }}>
+          <div className="text-white font-bold text-[20px]" style={{ fontFamily: 'var(--font-display, "DM Serif Display", Georgia, serif)' }}>
             ACHIEVE
           </div>
-          <div className="font-barlow font-bold text-[10px] tracking-[.22em] uppercase" style={{ color: 'var(--teal-light)' }}>
+          <div className="text-[10px] font-bold tracking-[0.22em] uppercase text-[#1a8c9e]">
             Research-Ready Nurse™ · {app.cohort}
           </div>
         </div>
-        <span className="font-barlow text-[12px]" style={{ color: 'rgba(255,255,255,0.3)' }}>
+        <span className="text-[12px] text-white/30">
           {app.email}
         </span>
       </header>
@@ -64,58 +61,52 @@ export default async function NurseStatusPage({
 
         {/* Email not verified warning */}
         {!app.email_verified && (
-          <div
-            className="mb-8 px-5 py-4 border rounded-[2px]"
-            style={{ background: 'rgba(232,168,32,0.06)', borderColor: 'rgba(232,168,32,0.2)' }}
-          >
-            <p className="font-barlow font-bold text-[11px] tracking-[.16em] uppercase mb-1" style={{ color: 'var(--gold-bright)' }}>
+          <div className="bg-[#d4920a]/[0.07] border border-[#d4920a]/[0.22] rounded-[8px] px-5 py-4 mb-8">
+            <p className="text-[11px] font-bold tracking-[0.16em] uppercase text-[#d4920a] mb-1">
               ⚠ Email not yet confirmed
             </p>
-            <p className="text-[13px] leading-[1.5]" style={{ color: 'rgba(255,255,255,0.5)' }}>
+            <p className="text-[13px] leading-[1.5] text-white/45">
               Please check your inbox and click the confirmation link to verify your email address.
             </p>
           </div>
         )}
 
         {/* Status card */}
-        <div
-          className="p-8 border rounded-[2px] mb-6"
-          style={{ background: '#071828', borderColor: 'rgba(232,168,32,0.1)' }}
-        >
-          <p className="font-barlow font-bold text-[10px] tracking-[.24em] uppercase mb-3" style={{ color: 'rgba(255,255,255,0.3)' }}>
+        <div className="bg-[#0c2236] border border-white/[0.07] rounded-[10px] p-8 mb-6">
+          <p className="text-[10px] font-bold tracking-[0.24em] uppercase text-white/30 mb-3">
             Application Status
           </p>
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-2 h-2 rounded-full" style={{ background: statusCfg.color }} />
-            <span className="font-cormorant font-bold text-[28px]" style={{ color: statusCfg.color }}>
+            <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ background: statusCfg.color }} />
+            <span
+              className="text-[32px] text-white font-normal"
+              style={{ fontFamily: 'var(--font-display, "DM Serif Display", Georgia, serif)' }}
+            >
               {statusCfg.label}
             </span>
           </div>
-          <p className="text-[14px] leading-[1.7]" style={{ color: 'rgba(255,255,255,0.55)' }}>
+          <p className="text-[14px] leading-[1.7] text-white/50">
             {statusCfg.desc}
           </p>
         </div>
 
         {/* Applicant summary */}
-        <div
-          className="p-6 border rounded-[2px] mb-8"
-          style={{ background: 'rgba(255,255,255,0.02)', borderColor: 'rgba(255,255,255,0.06)' }}
-        >
-          <p className="font-barlow font-bold text-[10px] tracking-[.22em] uppercase mb-4" style={{ color: 'rgba(255,255,255,0.3)' }}>
+        <div className="bg-white/[0.03] border border-white/[0.06] rounded-[10px] p-6 mb-8">
+          <p className="text-[10px] font-bold tracking-[0.22em] uppercase text-white/30 mb-4">
             Your Application
           </p>
-          <div className="flex flex-col gap-2 text-[13px]" style={{ color: 'rgba(255,255,255,0.6)' }}>
+          <div className="flex flex-col gap-[10px] text-[13px] text-white/50">
             <div className="flex justify-between">
               <span>Name</span>
-              <span className="text-white">{app.first_name} {app.last_name}</span>
+              <span className="text-white font-semibold">{app.first_name} {app.last_name}</span>
             </div>
             <div className="flex justify-between">
               <span>Applied</span>
-              <span className="text-white">{new Date(app.applied_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
+              <span className="text-white font-semibold">{new Date(app.applied_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
             </div>
             <div className="flex justify-between">
               <span>Cohort</span>
-              <span className="text-white">{app.cohort}</span>
+              <span className="text-white font-semibold">{app.cohort}</span>
             </div>
           </div>
         </div>
@@ -124,21 +115,15 @@ export default async function NurseStatusPage({
         {app.applicant_can_edit && app.status !== 'rejected' && (
           <Link
             href="/nurse-match/edit"
-            className="flex items-center justify-center gap-2 w-full py-[14px] border rounded-[2px]
-              font-barlow font-bold text-[12px] tracking-[.16em] uppercase transition-all duration-200
-              hover:bg-[rgba(11,110,120,0.1)] hover:border-[rgba(11,110,120,0.4)] mb-6"
-            style={{ borderColor: 'rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.6)' }}
+            className="flex items-center justify-center gap-2 w-full px-0 py-[14px] border border-white/10 rounded-[8px] text-[12px] font-bold tracking-[0.16em] uppercase text-white/55 no-underline mb-6 bg-white/[0.03] transition-all duration-200"
           >
             ✎ Update My Application
           </Link>
         )}
 
         {app.status === 'rejected' && (
-          <div
-            className="px-5 py-4 border rounded-[2px] mb-6 text-center"
-            style={{ background: 'rgba(255,255,255,0.02)', borderColor: 'rgba(255,255,255,0.06)' }}
-          >
-            <p className="text-[13px]" style={{ color: 'rgba(255,255,255,0.35)' }}>
+          <div className="px-5 py-4 border border-white/[0.06] rounded-[8px] mb-6 text-center bg-white/[0.02]">
+            <p className="text-[13px] text-white/30">
               This application is closed and cannot be edited.
             </p>
           </div>
@@ -148,8 +133,7 @@ export default async function NurseStatusPage({
         <div className="flex flex-col gap-3">
           <Link
             href="/nurse-match/landing"
-            className="font-barlow font-bold text-[11px] tracking-[.16em] uppercase transition-colors hover:text-white"
-            style={{ color: 'rgba(255,255,255,0.3)' }}
+            className="text-[11px] font-bold tracking-[0.16em] uppercase text-white/30 no-underline"
           >
             ← Back to Overview
           </Link>
@@ -168,33 +152,30 @@ function RequestNewLink({ errorParam }: { errorParam?: string }) {
   const msg = errorParam ? (errorMessages[errorParam] ?? errorMessages['invalid-or-expired']) : null
 
   return (
-    <div style={{ minHeight: '100vh', background: '#040E1B', color: 'white' }}>
-      <header
-        className="sticky top-0 z-[100] flex items-center px-12 max-[860px]:px-6 py-4 border-b"
-        style={{ background: 'var(--ink-mid)', borderColor: 'rgba(232,168,32,0.12)' }}
-      >
-        <div className="font-cormorant font-bold text-[20px] tracking-[.05em]" style={{ color: 'var(--gold-bright)' }}>
+    <div className="min-h-screen bg-[#071828] text-white">
+      <header className="sticky top-0 z-[100] bg-[#0a1f30] border-b border-white/[0.07] flex items-center px-12 py-[14px]">
+        <div className="text-white font-bold text-[20px]" style={{ fontFamily: 'var(--font-display, "DM Serif Display", Georgia, serif)' }}>
           ACHIEVE
         </div>
       </header>
 
-      <main className="max-w-[480px] mx-auto px-6 py-20 text-center">
+      <main className="max-w-[480px] mx-auto px-6 pt-20 pb-10 text-center">
         <div className="text-[40px] mb-5">📬</div>
         <h1
-          className="font-cormorant font-bold leading-none mb-3"
-          style={{ fontSize: 'clamp(28px, 4vw, 40px)', color: 'var(--cream)' }}
+          className="text-white font-normal mb-3"
+          style={{ fontFamily: 'var(--font-display, "DM Serif Display", Georgia, serif)', fontSize: 'clamp(28px, 4vw, 40px)' }}
         >
           Check your status
         </h1>
 
         {msg && (
-          <p className="text-[13px] leading-[1.6] mb-6" style={{ color: 'rgba(255,255,255,0.45)' }}>
+          <p className="text-[13px] leading-[1.6] text-white/45 mb-6">
             {msg}
           </p>
         )}
 
         {!msg && (
-          <p className="text-[14px] leading-[1.7] mb-8" style={{ color: 'rgba(255,255,255,0.5)' }}>
+          <p className="text-[14px] leading-[1.7] text-white/50 mb-8">
             Enter your email address and we&apos;ll send you a secure link to view your application status.
           </p>
         )}
@@ -203,8 +184,7 @@ function RequestNewLink({ errorParam }: { errorParam?: string }) {
 
         <Link
           href="/nurse-match/landing"
-          className="mt-8 inline-block font-barlow font-bold text-[11px] tracking-[.16em] uppercase transition-colors hover:text-white"
-          style={{ color: 'rgba(255,255,255,0.25)' }}
+          className="mt-8 inline-block text-[11px] font-bold tracking-[0.16em] uppercase text-white/25 no-underline"
         >
           ← Back to Overview
         </Link>

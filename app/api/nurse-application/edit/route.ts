@@ -5,13 +5,13 @@ import { getSessionFromCookie } from '@/lib/nurseSession'
 // 所有字段 — pending / reviewing / waitlisted 可改
 const ALL_EDITABLE = [
   'phone', 'role', 'specialty', 'years_experience', 'languages',
-  'state', 'city', 'zip', 'serves_underserved',
+  'address', 'state', 'city', 'zip', 'serves_underserved',
   'motivation_text', 'goal', 'hours_per_month',
 ] as const
 
 // 仅 contact / availability — selected 时只允许改这些
 const CONTACT_EDITABLE = [
-  'phone', 'state', 'city', 'zip', 'hours_per_month', 'languages',
+  'phone', 'address', 'state', 'city', 'zip', 'hours_per_month', 'languages',
 ] as const
 
 export async function PATCH(req: NextRequest) {

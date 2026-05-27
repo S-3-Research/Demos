@@ -9,6 +9,7 @@ export interface NurseApplication {
   specialty?: string
   years_experience?: string
   languages?: string[]
+  address?: string
   state?: string
   city?: string
   zip?: string

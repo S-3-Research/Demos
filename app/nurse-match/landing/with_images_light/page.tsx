@@ -13,7 +13,7 @@ import BottomCTA from './_components/BottomCTA'
 export default function LandingPage() {
   return (
     <>
-      <Ticker />
+      {/* <Ticker /> */}
       <HeroSection />
       <ProofBar />
       <EmotionalSection />

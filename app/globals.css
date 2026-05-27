@@ -167,6 +167,12 @@ body {
   animation: match-border-spin 2s linear infinite;
 }
 
+@keyframes shimmer {
+  0%   { transform: translateX(-100%) skewX(-20deg); }
+  60%  { transform: translateX(200%) skewX(-20deg); }
+  100% { transform: translateX(200%) skewX(-20deg); }
+}
+
 @keyframes shimmer-border-spin {
   from { --shimmer-angle: 0deg; }
   to   { --shimmer-angle: 360deg; }

@@ -1,18 +1,18 @@
 import type { Metadata } from 'next'
-import { Cormorant_Garamond, DM_Sans, Barlow_Condensed } from 'next/font/google'
+import { DM_Serif_Display, DM_Sans, Barlow_Condensed } from 'next/font/google'
 import './landing.css'
 
-const cormorant = Cormorant_Garamond({
+const dmSerifDisplay = DM_Serif_Display({
   subsets: ['latin'],
-  weight: ['300', '400', '600', '700'],
+  weight: ['400'],
   style: ['normal', 'italic'],
-  variable: '--font-cormorant',
+  variable: '--font-display',
   display: 'swap',
 })
 
 const dmSans = DM_Sans({
   subsets: ['latin'],
-  weight: ['300', '400', '500', '600'],
+  weight: ['300', '400', '500', '600', '700'],
   variable: '--font-dm',
   display: 'swap',
 })
@@ -25,15 +25,15 @@ const barlowCondensed = Barlow_Condensed({
 })
 
 export const metadata: Metadata = {
-  title: 'ACHIEVE | 30 Nurses. Nationwide. Selected.',
+  title: 'Research-Ready Nurse™ Program | ACHIEVE Clinical Expertise',
   description:
-    '30 nurses. Nationwide. Selected. ACHIEVE is selecting a limited group of bedside nurses for fully sponsored access to a clinical research certification valued at $3,000.',
+    'Gain the skills, certification, and access to paid local research opportunities — on your schedule. 30 fully sponsored seats available.',
 }
 
 export default function LandingLayout({ children }: { children: React.ReactNode }) {
   return (
     <div
-      className={`${cormorant.variable} ${dmSans.variable} ${barlowCondensed.variable} achieve-landing achieve-grain`}
+      className={`${dmSerifDisplay.variable} ${dmSans.variable} ${barlowCondensed.variable} achieve-landing`}
       style={{ overflowX: 'hidden' }}
     >
       {children}

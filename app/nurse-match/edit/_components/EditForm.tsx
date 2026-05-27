@@ -12,6 +12,7 @@ type AppData = {
   specialty: string
   years_experience: number
   languages: string
+  address: string
   state: string
   city: string
   zip: string
@@ -27,8 +28,8 @@ type EditFormProps = {
 }
 
 const inputClass =
-  'w-full bg-transparent border-b border-[rgba(255,255,255,0.12)] text-white text-[15px] font-barlow py-2 px-0 placeholder:text-[rgba(255,255,255,0.22)] focus:outline-none focus:border-[rgba(232,168,32,0.5)] transition-colors'
-const labelClass = 'block font-barlow font-bold text-[10px] tracking-[.2em] uppercase mb-1'
+  'w-full bg-transparent border-b border-white/10 text-white text-[15px] py-2 px-0 placeholder:text-white/20 focus:outline-none focus:border-[#1a8c9e]/60 transition-colors'
+const labelClass = 'block font-bold text-[10px] tracking-[.2em] uppercase mb-1 text-white/40'
 
 export default function EditForm({ app, isSelectedLimited }: EditFormProps) {
   const router = useRouter()
@@ -44,6 +45,7 @@ export default function EditForm({ app, isSelectedLimited }: EditFormProps) {
     const fd = new FormData(e.currentTarget)
     const body: Record<string, unknown> = {
       phone: fd.get('phone'),
+      address: fd.get('address'),
       state: fd.get('state'),
       city: fd.get('city'),
       zip: fd.get('zip'),
@@ -79,11 +81,11 @@ export default function EditForm({ app, isSelectedLimited }: EditFormProps) {
   if (success) {
     return (
       <div className="text-center py-16">
-        <div className="text-[32px] mb-3">✓</div>
-        <p className="font-barlow font-bold tracking-[.12em] uppercase text-[14px]" style={{ color: 'var(--gold-bright)' }}>
+        <div className="text-[32px] mb-3 text-[#1a8c9e]">✓</div>
+        <p className="font-bold tracking-[0.12em] uppercase text-[14px] text-[#d4920a]">
           Application updated
         </p>
-        <p className="text-[13px] mt-2" style={{ color: 'rgba(255,255,255,0.4)' }}>Returning to status page…</p>
+        <p className="text-[13px] mt-2 text-white/35">Returning to status page…</p>
       </div>
     )
   }
@@ -93,32 +95,36 @@ export default function EditForm({ app, isSelectedLimited }: EditFormProps) {
 
       {/* Contact */}
       <section>
-        <h3 className="font-barlow font-bold text-[10px] tracking-[.22em] uppercase mb-4" style={{ color: 'var(--teal-light)' }}>
-          Contact & Availability
+        <h3 className="text-[10px] font-bold tracking-[0.22em] uppercase mb-5 text-[#1a8c9e] pb-[10px] border-b border-white/[0.06]">
+          Contact &amp; Availability
         </h3>
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
           <div>
-            <label className={labelClass} style={{ color: 'rgba(255,255,255,0.45)' }}>Phone</label>
+            <label className={labelClass}>Phone</label>
             <input name="phone" type="tel" className={inputClass} defaultValue={app.phone} />
           </div>
           <div>
-            <label className={labelClass} style={{ color: 'rgba(255,255,255,0.45)' }}>Languages</label>
+            <label className={labelClass}>Languages</label>
             <input name="languages" type="text" className={inputClass} defaultValue={Array.isArray(app.languages) ? app.languages.join(', ') : (app.languages ?? '')} placeholder="e.g. English, Spanish" />
           </div>
           <div>
-            <label className={labelClass} style={{ color: 'rgba(255,255,255,0.45)' }}>City</label>
+            <label className={labelClass}>Street Address</label>
+            <input name="address" type="text" className={inputClass} defaultValue={app.address} />
+          </div>
+          <div>
+            <label className={labelClass}>City</label>
             <input name="city" type="text" className={inputClass} defaultValue={app.city} />
           </div>
           <div>
-            <label className={labelClass} style={{ color: 'rgba(255,255,255,0.45)' }}>State</label>
+            <label className={labelClass}>State</label>
             <input name="state" type="text" className={inputClass} defaultValue={app.state} maxLength={2} />
           </div>
           <div>
-            <label className={labelClass} style={{ color: 'rgba(255,255,255,0.45)' }}>ZIP</label>
+            <label className={labelClass}>ZIP</label>
             <input name="zip" type="text" className={inputClass} defaultValue={app.zip} maxLength={10} />
           </div>
           <div>
-            <label className={labelClass} style={{ color: 'rgba(255,255,255,0.45)' }}>Hours available / month</label>
+            <label className={labelClass}>Hours available / month</label>
             <input name="hours_per_month" type="number" min={1} max={160} className={inputClass} defaultValue={app.hours_per_month} />
           </div>
         </div>
@@ -127,20 +133,20 @@ export default function EditForm({ app, isSelectedLimited }: EditFormProps) {
       {/* Qualification fields — full edit mode only */}
       {!isSelectedLimited && (
         <section>
-          <h3 className="font-barlow font-bold text-[10px] tracking-[.22em] uppercase mb-4" style={{ color: 'var(--teal-light)' }}>
+          <h3 className="text-[10px] font-bold tracking-[0.22em] uppercase mb-5 text-[#1a8c9e] pb-[10px] border-b border-white/[0.06]">
             Qualifications
           </h3>
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
             <div>
-              <label className={labelClass} style={{ color: 'rgba(255,255,255,0.45)' }}>Role / Title</label>
+              <label className={labelClass}>Role / Title</label>
               <input name="role" type="text" className={inputClass} defaultValue={app.role} />
             </div>
             <div>
-              <label className={labelClass} style={{ color: 'rgba(255,255,255,0.45)' }}>Specialty</label>
+              <label className={labelClass}>Specialty</label>
               <input name="specialty" type="text" className={inputClass} defaultValue={app.specialty} />
             </div>
             <div>
-              <label className={labelClass} style={{ color: 'rgba(255,255,255,0.45)' }}>Years of experience</label>
+              <label className={labelClass}>Years of experience</label>
               <input name="years_experience" type="number" min={0} max={50} className={inputClass} defaultValue={app.years_experience} />
             </div>
             <div className="flex items-center gap-3 self-end pb-2">
@@ -149,9 +155,9 @@ export default function EditForm({ app, isSelectedLimited }: EditFormProps) {
                 name="serves_underserved"
                 type="checkbox"
                 defaultChecked={app.serves_underserved}
-                className="w-4 h-4 accent-[var(--gold-bright)]"
+                className="w-4 h-4 accent-[#d4920a]"
               />
-              <label htmlFor="serves_underserved" className="font-barlow text-[13px]" style={{ color: 'rgba(255,255,255,0.6)' }}>
+              <label htmlFor="serves_underserved" className="text-[13px] text-white/55">
                 Open to underserved communities
               </label>
             </div>
@@ -159,20 +165,20 @@ export default function EditForm({ app, isSelectedLimited }: EditFormProps) {
 
           <div className="mt-6 space-y-5">
             <div>
-              <label className={labelClass} style={{ color: 'rgba(255,255,255,0.45)' }}>Why do you want to join? (motivation)</label>
+              <label className={labelClass}>Why do you want to join? (motivation)</label>
               <textarea
                 name="motivation_text"
                 rows={4}
-                className={`${inputClass} border border-[rgba(255,255,255,0.12)] rounded-[2px] p-3 resize-none`}
+                className="w-full text-[14px] text-white leading-[1.6] resize-none outline-none py-3 px-3 rounded-[4px] bg-white/[0.04] border border-white/[0.08]"
                 defaultValue={app.motivation_text}
               />
             </div>
             <div>
-              <label className={labelClass} style={{ color: 'rgba(255,255,255,0.45)' }}>Your goal with Achieve</label>
+              <label className={labelClass}>Your goal with Achieve</label>
               <textarea
                 name="goal"
                 rows={3}
-                className={`${inputClass} border border-[rgba(255,255,255,0.12)] rounded-[2px] p-3 resize-none`}
+                className="w-full text-[14px] text-white leading-[1.6] resize-none outline-none py-3 px-3 rounded-[4px] bg-white/[0.04] border border-white/[0.08]"
                 defaultValue={app.goal}
               />
             </div>
@@ -181,26 +187,24 @@ export default function EditForm({ app, isSelectedLimited }: EditFormProps) {
       )}
 
       {error && (
-        <p className="text-[13px]" style={{ color: '#f87171' }}>{error}</p>
+        <p className="text-[13px] text-[#f87171]">{error}</p>
       )}
 
       <div className="flex items-center gap-4 pt-2">
         <button
           type="submit"
           disabled={saving}
-          className="font-barlow font-bold text-[12px] tracking-[.18em] uppercase px-8 py-3 rounded-[2px] transition-all"
-          style={{
-            background: saving ? 'rgba(232,168,32,0.35)' : '#E8A820',
-            color: saving ? 'rgba(255,255,255,0.5)' : '#040E1B',
-            cursor: saving ? 'not-allowed' : 'pointer',
-          }}
+          className={`font-black text-[12px] tracking-[0.18em] uppercase py-3 px-8 rounded-[6px] border-none transition-all duration-200 ${
+            saving
+              ? 'bg-[rgba(212,146,10,0.35)] text-white/50 cursor-not-allowed'
+              : 'bg-[#d4920a] text-[#071828] cursor-pointer'
+          }`}
         >
-          {saving ? 'Saving…' : 'Save changes'}
+          {saving ? 'Saving…' : 'Save Changes'}
         </button>
         <a
           href="/nurse-match/status"
-          className="font-barlow text-[12px] tracking-[.12em] uppercase transition-colors hover:text-white"
-          style={{ color: 'rgba(255,255,255,0.3)' }}
+          className="text-[12px] tracking-[0.12em] uppercase text-white/30 no-underline"
         >
           Cancel
         </a>
