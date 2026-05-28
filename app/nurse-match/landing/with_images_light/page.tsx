@@ -16,7 +16,6 @@ export default function LandingPage() {
       {/* <Ticker /> */}
       <HeroSection />
       <ProofBar />
-      <EmotionalSection />
       <WhatYouGetSection />
       <AutonomySection />
       <WhoQualifiesSection />

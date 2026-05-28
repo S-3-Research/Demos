@@ -47,22 +47,23 @@ export default function ProofBar() {
 
   const scroll = (dir: 'left' | 'right') => {
     if (!scrollRef.current) return
-    scrollRef.current.scrollBy({ left: dir === 'right' ? 320 : -320, behavior: 'smooth' })
+    scrollRef.current.scrollBy({ left: dir === 'right' ? 300 : -300, behavior: 'smooth' })
   }
 
   return (
-    <section className="bg-transparent py-14 px-6">
+    <section className="bg-transparent py-10 sm:py-14 sm:px-12">
       <div className="max-w-7xl mx-auto">
         {/* Scrollable row */}
         <div
           ref={scrollRef}
-          className="flex gap-0 overflow-x-auto scroll-smooth"
+          className="flex gap-0 overflow-x-auto scroll-smooth snap-x snap-mandatory pl-5 pr-5 sm:pl-0 sm:pr-0 [scroll-padding-left:1.25rem] sm:[scroll-padding-left:0px]"
           style={{ scrollbarWidth: 'none' }}
         >
           {stats.map((item, i) => (
             <div
               key={i}
-              className="flex-1 min-w-[260px] px-8 first:pl-0 last:pr-0 flex flex-col gap-4"
+              className="flex-1 min-w-[82vw] sm:min-w-[260px] px-5 sm:px-8 flex flex-col gap-4 snap-start animate-[fade-up_0.6s_ease-out_both]"
+              style={{ animationDelay: `${0.1 + i * 0.1}s` }}
             >
               {/* Top divider */}
               <div className="h-px bg-black/15 w-full mb-2" />

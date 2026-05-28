@@ -1,98 +1,73 @@
 'use client'
-import React, { useState } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { COHORT } from '../../_config'
 import ProofBar from './ProofBar'
+import SiteHeader from './SiteHeader'
 
 const IMAGES = [
-  '/images/nurse_match/istockphoto-998313080-1024x1024.jpg',
-  '/images/nurse_match/istockphoto-998313770-1024x1024.jpg',
-  '/images/nurse_match/istockphoto-998339320-1024x1024.jpg',
-  '/images/nurse_match/istockphoto-1209368403-1024x1024.jpg',
-  '/images/nurse_match/istockphoto-1387028955-1024x1024.jpg',
-  '/images/nurse_match/istockphoto-2187596922-1024x1024.jpg',
+  '/images/nurse_match/smiling_nurses.jpg',
 ]
 
 export default function HeroSection() {
-  const [heroImg, setHeroImg] = useState(IMAGES[0])
-  const [pickerOpen, setPickerOpen] = useState(false)
+  const [heroImg] = useState(IMAGES[0])
+  const [count, setCount] = useState(0)
+  const [shimmerKey, setShimmerKey] = useState(0)
+  const badgeRef = useRef<SVGSVGElement>(null)
+
+  const runCountUp = () => {
+    const target = 30
+    const duration = 2400
+    const start = performance.now()
+    const tick = (now: number) => {
+      const elapsed = now - start
+      const progress = Math.min(elapsed / duration, 1)
+      const eased = 1 - Math.pow(1 - progress, 3)
+      setCount(Math.round(eased * target))
+      if (progress < 1) requestAnimationFrame(tick)
+    }
+    setCount(0)
+    requestAnimationFrame(tick)
+  }
+
+  useEffect(() => {
+    runCountUp()
+    const el = badgeRef.current
+    if (!el) return
+    const observer = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) runCountUp() },
+      { threshold: 0.5 }
+    )
+    observer.observe(el)
+    return () => observer.disconnect()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   return (
-    <section className="min-h-[65vh] px-6 pb-0 relative overflow-hidden flex flex-col"
-     style={{ background: 'linear-gradient(180deg, #c8d8e8 0%, #dde8ee 15%, #f3f3f3 35%, #f8f8f8   100%)' }}
+    <section className="min-h-[65vh] px-0 pb-0 relative overflow-hidden flex flex-col"
+     style={{ background: 'linear-gradient(180deg, #c8d8e8 0%, #dde8ee 15%, #f3f3f3 35%, #ffffff   100%)' }}
      >
 
 
       {/* Announcement bar */}
-      <div className="w-full max-w-7xl mx-auto pt-5 px-5 mb-1 text-gray-400 text-center font-bold text-[14px] tracking-[0.04em] uppercase">
+      <div className="hidden sm:inline w-full py-2 mb-3 text-gray-500 text-center font-bold text-[12px] tracking-[0.04em] uppercase">
         <span className="mr-1.5">★</span>
-        <span>INAUGURAL COHORT NOW OPEN — 30 SPONSORED SEATS AVAILABLE</span>
+        <span>INAUGURAL COHORT NOW OPEN</span>
+        <span className="hidden sm:inline"> — 30 SPONSORED SEATS AVAILABLE</span>
+        
       </div>
 
-      {/* Nav Bar */}
-      <div className="w-full max-w-7xl mx-auto px-0 pt-5">
-        <div
-          className="backdrop-blur-xl border border-white/40 bg-gray-100/30 rounded-4xl shadow-[0_8px_32px_rgba(0,0,0,0.1)] relative overflow-hidden px-5 py-3 flex items-center justify-between"
-        >
-          {/* Noise overlay */}
-          <div className="absolute inset-0 opacity-2 pointer-events-none" style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
-            backgroundSize: '128px 128px',
-          }} />
-          {/* Logo — left */}
-          <div className="flex items-center gap-3">
-            {/* Logo placeholder */}
-            <div className="w-8 h-8 rounded-lg border-0 flex items-center justify-center shrink-0">
-              <span className="text-[#2dd4bf] font-bold text-[30px] leading-none" style={{ fontFamily: 'Georgia, serif' }}>A</span>
-            </div>
-            <div>
-              <div className="text-[11px] uppercase text-gray-500 mb-0 font-bold leading-tight">
-                Research-Ready Nurse™ Program
-              </div>
-              <div className="text-[11px] text-gray-400">
-                by ACHIEVE Clinical Expertise
-              </div>
-            </div>
-          </div>
-          {/* Social icons + Contact CTA — right */}
-          <div className="relative flex items-center gap-3">
-            {/* Facebook */}
-            <a href="https://www.facebook.com/" rel="noopener" aria-label="Visit Facebook" className="text-[#0d2a3f]/50 hover:text-[#0d2a3f] transition">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>
-              </svg>
-            </a>
-            {/* Instagram */}
-            <a href="https://www.instagram.com/" rel="noopener" aria-label="Visit Instagram" className="text-[#0d2a3f]/50 hover:text-[#0d2a3f] transition">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
-              </svg>
-            </a>
-            {/* X / Twitter */}
-            <a href="https://twitter.com/" rel="noopener" aria-label="Visit Twitter" className="text-[#0d2a3f]/50 hover:text-[#0d2a3f] transition">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.835L2.25 2.25h6.938l4.279 5.658zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-              </svg>
-            </a>
-            {/* Divider */}
-            <div className="w-px h-4 bg-[#0d2a3f]/15" />
-            <Link
-              href="mailto:hello@achieveclinical.com"
-              className="border-2 border-[#0d2a3f] bg-[#0d2a3f] text-white text-[12px] font-extrabold px-5 py-[9px] rounded-3xl no-underline uppercase tracking-[0.06em]"
-            >
-              Contact Us →
-            </Link>
-          </div>
-        </div>
-      </div>
+      {/* Fixed nav rendered at top: 90px — spacer reserves its visual space */}
+      <SiteHeader />
+      <div className="h-20 sm:h-20" aria-hidden="true" />
 
       {/* Radial glow */}
       {/* <div className="absolute -top-20 -right-20 w-[400px] h-[400px] bg-[radial-gradient(circle,rgba(26,107,122,0.3)_0%,transparent_70%)] pointer-events-none" /> */}
 
-      <div className="w-full max-w-7xl mx-auto grid grid-cols-[2fr_3fr] gap-10 items-end py-13 px-6 flex-1 min-h-0">
+      <div className="w-full max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-[2fr_3fr] gap-6 sm:gap-10 items-end py-8 sm:py-13 px-5 sm:px-12 flex-1 min-h-0">
         {/* Left content */}
-        <div className="flex flex-col justify-end h-full">
+        <div className="flex flex-col justify-end sm:h-full">
           {/* <div className="flex items-center gap-3 mb-3">
             <div className="w-8 h-8 rounded-lg border-0 flex items-center justify-center shrink-0">
               <span className="text-[#2dd4bf] font-bold text-[30px] leading-none" style={{ fontFamily: 'Georgia, serif' }}>A</span>
@@ -106,7 +81,7 @@ export default function HeroSection() {
               </div>
             </div>
           </div> */}
-          <h1 className="font-[family-name:var(--font-display,'DM_Serif_Display',Georgia,serif)] text-[clamp(2rem,4vw,3.2rem)] leading-[1.1] mb-4">
+          <h1 className="font-[family-name:var(--font-display,'DM_Serif_Display',Georgia,serif)] text-[clamp(2rem,4vw,3.2rem)] leading-[1.1] mb-4 animate-[fade-up_0.6s_ease-out_0.15s_both]">
             Expand Your<br />
             <span className="text-[#f0a922]">Nursing Career</span>
             <em className="text-[22px] ml-3">with</em>
@@ -114,10 +89,11 @@ export default function HeroSection() {
           </h1>
           <Link
             href={COHORT.applyUrl}
-            className="self-start border-2 border-[#f0a922] bg-[#f0a922] text-gray-100 font-extrabold text-[15px] py-[14px] px-6 rounded-3xl no-underline uppercase tracking-[0.06em] text-center mb-3 relative overflow-hidden"
+            onMouseEnter={() => setShimmerKey(k => k + 1)}
+            className="self-stretch sm:self-start bg-[#f0a922] text-gray-100 font-extrabold text-[15px] py-[14px] sm:px-6 rounded-3xl no-underline uppercase tracking-[0.06em] text-center relative overflow-hidden transition-transform duration-200 hover:scale-[1.04] animate-[fade-up_0.6s_ease-out_0.3s_both]"
           >
-            {/* Shimmer sweep */}
-            <span className="absolute inset-0 -translate-x-full animate-[shimmer_2.2s_ease-in-out_infinite] bg-gradient-to-r from-transparent via-white/40 to-transparent skew-x-[-20deg]" />
+            {/* Shimmer sweep — key flip remounts span, restarting animation each hover */}
+            <span key={shimmerKey} className="absolute inset-0 -translate-x-full animate-[shimmer_2s_ease-in-out_2s_1] bg-gradient-to-r from-transparent via-white/40 to-transparent skew-x-[-20deg]" />
             <span className="relative">• Apply for Sponsored Selection</span>
           </Link>
           {/* <p className="text-[16px] text-[#0d2a3f] leading-[1.6] mb-2">
@@ -131,9 +107,9 @@ export default function HeroSection() {
         </div>
 
         {/* Right: image */}
-        <div className="relative flex flex-col gap-0 pb-0 justify-end items-end h-full">
+        <div className="relative flex flex-col gap-0 pb-0 justify-end items-end h-full animate-[fade-up_0.7s_ease-out_0.25s_both]">
           {/* Rounded image container — adjust w/translate to position; h fills remaining column */}
-          <div className="relative w-full flex-1 min-h-0 rounded-3xl overflow-hidden shadow-2xl">
+          <div className="relative w-full h-[260px] sm:h-auto sm:flex-1 sm:min-h-0 rounded-3xl overflow-hidden shadow-2xl">
             <Image
               src={heroImg}
               alt="Medical team"
@@ -142,53 +118,25 @@ export default function HeroSection() {
               priority
             />
 
-            {/* 🖼 Floating image picker — dev only */}
-            <button
-              onClick={() => setPickerOpen(o => !o)}
-              className="absolute top-3 left-3 z-20 bg-black/50 hover:bg-black/70 text-white text-[11px] font-bold px-2.5 py-1.5 rounded-lg backdrop-blur-sm transition"
-            >
-              🖼 Change Photo
-            </button>
-            {pickerOpen && (
-              <div className="absolute top-10 left-3 z-30 bg-black/70 backdrop-blur-md rounded-2xl p-3 grid grid-cols-3 gap-2 w-[260px]">
-                {IMAGES.map((src) => (
-                  <button
-                    key={src}
-                    onClick={() => { setHeroImg(src); setPickerOpen(false) }}
-                    className={`relative w-full aspect-square rounded-xl overflow-hidden border-2 transition ${heroImg === src ? 'border-[#2dd4bf]' : 'border-transparent hover:border-white/60'}`}
-                  >
-                    <Image src={src} alt="" fill className="object-cover" sizes="80px" />
-                  </button>
-                ))}
-              </div>
-            )}
-
             {/* Glassmorphism floating card — bottom-right */}
-            <div className="absolute bottom-4 right-4 backdrop-blur-xl bg-white/20 border border-white/40 rounded-2xl shadow-[0_8px_32px_rgba(0,0,0,0.25)] p-4 flex gap-5 items-center">
+            <div className="absolute bottom-4 right-4 backdrop-blur-xl bg-white/20 border border-white/40 rounded-2xl shadow-[0_8px_32px_rgba(0,0,0,0.25)] p-2 flex gap-3 items-center md:min-w-[320px] max-w-[420px]">
               {/* Seat count — SVG knockout text revealing glass */}
-              <svg width="80" height="80" viewBox="0 0 80 80" className="shrink-0">
-                <defs>
-                  <mask id="knockout">
-                    <rect width="80" height="80" fill="white" rx="12" />
-                    <text x="40" y="46" textAnchor="middle" fontFamily="system-ui,sans-serif" fontWeight="900" fontSize="40" fill="black">30</text>
-                    <text x="40" y="60" textAnchor="middle" fontFamily="system-ui,sans-serif" fontWeight="700" fontSize="8" letterSpacing="1" fill="black">SPONSORED</text>
-                    <text x="40" y="71" textAnchor="middle" fontFamily="system-ui,sans-serif" fontWeight="700" fontSize="8" letterSpacing="1" fill="black">SEATS</text>
-                  </mask>
-                </defs>
-                <rect width="80" height="80" fill="white" mask="url(#knockout)" rx="12" />
+              <svg ref={badgeRef} width="90" height="90" viewBox="0 0 80 80" className="shrink-0">
+                <rect width="80" height="80" fill="#09284d" rx="12" />
+                <text x="40" y="46" textAnchor="middle" fontFamily="system-ui,sans-serif" fontWeight="900" fontSize="40" fill="white">{count}</text>
+                <text x="40" y="60" textAnchor="middle" fontFamily="system-ui,sans-serif" fontWeight="700" fontSize="8" letterSpacing="1" fill="white">SPONSORED</text>
+                <text x="40" y="71" textAnchor="middle" fontFamily="system-ui,sans-serif" fontWeight="700" fontSize="8" letterSpacing="1" fill="white">SEATS</text>
               </svg>
               {/* Text */}
-              <div className="flex flex-col justify-between self-stretch py-1.5">
+              <div className="hidden md:flex flex-col justify-between self-stretch py-2 px-2 flex-1 min-w-0">
                 {[
                   'Rolling Admissions',
                   '3-min Application',
                   'Auto-Waitlisted',
                 ].map((item) => (
-                  <div key={item} className="flex items-center">
-                    {/* <span className="shrink-0 w-4 h-4 rounded-full border border-gray-200/70 flex items-center justify-center">
-                      <svg width="8" height="8" viewBox="0 0 8 8" fill="none"><path d="M1.5 4l2 2 3-3" stroke="#ffffff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                    </span> */}
-                    <span className="text-white/80 text-[15px] leading-none drop-shadow-sm">{item}</span>
+                  <div key={item} className="flex items-center justify-between gap-3">
+                    <span className="text-white text-[14px] tracking-wider font-bold leading-none drop-shadow-sm whitespace-nowrap">{item}</span>
+                    <span className="text-white text-[14px] shrink-0">✔</span>
                   </div>
                 ))}
               </div>
