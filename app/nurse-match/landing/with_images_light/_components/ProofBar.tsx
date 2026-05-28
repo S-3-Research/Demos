@@ -51,7 +51,7 @@ export default function ProofBar() {
   }
 
   return (
-    <section className="bg-transparent py-10 sm:py-14 sm:px-12">
+    <section className="bg-white py-10 sm:pt-10 sm:pb-7 sm:px-12">
       <div className="max-w-7xl mx-auto">
         {/* Scrollable row */}
         <div

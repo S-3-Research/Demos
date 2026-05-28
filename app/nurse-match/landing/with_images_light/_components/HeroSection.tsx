@@ -46,12 +46,12 @@ export default function HeroSection() {
 
   return (
     <section className="min-h-[65vh] px-0 pb-0 relative overflow-hidden flex flex-col"
-     style={{ background: 'linear-gradient(180deg, #c8d8e8 0%, #dde8ee 15%, #f3f3f3 35%, #ffffff   100%)' }}
+     style={{ background: 'linear-gradient(180deg, #c8d8e8 0%, #dde8ee 15%, #f3f3f3 35%, #f3f3f3   100%)' }}
      >
 
 
       {/* Announcement bar */}
-      <div className="hidden sm:inline w-full py-2 mb-3 text-gray-500 text-center font-bold text-[12px] tracking-[0.04em] uppercase">
+      <div className="hidden sm:inline w-full py-2 my-3 text-gray-500 text-center font-bold text-[12px] tracking-[0.04em] uppercase">
         <span className="mr-1.5">★</span>
         <span>INAUGURAL COHORT NOW OPEN</span>
         <span className="hidden sm:inline"> — 30 SPONSORED SEATS AVAILABLE</span>
@@ -65,7 +65,7 @@ export default function HeroSection() {
       {/* Radial glow */}
       {/* <div className="absolute -top-20 -right-20 w-[400px] h-[400px] bg-[radial-gradient(circle,rgba(26,107,122,0.3)_0%,transparent_70%)] pointer-events-none" /> */}
 
-      <div className="w-full max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-[2fr_3fr] gap-6 sm:gap-10 items-end py-8 sm:py-13 px-5 sm:px-12 flex-1 min-h-0">
+      <div className="w-full max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-[2fr_3fr] gap-6 sm:gap-10 items-end py-8 sm:py-13 px-5 sm:px-5 flex-1 min-h-0">
         {/* Left content */}
         <div className="flex flex-col justify-end sm:h-full">
           {/* <div className="flex items-center gap-3 mb-3">
@@ -114,12 +114,12 @@ export default function HeroSection() {
               src={heroImg}
               alt="Medical team"
               fill
-              className="object-cover object-[70%_20%]"
+              className="object-cover object-[70%_20%] saturate-80 brightness-98"
               priority
             />
 
             {/* Glassmorphism floating card — bottom-right */}
-            <div className="absolute bottom-4 right-4 backdrop-blur-xl bg-white/20 border border-white/40 rounded-2xl shadow-[0_8px_32px_rgba(0,0,0,0.25)] p-2 flex gap-3 items-center md:min-w-[320px] max-w-[420px]">
+            <div className="absolute bottom-4 right-4 backdrop-blur-xl bg-white/20 border-0 border-white/40 rounded-2xl shadow-[0_8px_32px_rgba(0,0,0,0.25)] p-4 flex gap-3 items-center md:min-w-[320px] max-w-[420px]">
               {/* Seat count — SVG knockout text revealing glass */}
               <svg ref={badgeRef} width="90" height="90" viewBox="0 0 80 80" className="shrink-0">
                 <rect width="80" height="80" fill="#09284d" rx="12" />
