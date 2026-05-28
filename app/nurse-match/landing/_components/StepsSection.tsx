@@ -41,12 +41,12 @@ function FaqItem({ q, a }: { q: string; a: string }) {
 
 export default function StepsSection() {
   return (
-    <section className="py-[60px] px-6 bg-[#f7f9fb]">
+    <section className="pt-25 pb-15 px-5 sm:px-6 bg-[#f7f9fb]">
       <div className="max-w-[1100px] mx-auto">
         <h2 className="font-[family-name:var(--font-display,'DM_Serif_Display',Georgia,serif)] text-[clamp(1.5rem,3vw,2rem)] text-[#0d2a3f] text-center mb-10">
           Frequently Asked Questions
         </h2>
-        <div className="grid grid-cols-2 gap-x-10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-10">
           <div>{FAQ_LEFT.map((item) => <FaqItem key={item.q} q={item.q} a={item.a} />)}</div>
           <div>{FAQ_RIGHT.map((item) => <FaqItem key={item.q} q={item.q} a={item.a} />)}</div>
         </div>

@@ -1,12 +1,12 @@
-import Countdown from '../../_components/Countdown'
+import Countdown from '../../landing/_components/Countdown'
 import { COHORT } from '../../_config'
 
 export default function ApplySidebar() {
   return (
     <aside className="sticky top-[140px] max-[860px]:static space-y-4">
-      {/* Countdown urgency */}
+      {/* Countdown urgency — hidden on mobile (shown in hero instead) */}
       <div
-        className="border rounded-[8px] p-4 bg-[#1a8c9e]/[0.07] border-[#1a8c9e]/20"
+        className="hidden sm:block border rounded-[8px] p-4 bg-[#1a8c9e]/[0.07] border-[#1a8c9e]/20"
       >
         <p
           className="font-extrabold text-[11px] tracking-[.18em] uppercase mb-[10px] text-[#1a8c9e]"
@@ -43,7 +43,6 @@ export default function ApplySidebar() {
               style={{
                 fontFamily: 'var(--font-display, "DM Serif Display", Georgia, serif)',
                 color: '#d4920a',
-                textDecoration: 'line-through',
                 textDecorationColor: 'rgba(212,146,10,0.5)',
               }}
             >

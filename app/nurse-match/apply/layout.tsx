@@ -25,9 +25,9 @@ const barlowCondensed = Barlow_Condensed({
 })
 
 export const metadata: Metadata = {
-  title: 'Research-Ready Nurse™ Program | ACHIEVE Clinical Expertise',
+  title: 'Apply for Selection | ACHIEVE Research-Ready Nurse™',
   description:
-    'Gain the skills, certification, and access to paid local research opportunities — on your schedule. 30 fully sponsored seats available.',
+    'Apply for Cohort 4 of the ACHIEVE Research-Ready Nurse™ program. 30 fully sponsored seats. Takes 3 minutes. No prior research experience required.',
 }
 
 export default function LandingLayout({ children }: { children: React.ReactNode }) {

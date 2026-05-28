@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { COHORT } from '../_config'
+import { COHORT } from '../../_config'
 
 interface CountdownProps {
   size?: 'lg' | 'sm'

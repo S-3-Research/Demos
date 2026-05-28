@@ -2,7 +2,7 @@
 import React, { useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { COHORT } from '../../_config'
+import { COHORT } from '../../../_config'
 
 const IMAGES = [
   '/images/nurse_match/istockphoto-998313080-1024x1024.jpg',

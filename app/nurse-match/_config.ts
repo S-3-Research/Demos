@@ -6,10 +6,10 @@
 export const COHORT = {
   name: 'Cohort 4',
   seats: 30,
-  closeDate: new Date('2026-05-31T23:59:59'),
+  closeDate: new Date('2026-07-31T23:59:59'),
   tuitionValue: '$3,000',
   certName: 'Research-Ready Nurse™',
-  applyUrl: '/nurse-match/landing/apply',
+  applyUrl: '/nurse-match/apply',
 }
 
 export const STATS = [
