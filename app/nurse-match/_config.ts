@@ -147,6 +147,11 @@ export const SPECIALTIES = [
   'Other',
 ]
 
+export const SPECIAL_EXPERIENCE_OPTIONS = [
+  { value: 'pediatrics', label: 'Pediatrics' },
+  { value: 'port',       label: 'Port' },
+]
+
 export const EXPERIENCE_OPTIONS = [
   'Less than 2 years',
   '2–5 years',

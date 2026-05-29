@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import {
-  ROLES, SPECIALTIES, EXPERIENCE_OPTIONS, LANGUAGE_OPTIONS,
+  ROLES, SPECIALTIES, SPECIAL_EXPERIENCE_OPTIONS, EXPERIENCE_OPTIONS, LANGUAGE_OPTIONS,
   GOAL_OPTIONS, HOURS_OPTIONS, SOURCE_OPTIONS, US_STATES, COHORT,
 } from '../../_config'
 
@@ -236,11 +236,26 @@ function StepBackground({ onNext, onBack }: { onNext: (data: StepData) => void; 
           </SelectInput>
         </div>
         <div>
-          <FieldLabel>Primary Specialty</FieldLabel>
-          <SelectInput name="specialty" defaultValue="">
-            <option value="" disabled>Select your specialty</option>
-            {SPECIALTIES.map((s) => <option key={s}>{s}</option>)}
-          </SelectInput>
+          <FieldLabel>
+            Primary Specialty{' '}
+            <span className="font-normal opacity-50">(select all that apply)</span>
+          </FieldLabel>
+          <div className="grid grid-cols-3 gap-[8px] mt-1 language-grid">
+            {SPECIALTIES.map((s) => (
+              <CheckboxOption key={s} name="specialty" value={s} label={s} />
+            ))}
+          </div>
+        </div>
+        <div>
+          <FieldLabel>
+            Experience{' '}
+            <span className="font-normal opacity-50">(optional — select all that apply)</span>
+          </FieldLabel>
+          <div className="grid grid-cols-2 gap-[8px] mt-1">
+            {SPECIAL_EXPERIENCE_OPTIONS.map((o) => (
+              <CheckboxOption key={o.value} name="specialExperience" value={o.value} label={o.label} />
+            ))}
+          </div>
         </div>
         <div>
           <FieldLabel>Years of Clinical Experience</FieldLabel>

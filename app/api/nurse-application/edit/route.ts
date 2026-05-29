@@ -6,7 +6,7 @@ import { getSessionFromCookie } from '@/lib/nurseSession'
 const ALL_EDITABLE = [
   'phone', 'role', 'specialty', 'years_experience', 'languages',
   'address', 'state', 'city', 'zip', 'serves_underserved',
-  'motivation_text', 'goal', 'hours_per_month',
+  'motivation_text', 'goal', 'hours_per_month', 'special_experience',
 ] as const
 
 // 仅 contact / availability — selected 时只允许改这些
@@ -59,12 +59,18 @@ export async function PATCH(req: NextRequest) {
     return NextResponse.json({ error: 'No valid fields to update.' }, { status: 400 })
   }
 
-  // languages is stored as TEXT[] — convert comma-separated string to array
-  if ('languages' in updates && typeof updates.languages === 'string') {
-    updates.languages = updates.languages
-      .split(',')
-      .map((s: string) => s.trim())
-      .filter(Boolean)
+  // array fields stored as TEXT[] — ensure they are arrays
+  for (const arrField of ['languages', 'specialty', 'special_experience'] as const) {
+    if (arrField in updates) {
+      if (typeof updates[arrField] === 'string') {
+        updates[arrField] = (updates[arrField] as string)
+          .split(',')
+          .map((s: string) => s.trim())
+          .filter(Boolean)
+      } else if (!Array.isArray(updates[arrField])) {
+        updates[arrField] = []
+      }
+    }
   }
 
   // 如果正在 reviewing，编辑后重置为 pending

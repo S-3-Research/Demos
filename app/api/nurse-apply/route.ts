@@ -19,6 +19,7 @@ export async function POST(req: NextRequest) {
       address, state, city, zip, servesUnderserved,
       motivationText, goal,
       hoursPerMonth, source,
+      specialExperience,
     } = body
 
     if (!firstName || !lastName || !email) {
@@ -56,7 +57,7 @@ export async function POST(req: NextRequest) {
         last_name: lastName,
         email: normalizedEmail,
         phone,
-        role, specialty,
+        role, specialty: specialty ?? [],
         years_experience: yearsExperience,
         languages: languages ?? [],
         address, state, city, zip,
@@ -65,6 +66,7 @@ export async function POST(req: NextRequest) {
         goal,
         hours_per_month: hoursPerMonth,
         source,
+        special_experience: specialExperience ?? [],
       })
       .select('id')
       .single()

@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import {
-  ROLES, SPECIALTIES, EXPERIENCE_OPTIONS, LANGUAGE_OPTIONS,
+  ROLES, SPECIALTIES, SPECIAL_EXPERIENCE_OPTIONS, EXPERIENCE_OPTIONS, LANGUAGE_OPTIONS,
   GOAL_OPTIONS, HOURS_OPTIONS, US_STATES,
 } from '../../_config'
 
@@ -24,6 +24,7 @@ type AppData = {
   motivation_text: string
   goal: string
   hours_per_month: string | number
+  special_experience: string | string[]
 }
 
 type EditFormProps = {
@@ -109,12 +110,13 @@ export default function EditForm({ app, isSelectedLimited }: EditFormProps) {
     }
     if (!isSelectedLimited) {
       body.role = fd.get('role')
-      body.specialty = fd.get('specialty')
+      body.specialty = fd.getAll('specialty')
       body.years_experience = fd.get('years_experience')
       const underserved = fd.get('serves_underserved') as string
       body.serves_underserved = underserved === 'yes' || underserved === 'somewhat'
       body.motivation_text = fd.get('motivation_text')
       body.goal = fd.get('goal')
+      body.special_experience = fd.getAll('special_experience')
     }
 
     const res = await fetch('/api/nurse-application/edit', {
@@ -231,12 +233,37 @@ export default function EditForm({ app, isSelectedLimited }: EditFormProps) {
                   {ROLES.map((r) => <option key={r}>{r}</option>)}
                 </select>
               </div>
-              <div>
-                <label className={labelClass}>Primary Specialty</label>
-                <select name="specialty" className={selectClass} defaultValue={app.specialty ?? ''} style={{ colorScheme: 'dark' }}>
-                  <option value="" disabled>Select your specialty</option>
-                  {SPECIALTIES.map((s) => <option key={s}>{s}</option>)}
-                </select>
+              <div className="sm:col-span-2">
+                <label className={labelClass}>
+                  Primary Specialty{' '}
+                  <span className="font-normal opacity-50">(select all that apply)</span>
+                </label>
+                <div className="grid grid-cols-3 gap-[8px] mt-1">
+                  {SPECIALTIES.map((s) => {
+                    const saved = Array.isArray(app.specialty)
+                      ? app.specialty
+                      : (app.specialty ?? '').toString().split(/[,;]+/).map((x) => x.trim())
+                    return (
+                      <CheckboxOption key={s} name="specialty" value={s} label={s} defaultChecked={saved.includes(s)} />
+                    )
+                  })}
+                </div>
+              </div>
+              <div className="sm:col-span-2">
+                <label className={labelClass}>
+                  Experience{' '}
+                  <span className="font-normal opacity-50">(optional)</span>
+                </label>
+                <div className="grid grid-cols-2 gap-[8px] mt-1">
+                  {SPECIAL_EXPERIENCE_OPTIONS.map((o) => {
+                    const saved = Array.isArray(app.special_experience)
+                      ? app.special_experience
+                      : (app.special_experience ?? '').toString().split(/[,;]+/).map((x) => x.trim())
+                    return (
+                      <CheckboxOption key={o.value} name="special_experience" value={o.value} label={o.label} defaultChecked={saved.includes(o.value)} />
+                    )
+                  })}
+                </div>
               </div>
               <div className="sm:col-span-2">
                 <label className={labelClass}>Years of Clinical Experience</label>
