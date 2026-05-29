@@ -60,7 +60,7 @@ export function IntakeFormEdit({ initialData, onSave, onCancel, isSaving = false
               Myself
             </div>
             <div className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-              I&apos;m looking for clinical trials for myself
+              I&apos;m looking for information for myself
             </div>
           </button>
 
@@ -80,7 +80,7 @@ export function IntakeFormEdit({ initialData, onSave, onCancel, isSaving = false
               Someone else
             </div>
             <div className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-              I&apos;m helping someone else to find information about clinical trials
+              I&apos;m helping someone else to find information
             </div>
           </button>
         </div>
@@ -172,6 +172,27 @@ export function IntakeFormEdit({ initialData, onSave, onCancel, isSaving = false
         </div>
 
         <div className="space-y-2">
+          <button
+            onClick={() => setIntent('learn_about_alzheimer')}
+            className={`w-full p-4 text-left rounded-xl border-2 transition-all ${
+              intent === 'learn_about_alzheimer'
+                ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
+                : 'border-gray-200 dark:border-gray-600 hover:border-blue-300 dark:hover:border-blue-600'
+            }`}
+          >
+            <div className={`flex items-center gap-2 font-medium ${
+              intent === 'learn_about_alzheimer'
+                ? 'text-blue-600 dark:text-blue-400'
+                : 'text-gray-900 dark:text-white'
+            }`}>
+              Learn About Alzheimer&apos;s Disease
+              <span className="text-xs font-medium px-1.5 py-0.5 rounded bg-blue-100 dark:bg-blue-800 text-blue-600 dark:text-blue-300">Default</span>
+            </div>
+            <div className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+              I want to learn about Alzheimer&apos;s disease and ADRD
+            </div>
+          </button>
+
           <button
             onClick={() => setIntent('trial_matching')}
             className={`w-full p-4 text-left rounded-xl border-2 transition-all ${

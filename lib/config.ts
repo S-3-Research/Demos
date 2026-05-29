@@ -101,12 +101,33 @@ const LEARN_CAREGIVER_PROMPTS: StartScreenPrompt[] = [
   },
 ];
 
+// Starter prompts for learning about Alzheimer's disease
+const LEARN_ALZHEIMER_PROMPTS: StartScreenPrompt[] = [
+  {
+    label: "What are the latest research breakthroughs in Alzheimer's disease and related dementias (ADRD)?",
+    prompt: "What are the latest research breakthroughs in Alzheimer's disease and related dementias (ADRD)?",
+    icon: "circle-question",
+  },
+  {
+    label: "What causes ADRD, and can it be prevented or slowed down?",
+    prompt: "What causes ADRD, and can it be prevented or slowed down?",
+    icon: "notebook",
+  },
+  {
+    label: "What are the stages of Alzheimer's disease?",
+    prompt: "What are the stages of Alzheimer's disease?",
+    icon: "search",
+  },
+];
+
 // Greetings based on intent and role
 const GREETINGS = {
   trial_matching_user: "Welcome to TrialChat! I'm here to help you find clinical trials that match your needs. Let's get started!",
   trial_matching_caregiver: "Welcome to TrialChat! I'm here to help you find suitable clinical trials for someone you know. How can I assist?",
   learn_about_trials_user: "Welcome to TrialChat! I'm here to answer your questions about Alzheimer's disease and clinical trials. What would you like to learn?",
   learn_about_trials_caregiver: "Welcome to TrialChat! I'm here to help you learn about Alzheimer's disease clinical trials. What can I explain?",
+  learn_about_alzheimer_user: "Welcome to TrialChat! I'm here to help you learn about Alzheimer's disease. What would you like to know?",
+  learn_about_alzheimer_caregiver: "Welcome to TrialChat! I'm here to help you learn about Alzheimer's disease for someone you care for. What can I explain?",
   default: "Welcome to TrialChat! I'm here to help you navigate Alzheimer's disease clinical trials. How can I assist you today?",
 };
 
@@ -124,6 +145,9 @@ export const getStarterPromptsForUser = (intakeData: IntakeData | null): StartSc
   }
   if (intent === 'learn_about_trials') {
     return role === 'caregiver' ? LEARN_CAREGIVER_PROMPTS : LEARN_USER_PROMPTS;
+  }
+  if (intent === 'learn_about_alzheimer') {
+    return LEARN_ALZHEIMER_PROMPTS;
   }
   if (role === 'caregiver') {
     // Role signal without intent leans towards caregiver prompts
@@ -161,6 +185,7 @@ export const getGreetingForUser = (intakeData: IntakeData | null): string => {
   // Intent known, role unknown — intent-based greeting
   if (intent === 'trial_matching') return PARTIAL_GREETINGS.trial_matching;
   if (intent === 'learn_about_trials') return PARTIAL_GREETINGS.learn_about_trials;
+  if (intent === 'learn_about_alzheimer') return "Welcome to TrialChat! I'm here to help you learn about Alzheimer's disease. What would you like to know?";
 
   // Role known (caregiver), intent unknown
   if (role === 'caregiver') return PARTIAL_GREETINGS.caregiver_only;

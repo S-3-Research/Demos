@@ -1,6 +1,6 @@
 export type UserRole = 'user' | 'caregiver';
 export type ResponseStyle = 'concise' | 'balanced' | 'verbose';
-export type UserIntent = 'trial_matching' | 'learn_about_trials';
+export type UserIntent = 'trial_matching' | 'learn_about_trials' | 'learn_about_alzheimer';
 
 export interface IntakeData {
   role: UserRole | null;

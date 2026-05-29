@@ -11,9 +11,9 @@ interface IntakeFormModalProps {
 
 export function IntakeFormModal({ onComplete, onSkip }: IntakeFormModalProps) {
   const [step, setStep] = useState(1);
-  const [role, setRole] = useState<UserRole | null>(null);
-  const [responseStyle, setResponseStyle] = useState<ResponseStyle | null>(null);
-  const [intent, setIntent] = useState<UserIntent | null>(null);
+  const [intent, setIntent] = useState<UserIntent | null>('learn_about_alzheimer');
+  const [role, setRole] = useState<UserRole | null>('user');
+  const [responseStyle, setResponseStyle] = useState<ResponseStyle | null>('balanced');
 
   // Check if user has already completed intake
   useEffect(() => {
@@ -28,68 +28,49 @@ export function IntakeFormModal({ onComplete, onSkip }: IntakeFormModalProps) {
     }
   }, [onComplete]);
 
-  const handleRoleSelect = (selectedRole: UserRole) => {
-    setRole(selectedRole);
-    setStep(2);
-  };
-
-  const handleStyleSelect = (selectedStyle: ResponseStyle) => {
-    setResponseStyle(selectedStyle);
-    setStep(3);
-  };
-
-  const handleIntentSelect = (selectedIntent: UserIntent) => {
+  const complete = (overrides?: Partial<IntakeData>) => {
     const data: IntakeData = {
+      intent,
       role,
       response_style: responseStyle,
-      intent: selectedIntent,
       completed_at: new Date().toISOString(),
+      ...overrides,
     };
     localStorage.setItem(INTAKE_STORAGE_KEY, JSON.stringify(data));
     onComplete(data);
   };
 
-  const handleSkipStep = (nextStep: number) => {
-    setStep(nextStep);
+  // Step 1: Goal — select intent then advance
+  const handleIntentSelect = (selectedIntent: UserIntent) => {
+    setIntent(selectedIntent);
+    setStep(2);
+  };
+
+  // Step 2: Role — select role then advance
+  const handleRoleSelect = (selectedRole: UserRole) => {
+    setRole(selectedRole);
+    setStep(3);
+  };
+
+  // Step 3: Tone — select style then complete
+  const handleStyleSelect = (selectedStyle: ResponseStyle) => {
+    complete({ response_style: selectedStyle });
   };
 
   const handleSkipAll = () => {
     if (onSkip) {
       onSkip();
     } else {
-      // Skip entire form — all fields null
-      const data: IntakeData = {
-        role: null,
-        response_style: null,
-        intent: null,
-        completed_at: new Date().toISOString(),
-      };
-      localStorage.setItem(INTAKE_STORAGE_KEY, JSON.stringify(data));
-      onComplete(data);
+      complete();
     }
   };
 
-  // Skip current step and complete with nulls for remaining steps
   const handleSkipFromStep2 = () => {
-    const data: IntakeData = {
-      role,
-      response_style: null,
-      intent: null,
-      completed_at: new Date().toISOString(),
-    };
-    localStorage.setItem(INTAKE_STORAGE_KEY, JSON.stringify(data));
-    onComplete(data);
+    setStep(3);
   };
 
   const handleSkipFromStep3 = () => {
-    const data: IntakeData = {
-      role,
-      response_style: responseStyle,
-      intent: null,
-      completed_at: new Date().toISOString(),
-    };
-    localStorage.setItem(INTAKE_STORAGE_KEY, JSON.stringify(data));
-    onComplete(data);
+    complete();
   };
 
   return (
@@ -107,7 +88,7 @@ export function IntakeFormModal({ onComplete, onSkip }: IntakeFormModalProps) {
           ))}
         </div>
 
-        {/* Step 1: Role Selection */}
+        {/* Step 1: Goal (Intent) */}
         {step === 1 && (
           <div className="space-y-6">
             <div>
@@ -115,32 +96,47 @@ export function IntakeFormModal({ onComplete, onSkip }: IntakeFormModalProps) {
                 Welcome! 👋
               </h2>
               <p className="text-gray-600 dark:text-gray-300">
-                Who are you looking for information for?
+                What brings you here today?
               </p>
             </div>
 
             <div className="space-y-3">
               <button
-                onClick={() => handleRoleSelect('user')}
-                className="w-full p-4 text-left rounded-xl border-2 border-gray-200 dark:border-gray-600 hover:border-blue-500 dark:hover:border-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all group"
+                onClick={() => handleIntentSelect('learn_about_alzheimer')}
+                className="w-full p-4 text-left rounded-xl border-2 border-blue-500 bg-blue-50 dark:bg-blue-900/20 hover:border-blue-600 transition-all group"
               >
-                <div className="font-medium text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400">
-                  Myself
+                <div className="flex items-center gap-2">
+                  <span className="font-medium text-blue-600 dark:text-blue-400">
+                    Learn About Alzheimer&apos;s Disease
+                  </span>
+                  <span className="text-xs font-medium px-1.5 py-0.5 rounded bg-blue-100 dark:bg-blue-800 text-blue-600 dark:text-blue-300">Default</span>
                 </div>
                 <div className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                  I&apos;m looking for clinical trials for myself
+                  I want to learn about Alzheimer&apos;s disease and ADRD
                 </div>
               </button>
 
               <button
-                onClick={() => handleRoleSelect('caregiver')}
+                onClick={() => handleIntentSelect('trial_matching')}
                 className="w-full p-4 text-left rounded-xl border-2 border-gray-200 dark:border-gray-600 hover:border-blue-500 dark:hover:border-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all group"
               >
                 <div className="font-medium text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400">
-                  Someone else
+                  Find Suitable Clinical Trials
                 </div>
                 <div className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                  I&apos;m helping someone else to find information about clinical trials
+                  Help me search for and match with clinical trials
+                </div>
+              </button>
+
+              <button
+                onClick={() => handleIntentSelect('learn_about_trials')}
+                className="w-full p-4 text-left rounded-xl border-2 border-gray-200 dark:border-gray-600 hover:border-blue-500 dark:hover:border-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all group"
+              >
+                <div className="font-medium text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400">
+                  Learn About Clinical Trials
+                </div>
+                <div className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                  I want to understand what clinical trials are
                 </div>
               </button>
             </div>
@@ -154,8 +150,66 @@ export function IntakeFormModal({ onComplete, onSkip }: IntakeFormModalProps) {
           </div>
         )}
 
-        {/* Step 2: Response Style */}
+        {/* Step 2: Role */}
         {step === 2 && (
+          <div className="space-y-6">
+            <div>
+              <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-2">
+                Who are you looking for?
+              </h2>
+              <p className="text-gray-600 dark:text-gray-300">
+                This helps us tailor our responses to your needs
+              </p>
+            </div>
+
+            <div className="space-y-3">
+              <button
+                onClick={() => handleRoleSelect('user')}
+                className="w-full p-4 text-left rounded-xl border-2 border-blue-500 bg-blue-50 dark:bg-blue-900/20 hover:border-blue-600 transition-all group"
+              >
+                <div className="flex items-center gap-2">
+                  <span className="font-medium text-blue-600 dark:text-blue-400">
+                    Myself
+                  </span>
+                  <span className="text-xs font-medium px-1.5 py-0.5 rounded bg-blue-100 dark:bg-blue-800 text-blue-600 dark:text-blue-300">Default</span>
+                </div>
+                <div className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                  I&apos;m looking for information for myself
+                </div>
+              </button>
+
+              <button
+                onClick={() => handleRoleSelect('caregiver')}
+                className="w-full p-4 text-left rounded-xl border-2 border-gray-200 dark:border-gray-600 hover:border-blue-500 dark:hover:border-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all group"
+              >
+                <div className="font-medium text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400">
+                  Someone else
+                </div>
+                <div className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                  I&apos;m helping someone else find information
+                </div>
+              </button>
+            </div>
+
+            <div className="flex gap-4">
+              <button
+                onClick={() => setStep(1)}
+                className="flex-1 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
+              >
+                ← Back
+              </button>
+              <button
+                onClick={handleSkipFromStep2}
+                className="flex-1 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
+              >
+                Skip for now
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Step 3: Tone (Response Style) */}
+        {step === 3 && (
           <div className="space-y-6">
             <div>
               <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-2">
@@ -181,10 +235,13 @@ export function IntakeFormModal({ onComplete, onSkip }: IntakeFormModalProps) {
 
               <button
                 onClick={() => handleStyleSelect('balanced')}
-                className="w-full p-4 text-left rounded-xl border-2 border-gray-200 dark:border-gray-600 hover:border-blue-500 dark:hover:border-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all group"
+                className="w-full p-4 text-left rounded-xl border-2 border-blue-500 bg-blue-50 dark:bg-blue-900/20 hover:border-blue-600 transition-all group"
               >
-                <div className="font-medium text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400">
-                  Balanced
+                <div className="flex items-center gap-2">
+                  <span className="font-medium text-blue-600 dark:text-blue-400">
+                    Balanced
+                  </span>
+                  <span className="text-xs font-medium px-1.5 py-0.5 rounded bg-blue-100 dark:bg-blue-800 text-blue-600 dark:text-blue-300">Default</span>
                 </div>
                 <div className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                   A good mix of detail and clarity
@@ -200,61 +257,6 @@ export function IntakeFormModal({ onComplete, onSkip }: IntakeFormModalProps) {
                 </div>
                 <div className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                   In-depth explanations with context and examples
-                </div>
-              </button>
-            </div>
-
-            <div className="flex gap-4">
-              <button
-                onClick={() => setStep(1)}
-                className="flex-1 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
-              >
-                ← Back
-              </button>
-              <button
-                onClick={handleSkipFromStep2}
-                className="flex-1 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
-              >
-                Skip for now
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* Step 3: Intent */}
-        {step === 3 && (
-          <div className="space-y-6">
-            <div>
-              <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-2">
-                Your Goal
-              </h2>
-              <p className="text-gray-600 dark:text-gray-300">
-                What brings you here today?
-              </p>
-            </div>
-
-            <div className="space-y-3">
-              <button
-                onClick={() => handleIntentSelect('trial_matching')}
-                className="w-full p-4 text-left rounded-xl border-2 border-gray-200 dark:border-gray-600 hover:border-blue-500 dark:hover:border-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all group"
-              >
-                <div className="font-medium text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400">
-                  Find Suitable Clinical Trials
-                </div>
-                <div className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                  Help me search for and match with clinical trials
-                </div>
-              </button>
-
-              <button
-                onClick={() => handleIntentSelect('learn_about_trials')}
-                className="w-full p-4 text-left rounded-xl border-2 border-gray-200 dark:border-gray-600 hover:border-blue-500 dark:hover:border-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all group"
-              >
-                <div className="font-medium text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400">
-                  Learn About Clinical Trials
-                </div>
-                <div className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                  I want to understand what clinical trials are
                 </div>
               </button>
             </div>
