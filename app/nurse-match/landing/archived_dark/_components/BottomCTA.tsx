@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { COHORT } from '../../_config'
+import { COHORT } from '../../../_config'
 
 export default function BottomCTA() {
   return (
