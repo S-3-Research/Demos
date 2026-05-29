@@ -86,9 +86,12 @@ export function ChatKitPanel({
   const processedFacts = useRef(new Set<string>());
   const [errors, setErrors] = useState<ErrorState>(() => createInitialErrors());
   const [isInitializingSession, setIsInitializingSession] = useState(true);
+  const [isContentReady, setIsContentReady] = useState(false); // True after chatkit.thread.load.end fires
+  const [isOverlayFadingOut, setIsOverlayFadingOut] = useState(false); // Triggers CSS fade before DOM removal
   const [intakeData, setIntakeData] = useState<IntakeData | null>(null);
   const [showMatchModal, setShowMatchModal] = useState(false);
   const isMountedRef = useRef(true);
+  const markContentReadyRef = useRef<((extraDelay?: number) => void) | null>(null);
   const [scriptStatus, setScriptStatus] = useState<
     "pending" | "ready" | "error"
   >(() =>
@@ -207,6 +210,8 @@ export function ChatKitPanel({
       );
     }
     setIsInitializingSession(true);
+    setIsContentReady(false);
+    setIsOverlayFadingOut(false);
     setErrors(createInitialErrors());
     setWidgetInstanceKey((prev) => prev + 1);
   }, []);
@@ -300,6 +305,9 @@ export function ChatKitPanel({
             bodyPreview: raw.slice(0, 1600),
           });
         }
+
+        // createSession response = ChatKit is about to render — start fade-out
+        markContentReadyRef.current?.();
 
         let data: Record<string, unknown> = {};
         if (raw) {
@@ -802,6 +810,31 @@ export function ChatKitPanel({
     }
   }, [chatkit.control, isInitializingSession]);
 
+  // Helper to trigger smooth fade-out then remove overlay.
+  // `extraDelay` lets callers hold the skeleton longer to cover web component paint time.
+  const markContentReady = useCallback((extraDelay = 0) => {
+    if (isContentReady) return;
+    setTimeout(() => {
+      setIsOverlayFadingOut(true);
+      setTimeout(() => setIsContentReady(true), 700); // match transition duration
+    }, extraDelay);
+  }, [isContentReady]);
+
+  // Keep ref in sync so getClientSecret can call it
+  useEffect(() => {
+    markContentReadyRef.current = markContentReady;
+  }, [markContentReady]);
+
+  // Fallback: clear skeleton 1.5s after session is ready (if createSession callback never fires)
+  useEffect(() => {
+    if (isInitializingSession || isContentReady) return;
+    const t = setTimeout(() => {
+      console.log('[ChatKitPanel] fallback timeout → force content ready');
+      markContentReady();
+    }, 2500);
+    return () => clearTimeout(t);
+  }, [isInitializingSession, isContentReady, markContentReady]);
+
   // Auto-open match modal when chatkit becomes ready (triggered by ?open_match=1)
   const autoMatchFiredRef = useRef(false);
   useEffect(() => {
@@ -885,19 +918,43 @@ export function ChatKitPanel({
         </div>
       </div>
 
-    <div className="chatkit-panel-container relative pb-8 flex flex-1 w-full h-full rounded-b-3xl md:rounded-3xl flex-col overflow-hidden bg-white/40 backdrop-blur-2xl border border-slate-200/60 shadow-2xl transition-colors dark:bg-[#181D26] dark:border-slate-700/60 z-0" style={{ boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 15px rgba(0, 0, 0, 0.1)' }}>
+    <div className="chatkit-panel-container relative pb-8 flex flex-1 w-full h-full rounded-b-3xl md:rounded-3xl flex-col overflow-hidden border border-slate-200/60 shadow-2xl transition-colors dark:bg-[#181D26] dark:border-slate-700/60 z-0 bg-[#FDFDFE]" style={{ boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 15px rgba(0, 0, 0, 0.1)' }}>
       <ChatKit
         key={widgetInstanceKey}
         control={chatkit.control}
-        className={
-          blockingError || isInitializingSession
-            ? "pointer-events-none opacity-0"
-            : "block h-full w-full"
-        }
+        className="block h-full w-full"
       />
+
+      {/* Skeleton overlay — fades out smoothly once content is ready */}
+      {!blockingError && !isContentReady && (
+        <div
+          className="absolute inset-0 z-10 flex flex-col justify-end px-8 py-10 bg-white/95 dark:bg-[#181D26]/95 backdrop-blur-sm"
+          style={{
+            opacity: isOverlayFadingOut ? 0 : 1,
+            transition: 'opacity 700ms ease-in-out',
+            pointerEvents: 'none',
+          }}
+        >
+          <div />
+          {/* Greeting skeleton */}
+          <div className="h-15 w-[70%] mx-auto rounded-2xl bg-slate-100/80 dark:bg-slate-800/60 animate-pulse mb-3" />
+          {/* Prompt pills */}
+          <div className="flex flex-col items-center gap-2.5 mb-4">
+            {[70, 70, 70].map((w, i) => (
+              <div
+                key={i}
+                className="h-8 rounded-xl bg-slate-100/80 dark:bg-slate-800/60 animate-pulse my-1"
+                style={{ width: `${w}%`, animationDelay: `${i * 100}ms` }}
+              />
+            ))}
+          </div>
+          {/* Composer */}
+          <div className="h-15 w-[70%] mx-auto rounded-2xl bg-slate-100/80 dark:bg-slate-800/60 animate-pulse mb-3" />
+        </div>
+      )}
       
       {/* Voice Input Button - positioned at same level as ChatKit */}
-      {!blockingError && !isInitializingSession && (
+      {!blockingError && isContentReady && (
         <div 
           className="absolute bottom-11 md:bottom-13 left-1/2 -translate-x-1/2 w-[calc(100%-24px)] md:w-[calc(100%-40px)] max-w-[771px] flex items-center justify-end pointer-events-none"
           style={{ height: '56px' }}
@@ -939,11 +996,7 @@ export function ChatKitPanel({
       
       <ErrorOverlay
         error={blockingError}
-        fallbackMessage={
-          blockingError || !isInitializingSession
-            ? null
-            : "Loading assistant session..."
-        }
+        fallbackMessage={null}
         onRetry={blockingError && errors.retryable ? handleResetChat : null}
         retryLabel="Restart chat"
       />
