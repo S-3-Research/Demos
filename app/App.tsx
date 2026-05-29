@@ -227,7 +227,14 @@ export default function App({ skipIntake = false, autoOpenMatch = false }: AppPr
   }, [isSignedIn]);
 
   const handleIntakeSkip = useCallback(() => {
-    console.log("[App] Intake skipped");
+    console.log("[App] Intake skipped — saving defaults to localStorage");
+    const defaultData = {
+      intent: 'learn_about_alzheimer',
+      role: 'user',
+      response_style: 'balanced',
+      completed_at: new Date().toISOString(),
+    };
+    localStorage.setItem(INTAKE_STORAGE_KEY, JSON.stringify(defaultData));
     setIntakeCompleted(true);
     setShowIntakeModal(false);
   }, []);
