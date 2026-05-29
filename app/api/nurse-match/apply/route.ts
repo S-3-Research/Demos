@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
     if (existing) {
       // 已有记录：不覆盖，发引导邮件让护士通过 magic link 自行修改
       const token = await signMagicToken({ applicationId: existing.id, email: normalizedEmail })
-      const magicLink = `${appUrl}/api/nurse-verify?token=${token}`
+      const magicLink = `${appUrl}/api/nurse-match/verify?token=${token}`
       await sendAlreadyRegisteredEmail({
         to: normalizedEmail,
         firstName: existing.first_name,
@@ -57,16 +57,17 @@ export async function POST(req: NextRequest) {
         last_name: lastName,
         email: normalizedEmail,
         phone,
-        role, specialty: specialty ?? [],
+        role,
+        specialty: Array.isArray(specialty) ? specialty : specialty ? [specialty] : [],
         years_experience: yearsExperience,
-        languages: languages ?? [],
+        languages: Array.isArray(languages) ? languages : languages ? [languages] : [],
         address, state, city, zip,
         serves_underserved: servesUnderserved,
         motivation_text: motivationText,
         goal,
         hours_per_month: hoursPerMonth,
         source,
-        special_experience: specialExperience ?? [],
+        special_experience: Array.isArray(specialExperience) ? specialExperience : specialExperience ? [specialExperience] : [],
       })
       .select('id')
       .single()
@@ -78,7 +79,7 @@ export async function POST(req: NextRequest) {
 
     // 发验证邮件
     const token = await signMagicToken({ applicationId: data.id, email: normalizedEmail })
-    const magicLink = `${appUrl}/api/nurse-verify?token=${token}`
+    const magicLink = `${appUrl}/api/nurse-match/verify?token=${token}`
     await sendVerificationEmail({ to: normalizedEmail, firstName, magicLink })
 
     return NextResponse.json({ success: true })

@@ -119,7 +119,7 @@ export default function EditForm({ app, isSelectedLimited }: EditFormProps) {
       body.special_experience = fd.getAll('special_experience')
     }
 
-    const res = await fetch('/api/nurse-application/edit', {
+    const res = await fetch('/api/nurse-match/edit-application', {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),

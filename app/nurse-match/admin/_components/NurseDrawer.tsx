@@ -86,7 +86,7 @@ export function NurseDrawer({ nurse, onClose, onUpdate }: Props) {
   const updateField = async (updates: Partial<NurseApplication>) => {
     setSaving(true)
     try {
-      const res = await fetch('/api/admin/nurse-status', {
+      const res = await fetch('/api/nurse-match/admin/nurse-status', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id: nurse.id, updates }),

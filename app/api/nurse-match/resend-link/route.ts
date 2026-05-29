@@ -27,7 +27,7 @@ export async function POST(req: NextRequest) {
 
   const token = await signMagicToken({ applicationId: app.id, email: app.email })
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'
-  const magicLink = `${appUrl}/api/nurse-verify?token=${token}`
+  const magicLink = `${appUrl}/api/nurse-match/verify?token=${token}`
 
   await sendVerificationEmail({ to: app.email, firstName: app.first_name, magicLink })
 

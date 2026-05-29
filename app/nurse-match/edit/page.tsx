@@ -20,7 +20,7 @@ export default async function EditPage() {
       applicant_can_edit,
       phone, role, specialty, years_experience, languages,
       address, state, city, zip, serves_underserved,
-      motivation_text, goal, hours_per_month
+      motivation_text, goal, hours_per_month, special_experience
     `)
     .eq('id', session.applicationId)
     .single()
