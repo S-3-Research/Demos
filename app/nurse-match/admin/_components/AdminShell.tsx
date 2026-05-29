@@ -55,7 +55,7 @@ export function AdminShell({ initialNurses }: Props) {
   const handleRefresh = async () => {
     setRefreshing(true)
     try {
-      const res = await fetch('/api/admin/nurses')
+      const res = await fetch('/api/nurse-match/admin/nurses')
       const data = await res.json()
       if (data.nurses) setNurses(data.nurses)
     } catch (e) {
@@ -68,7 +68,7 @@ export function AdminShell({ initialNurses }: Props) {
   const handleGeocode = async () => {
     setGeocoding(true)
     try {
-      const res = await fetch('/api/admin/geocode-nurses', { method: 'POST' })
+      const res = await fetch('/api/nurse-match/admin/geocode-nurses', { method: 'POST' })
       const data = await res.json()
       console.log('[AdminShell] geocode result:', data)
       // Refresh to get updated coordinates

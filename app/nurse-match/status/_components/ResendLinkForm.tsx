@@ -11,7 +11,7 @@ export default function ResendLinkForm() {
     if (!email) return
     setState('loading')
     try {
-      const res = await fetch('/api/nurse-resend-link', {
+      const res = await fetch('/api/nurse-match/resend-link', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email }),

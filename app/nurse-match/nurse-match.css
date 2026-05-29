@@ -1,0 +1,308 @@
+/* =========================================================
+   ACHIEVE Landing — Design Tokens & Animations
+   Scoped to .achieve-landing wrapper
+   ========================================================= */
+
+.achieve-landing {
+  /* New design tokens matching HTML */
+  --navy: #0d2a3f;
+  --teal: #1a6b7a;
+  --teal-light: #2a8fa0;
+  --gold: #d4920a;
+  --gold-light: #f0a922;
+  --white: #ffffff;
+  --off-white: #f7f9fb;
+  --gray-light: #e8eef2;
+  --gray: #6b7c8d;
+  --text: #1a2a38;
+
+  /* Legacy tokens kept for apply page */
+  --ink: #05111E;
+  --ink-mid: #091A2D;
+  --ink-light: #0E2440;
+  --teal-pale: rgba(11, 110, 120, 0.12);
+  --gold-bright: #f0a922;
+  --gold-warm: #F2C040;
+  --cream: #F4ECD8;
+  --sand: #E8DDCA;
+  --muted: rgba(255, 255, 255, 0.42);
+  --green: #1A7A44;
+
+  background: #ffffff;
+  color: var(--text);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+  font-family: var(--font-dm, 'DM Sans', system-ui, sans-serif);
+  position: relative;
+}
+
+/* Font helpers */
+.font-display { font-family: var(--font-display, 'DM Serif Display', Georgia, serif); }
+
+/* Font helpers */
+.font-cormorant { font-family: var(--font-cormorant, 'Cormorant Garamond', serif); }
+.font-barlow    { font-family: var(--font-barlow, 'Barlow Condensed', sans-serif); }
+.font-dm        { font-family: var(--font-dm, 'DM Sans', sans-serif); }
+
+/* ── Film grain overlay ── */
+.achieve-grain::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 9998;
+  opacity: 0.5;
+}
+
+/* ── Ticker ── */
+@keyframes achieve-tick {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.ticker-track {
+  display: flex;
+  white-space: nowrap;
+  animation: achieve-tick 32s linear infinite;
+}
+
+/* ── CTA Card float ── */
+@keyframes achieve-card-float {
+  0%, 100% { transform: translateY(0) rotate(0.1deg); }
+  50%       { transform: translateY(-10px) rotate(-0.1deg); }
+}
+.card-float {
+  animation: achieve-card-float 7s ease-in-out infinite;
+}
+
+/* ── Button shimmer ── */
+@keyframes achieve-shimmer {
+  0%   { left: -100%; }
+  100% { left: 220%; }
+}
+.btn-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+.btn-shimmer::after {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%; width: 60%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  animation: achieve-shimmer 3s ease infinite;
+}
+
+/* ── Blinking dot ── */
+@keyframes achieve-blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.3; }
+}
+.blink-dot {
+  animation: achieve-blink 2s ease-in-out infinite;
+}
+
+/* ── Step node glow (first step) — matches original @keyframes gl ── */
+@keyframes achieve-glow {
+  0%, 100% { box-shadow: 0 0 0 7px var(--ink), 0 0 16px rgba(11,110,120,0.2); }
+  50%       { box-shadow: 0 0 0 7px var(--ink), 0 0 32px rgba(11,110,120,0.5); }
+}
+.step-node-glow {
+  animation: achieve-glow 3s ease-in-out infinite;
+}
+
+/* ── Stat item bottom border reveal ── */
+.stat-item {
+  position: relative;
+}
+.stat-item::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0; height: 2px;
+  background: var(--teal);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.35s;
+}
+.stat-item:hover::after {
+  transform: scaleX(1);
+}
+
+/* ── Hero left vertical accent line ── */
+.hero-vline {
+  position: relative;
+}
+.hero-vline::before {
+  content: '';
+  position: absolute;
+  left: 48px; top: 0; bottom: 0; width: 1px;
+  background: linear-gradient(180deg, transparent, rgba(11,110,120,0.4), rgba(11,110,120,0.2), transparent);
+}
+
+/* ── Card header ghost number ── */
+.card-hd-ghost::before {
+  content: '30';
+  position: absolute;
+  right: -12px; top: -16px;
+  font-family: var(--font-cormorant, 'Cormorant Garamond', serif);
+  font-size: 130px; font-weight: 300;
+  color: rgba(11,110,120,0.08);
+  line-height: 1;
+  pointer-events: none;
+}
+
+/* ── Card header gold shimmer line ── */
+.card-hd-line::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold-bright, #E8A820), transparent);
+}
+
+/* ── Emotional section dark bg ── */
+.emotional-bg {
+  background: linear-gradient(155deg, #040E1B 0%, #071420 60%, #060F1A 100%);
+  padding: 100px 72px;
+}
+
+/* ── Autonomy section ── */
+.autonomy-bg::before {
+  content: '';
+  position: absolute;
+  right: 0; top: 0; bottom: 0; width: 50%;
+  background: rgba(11,110,120,0.03);
+  pointer-events: none;
+}
+
+/* ── Steps connector line ── */
+.steps-row {
+  position: relative;
+}
+.steps-row::before {
+  content: '';
+  position: absolute;
+  top: 28px; left: 10%; right: 10%; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(11,110,120,0.25), rgba(11,110,120,0.25), transparent);
+}
+
+/* ── Bottom CTA radial glow ── */
+.bcta-glow::before {
+  content: '';
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 600px; height: 400px;
+  background: radial-gradient(ellipse, rgba(11,110,120,0.12) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* ── Responsive grid layouts ── */
+
+/* Hero: 1fr 400px → single col at ≤1000px */
+.hero-layout {
+  display: grid;
+  grid-template-columns: 1fr 400px;
+  gap: 80px;
+  align-items: center;
+  width: 100%;
+}
+
+/* Steps: 5-col → 2-col at ≤1000px, connector hidden */
+.steps-layout {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0;
+  position: relative;
+  margin-top: 40px;
+}
+
+/* Stats: 3-col → 1-col at ≤600px, swap border-r → border-b */
+.stats-row-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+@media (max-width: 1000px) {
+  .hero-layout {
+    grid-template-columns: 1fr;
+    gap: 48px;
+  }
+  .steps-layout {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+  }
+  .steps-connector {
+    display: none;
+  }
+}
+
+@media (max-width: 600px) {
+  .stats-row-grid {
+    grid-template-columns: 1fr;
+  }
+  .stats-row-grid > .stat-item {
+    border-right: none !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  }
+  .stats-row-grid > .stat-item:last-child {
+    border-bottom: none;
+  }
+}
+
+/* Apply page main grid: form + sidebar */
+.apply-main-grid {
+  grid-template-columns: 1fr 320px;
+}
+
+/* Apply page 2-col grids: field rows + options grids */
+.field-row-2col {
+  grid-template-columns: 1fr 1fr;
+}
+.options-grid-2col {
+  grid-template-columns: 1fr 1fr;
+}
+.language-grid {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+@media (max-width: 860px) {
+  .apply-main-grid,
+  .field-row-2col,
+  .options-grid-2col {
+    grid-template-columns: 1fr;
+  }
+  .language-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* ── Scroll reveal ── */
+.reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.reveal.vis {
+  opacity: 1;
+  transform: translateY(0);
+}
+.reveal-d1 { transition-delay: 0.1s; }
+.reveal-d2 { transition-delay: 0.2s; }
+.reveal-d3 { transition-delay: 0.3s; }
+
+/* ── Apply form animations ── */
+@keyframes achieve-fade-in {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.form-section-enter {
+  animation: achieve-fade-in 0.4s ease;
+}
+
+/* ── Apply page progress bar fill ── */
+.progress-bar-fill {
+  height: 100%;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--teal), var(--teal-light));
+  transition: width 0.5s ease;
+}

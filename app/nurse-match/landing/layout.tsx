@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import { DM_Serif_Display, DM_Sans, Barlow_Condensed } from 'next/font/google'
-import './landing.css'
+import '../nurse-match.css'
 
 const dmSerifDisplay = DM_Serif_Display({
   subsets: ['latin'],

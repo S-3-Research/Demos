@@ -21,7 +21,7 @@ export function TrainingInviteModal({ nurse, onClose, onSuccess }: Props) {
     setLoading(true)
     setError('')
     try {
-      const res = await fetch('/api/admin/training-invite', {
+      const res = await fetch('/api/nurse-match/admin/training-invite', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id: nurse.id, trainingUrl: trainingUrl || undefined }),

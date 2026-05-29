@@ -173,6 +173,11 @@ body {
   100% { transform: translateX(200%) skewX(-20deg); }
 }
 
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
 @keyframes shimmer-border-spin {
   from { --shimmer-angle: 0deg; }
   to   { --shimmer-angle: 360deg; }
