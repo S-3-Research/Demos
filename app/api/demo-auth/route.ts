@@ -4,6 +4,7 @@ const DEMO_PASSWORDS = {
   'trial-chat': process.env.TRIAL_CHAT_PASSWORD,
   'trial-hub': process.env.TRIAL_HUB_PASSWORD,
   'nurse-match': process.env.NURSE_MATCH_PASSWORD,
+  'pay-lens': process.env.PAY_LENS_PASSWORD,
 };
 
 const MASTER_PASSWORD = process.env.MASTER_DEMO_PASSWORD;

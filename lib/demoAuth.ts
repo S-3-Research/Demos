@@ -20,6 +20,13 @@ export const DEMOS = {
     path: '/nurse-match',
     hidden: false,
   },
+  'pay-lens': {
+    id: 'pay-lens',
+    name: 'PayLens Dev',
+    description: 'Payment detection developer tools',
+    path: '/pay-lens/dev',
+    hidden: true,
+  },
 } as const;
 
 export type DemoId = keyof typeof DEMOS;
