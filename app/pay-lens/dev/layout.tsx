@@ -1,12 +1,16 @@
 'use client'
 
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
+import { useEffect, useState } from 'react'
+import DemoPasswordModal from '@/components/DemoPasswordModal'
+import { isDemoUnlockedClient } from '@/lib/demoAuth'
 
 const NAV_ITEMS = [
-  { href: '/pay-lens/dev',                label: 'Job Tester',      icon: '🧪' },
-  { href: '/pay-lens/dev/infra-design',   label: 'Infra Design',    icon: '🏗️' },
-  { href: '/pay-lens/dev/detector-design',label: 'Detector Design', icon: '🔍' },
+  { href: '/pay-lens/dev/crawler-job',              label: 'Crawler Jobs',    icon: '🕷️' },
+  { href: '/pay-lens/dev/detector-job',             label: 'Detector Jobs',   icon: '⚡' },
+  { href: '/pay-lens/dev/detector-design',          label: 'Detector Design', icon: '🔍' },
+  { href: '/pay-lens/dev/detector-infra-design',    label: 'Detector Infra Design',    icon: '🏗️' },
 ]
 
 const css = `
@@ -66,6 +70,30 @@ const css = `
 
 export default function DevLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
+  const router = useRouter()
+  const [isUnlocked, setIsUnlocked] = useState<boolean | null>(null)
+
+  useEffect(() => {
+    setIsUnlocked(isDemoUnlockedClient('pay-lens'))
+  }, [])
+
+  if (isUnlocked === null) {
+    return (
+      <div style={{ minHeight: '100vh', background: '#f5f5f7', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ color: '#86868b', fontSize: 14 }}>Loading…</div>
+      </div>
+    )
+  }
+
+  if (!isUnlocked) {
+    return (
+      <DemoPasswordModal
+        demoId="pay-lens"
+        onSuccess={() => setIsUnlocked(true)}
+        onCancel={() => router.push('/')}
+      />
+    )
+  }
 
   return (
     <div className="dev-layout">
