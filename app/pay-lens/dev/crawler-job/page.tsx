@@ -286,10 +286,18 @@ export default function CrawlerJobPage() {
     }
   }
 
-  const downloadArtifact = async (presignedUrl: string, labelKey: string) => {
+  const downloadArtifact = async (urlOrS3Uri: string, labelKey: string) => {
     setArtifactLoading(labelKey)
     try {
-      // s3Paths now contains presigned URLs directly (valid 15 min)
+      // s3Paths from summary returns S3 URIs (s3://...) — resolve via proxy to get presigned URL
+      // If already a presigned https URL, use directly
+      let presignedUrl = urlOrS3Uri
+      if (urlOrS3Uri.startsWith('s3://')) {
+        const r = await apiFetch(`${API_BASE}/artifacts?s3Uri=${encodeURIComponent(urlOrS3Uri)}`)
+        const data = await r.json()
+        presignedUrl = data.url ?? data.presignedUrl ?? data.signedUrl ?? ''
+        if (!presignedUrl) { console.error('[artifact] no presigned url in response', data); return }
+      }
       const fileName = presignedUrl.split('/').pop()?.split('?')[0] ?? labelKey
       try {
         const blob = await fetch(presignedUrl).then(res => res.blob())
