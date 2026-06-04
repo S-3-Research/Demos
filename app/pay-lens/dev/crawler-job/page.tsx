@@ -24,11 +24,15 @@ interface CrawlJob {
   logStreamName?: string
   exitCode?: number | null
   statusReason?: string | null
+  stoppedReason?: string | null
+  errorSummary?: string | null
+  visitedCount?: number
+  discoveredCount?: number
   batchDetail?: { status: string; logStreamName?: string; statusReason?: string } | null
   s3Paths?: {
     result_json?: string
-    summary_json?: string
-    result_jsonl?: string
+    result_excel?: string
+    crawl_log?: string
     [key: string]: string | undefined
   }
   jobName?: string
@@ -282,14 +286,19 @@ export default function CrawlerJobPage() {
     }
   }
 
-  const downloadArtifact = async (s3Uri: string, labelKey: string) => {
+  const downloadArtifact = async (urlOrS3Uri: string, labelKey: string) => {
     setArtifactLoading(labelKey)
     try {
-      const r = await apiFetch(`${API_BASE}/artifacts?s3Uri=${encodeURIComponent(s3Uri)}`)
-      const data = await r.json()
-      const presignedUrl: string = data.url ?? data.presignedUrl ?? data.signedUrl ?? ''
-      if (!presignedUrl) { console.error('[artifact] no url', data); return }
-      const fileName = s3Uri.split('/').pop() ?? labelKey
+      // s3Paths from summary returns S3 URIs (s3://...) — resolve via proxy to get presigned URL
+      // If already a presigned https URL, use directly
+      let presignedUrl = urlOrS3Uri
+      if (urlOrS3Uri.startsWith('s3://')) {
+        const r = await apiFetch(`${API_BASE}/artifacts?s3Uri=${encodeURIComponent(urlOrS3Uri)}`)
+        const data = await r.json()
+        presignedUrl = data.url ?? data.presignedUrl ?? data.signedUrl ?? ''
+        if (!presignedUrl) { console.error('[artifact] no presigned url in response', data); return }
+      }
+      const fileName = presignedUrl.split('/').pop()?.split('?')[0] ?? labelKey
       try {
         const blob = await fetch(presignedUrl).then(res => res.blob())
         const objUrl = URL.createObjectURL(blob)
@@ -448,6 +457,8 @@ export default function CrawlerJobPage() {
                     <th>Status</th>
                     <th>Submitted</th>
                     <th>Duration</th>
+                    <th style={{ textAlign: 'right' }}>Visited</th>
+                    <th style={{ textAlign: 'right' }}>Discovered</th>
                     <th style={{ textAlign: 'right' }}>Actions</th>
                   </tr>
                 </thead>
@@ -480,6 +491,8 @@ export default function CrawlerJobPage() {
                           <td><StatusBadge status={job.status} /></td>
                           <td className="mono" style={{ whiteSpace: 'nowrap', fontSize: 11 }}>{fmtTime(job.submittedAt ?? job.createdAt)}</td>
                           <td className="mono" style={{ fontSize: 11, color: inProgress ? '#8e6000' : undefined }}>{dur ?? '—'}</td>
+                          <td className="mono" style={{ fontSize: 11, textAlign: 'right' }}>{job.visitedCount != null ? job.visitedCount.toLocaleString() : '—'}</td>
+                          <td className="mono" style={{ fontSize: 11, textAlign: 'right' }}>{job.discoveredCount != null ? job.discoveredCount.toLocaleString() : '—'}</td>
                           <td>
                             <div style={{ display: 'flex', gap: 6, justifyContent: 'flex-end' }}>
                               <button className="btn btn-sm btn-detail"
@@ -493,7 +506,7 @@ export default function CrawlerJobPage() {
 
                         {isOpen && (
                           <tr className="expand-row">
-                            <td colSpan={8}>
+                            <td colSpan={10}>
                               <div className="expand-inner">
                                 <div className="kv-grid" style={{ marginBottom: 14 }}>
                                   <div className="kv"><div className="kv-label">Full Job ID</div><div className="kv-val mono">{job.jobId}</div></div>
@@ -518,10 +531,28 @@ export default function CrawlerJobPage() {
                                       </div>
                                     </div>
                                   )}
+                                  {job.visitedCount != null && (
+                                    <div className="kv"><div className="kv-label">Pages Visited</div><div className="kv-val mono">{job.visitedCount.toLocaleString()}</div></div>
+                                  )}
+                                  {job.discoveredCount != null && (
+                                    <div className="kv"><div className="kv-label">Pages Discovered</div><div className="kv-val mono">{job.discoveredCount.toLocaleString()}</div></div>
+                                  )}
                                   {(job.statusReason ?? job.batchDetail?.statusReason) && (
                                     <div className="kv" style={{ gridColumn: '1 / -1' }}>
                                       <div className="kv-label">Status Reason</div>
                                       <div className="kv-val" style={{ color: '#b52a1c' }}>{job.statusReason ?? job.batchDetail?.statusReason}</div>
+                                    </div>
+                                  )}
+                                  {job.stoppedReason && (
+                                    <div className="kv" style={{ gridColumn: '1 / -1' }}>
+                                      <div className="kv-label">Stopped Reason</div>
+                                      <div className="kv-val" style={{ color: '#8e6000' }}>{job.stoppedReason}</div>
+                                    </div>
+                                  )}
+                                  {job.errorSummary && (
+                                    <div className="kv" style={{ gridColumn: '1 / -1' }}>
+                                      <div className="kv-label">Error Summary</div>
+                                      <div className="kv-val mono" style={{ color: '#b52a1c', fontSize: 11, wordBreak: 'break-all' }}>{job.errorSummary}</div>
                                     </div>
                                   )}
                                 </div>
@@ -530,30 +561,30 @@ export default function CrawlerJobPage() {
                                   <div>
                                     <div className="kv-label" style={{ marginBottom: 8 }}>Artifacts</div>
                                     <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-                                      {(['result_json', 'summary_json', 'result_jsonl'] as const)
+                                      {(['result_json', 'result_excel', 'crawl_log'] as const)
                                         .filter(k => job.s3Paths![k])
                                         .map(k => {
-                                          const s3Uri = job.s3Paths![k]!
+                                          const url = job.s3Paths![k]!
                                           const loadKey = `${job.jobId}:${k}`
                                           const isLoadingThis = artifactLoading === loadKey
-                                          const label = k === 'result_json' ? '📄 result.json' : k === 'summary_json' ? '📊 summary.json' : '📋 result.jsonl'
+                                          const label = k === 'result_json' ? '📄 result.json' : k === 'result_excel' ? '📊 result.xlsx' : '📋 crawl.log'
                                           return (
-                                            <button key={k} className="artifact-btn" disabled={!!isLoadingThis} title={s3Uri}
-                                              onClick={() => downloadArtifact(s3Uri, loadKey)}>
+                                            <button key={k} className="artifact-btn" disabled={!!isLoadingThis} title={url}
+                                              onClick={() => downloadArtifact(url, loadKey)}>
                                               {isLoadingThis ? <span className="spinner spinner-dark" style={{ width: 10, height: 10, borderWidth: 1.5 }} /> : '↓'}
                                               {label}
                                             </button>
                                           )
                                         })}
                                       {Object.entries(job.s3Paths)
-                                        .filter(([k]) => !['result_json','summary_json','result_jsonl'].includes(k))
-                                        .map(([k, s3Uri]) => {
-                                          if (!s3Uri) return null
+                                        .filter(([k]) => !['result_json','result_excel','crawl_log'].includes(k))
+                                        .map(([k, url]) => {
+                                          if (!url) return null
                                           const loadKey = `${job.jobId}:${k}`
                                           const isLoadingThis = artifactLoading === loadKey
                                           return (
-                                            <button key={k} className="artifact-btn" disabled={!!isLoadingThis} title={s3Uri}
-                                              onClick={() => downloadArtifact(s3Uri, loadKey)}>
+                                            <button key={k} className="artifact-btn" disabled={!!isLoadingThis} title={url}
+                                              onClick={() => downloadArtifact(url, loadKey)}>
                                               {isLoadingThis ? <span className="spinner spinner-dark" style={{ width: 10, height: 10, borderWidth: 1.5 }} /> : '↓'}
                                               {k}
                                             </button>
